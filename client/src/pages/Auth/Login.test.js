@@ -21,7 +21,7 @@ jest.mock('../../context/auth', () => ({
 jest.mock('../../context/search', () => ({
     useSearch: jest.fn(() => [{ keyword: '' }, jest.fn()]) // Mock useSearch hook to return null state and a mock function
   }));  
-
+jest.mock("../../hooks/useCategory", () => jest.fn(() => []));
   Object.defineProperty(window, 'localStorage', {
     value: {
       setItem: jest.fn(),

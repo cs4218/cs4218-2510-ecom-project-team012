@@ -25,8 +25,8 @@ const CreateCategory = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      console.log(error);
-      toast.error("somthing went wrong in input form");
+      console.error(error);
+      toast.error("Something went wrong in input form"); // fixed other typos too
     }
   };
 
@@ -36,10 +36,12 @@ const CreateCategory = () => {
       const { data } = await axios.get("/api/v1/category/get-category");
       if (data.success) {
         setCategories(data.category);
+      } else {
+        toast.error(data.message); // added error feedback to align with other behaviours
       }
     } catch (error) {
-      console.log(error);
-      toast.error("Something wwent wrong in getting catgeory");
+      console.error(error);
+      toast.error("Something went wrong in getting category");
     }
   };
 
@@ -65,7 +67,8 @@ const CreateCategory = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error("Somtihing went wrong");
+      console.error(error);
+      toast.error("Something went wrong in updating category");
     }
   };
   //delete category
@@ -75,14 +78,15 @@ const CreateCategory = () => {
         `/api/v1/category/delete-category/${pId}`
       );
       if (data.success) {
-        toast.success(`category is deleted`);
+        toast.success(`Category is deleted`);
 
         getAllCategory();
       } else {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error("Somtihing went wrong");
+      console.error(error);
+      toast.error("Something went wrong in deleting category");
     }
   };
   return (
@@ -111,9 +115,8 @@ const CreateCategory = () => {
                 </thead>
                 <tbody>
                   {categories?.map((c) => (
-                    <>
-                      <tr>
-                        <td key={c._id}>{c.name}</td>
+                      <tr key={c._id}> 
+                        <td >{c.name}</td>
                         <td>
                           <button
                             className="btn btn-primary ms-2"
@@ -134,8 +137,7 @@ const CreateCategory = () => {
                             Delete
                           </button>
                         </td>
-                      </tr>
-                    </>
+                      </tr>               
                   ))}
                 </tbody>
               </table>
