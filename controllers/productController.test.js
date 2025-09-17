@@ -44,7 +44,7 @@ describe("Product Controller", () => {
 
     it("should handle errors", async () => {
       productModel.find.mockImplementation(() => {
-        throw new Error("DB error");
+        throw new Error("Erorr in getting products");
       });
 
       await getProductController(req, res);
@@ -52,6 +52,10 @@ describe("Product Controller", () => {
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.send).toHaveBeenCalledWith(
         expect.objectContaining({ success: false })
+      );
+      // Good practice will be to make the error message a constant and import it here
+      expect(res.send).toHaveBeenCalledWith(
+        expect.objectContaining({ message: "Erorr in getting products" })
       );
     });
   });
@@ -78,7 +82,7 @@ describe("Product Controller", () => {
     it("should handle errors", async () => {
       req.params = { slug: "test-slug" };
       productModel.findOne.mockImplementation(() => {
-        throw new Error("DB error");
+        throw new Error("Error while getting single product");
       });
 
       await getSingleProductController(req, res);
@@ -86,6 +90,12 @@ describe("Product Controller", () => {
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.send).toHaveBeenCalledWith(
         expect.objectContaining({ success: false })
+      );
+      // Good practice will be to make the error message a constant and import it here
+      expect(res.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: "Error while getting single product",
+        })
       );
     });
   });
@@ -108,7 +118,7 @@ describe("Product Controller", () => {
     it("should handle errors", async () => {
       req.params = { pid: "123" };
       productModel.findById.mockImplementation(() => {
-        throw new Error("DB error");
+        throw new Error("Erorr while getting photo");
       });
 
       await productPhotoController(req, res);
@@ -116,6 +126,10 @@ describe("Product Controller", () => {
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.send).toHaveBeenCalledWith(
         expect.objectContaining({ success: false })
+      );
+      // Good practice will be to make the error message a constant and import it here
+      expect(res.send).toHaveBeenCalledWith(
+        expect.objectContaining({ message: "Erorr while getting photo" })
       );
     });
   });
