@@ -206,13 +206,17 @@ export const productFiltersController = async (req, res) => {
     const products = await productModel.find(args);
     res.status(200).send({
       success: true,
+      // FIXED BUG: Missing message key:
+      message: "Filtered Products",
       products,
     });
   } catch (error) {
     console.log(error);
     res.status(400).send({
       success: false,
-      message: "Error WHile Filtering Products",
+      // FIXED BUG: Error message typo:
+      // message: "Error WHile Filtering Products",
+      message: "Error while filtering products",
       error,
     });
   }
@@ -224,6 +228,7 @@ export const productCountController = async (req, res) => {
     const total = await productModel.find({}).estimatedDocumentCount();
     res.status(200).send({
       success: true,
+      message: "Total Products Count",
       total,
     });
   } catch (error) {
@@ -249,6 +254,8 @@ export const productListController = async (req, res) => {
       .sort({ createdAt: -1 });
     res.status(200).send({
       success: true,
+      // FIXED BUG: Missing message key:
+      message: "Product List Fetched",
       products,
     });
   } catch (error) {
@@ -273,7 +280,9 @@ export const searchProductController = async (req, res) => {
         ],
       })
       .select("-photo");
-    res.json(resutls);
+    // FIXED BUG: Missing status code:
+    // Original: res.json(resutls);
+    res.status(200).json(resutls);
   } catch (error) {
     console.log(error);
     res.status(400).send({
