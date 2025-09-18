@@ -1,12 +1,10 @@
-import React from "react";
 import axios from "axios";
 import "@testing-library/jest-dom/extend-expect";
-import auth from "./auth";
+import { renderHook } from "@testing-library/react";
+import { useAuth, AuthProvider } from "./auth";
 
 // Mock axios
 jest.mock("axios");
-
-// focus on observable behavior
 
 // Fake localStorage
 Object.defineProperty(window, "localStorage", {
@@ -33,13 +31,19 @@ describe("Auth Context", () => {
     jest.clearAllMocks();
   });
 
-// Verify if authentication state is correctly updated after setAuth is called (state based testing)
-  it("auth state should update correctly after setAuth is called", () => {
-    const testToken = "testToken";
-    axios.defaults.headers.common["Authorization"] = testToken;
-    const testUser = { name: "Test User", email: "test@gmail.com" };
+  // Verify if default auth state is null user and empty token
+  it("default auth state should be null user and empty token", () => {
     const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
-    expect(result.current).toEqual({ user: testUser, token: testToken });
+    expect(result.current[0]).toEqual({ user: null, token: "" });
+  });
+
+  // Verify if authentication state is correctly updated when mounted
+  it("auth state should update if auth exists", () => {
+    const testData = { user: "Test User", token: "testToken" };
+    localStorage.getItem.mockReturnValue(JSON.stringify(testData));
+
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+    expect(result.current[0]).toEqual(testData);
   });
     
 // System should allow user to access if authenticated
