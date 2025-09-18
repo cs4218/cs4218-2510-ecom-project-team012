@@ -56,7 +56,7 @@ describe("PrivateRoute", () => {
     expect(axios.get).toHaveBeenCalledTimes(1);
   });
 
-  it("shows Spinner while auth check is pending", async () => {
+  it("renders Spinner while auth check is pending", async () => {
     useAuth.mockReturnValue([{ token: "valid-token" }, jest.fn()]);
     let resolve;
     axios.get.mockImplementation(() => new Promise((r) => (resolve = r)));
