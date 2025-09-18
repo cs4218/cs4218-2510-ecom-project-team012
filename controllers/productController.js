@@ -73,7 +73,9 @@ export const getProductController = async (req, res) => {
     res.status(200).send({
       success: true,
       counTotal: products.length,
-      message: "ALlProducts ",
+      // FIXED BUG: Message typo:
+      // message: "ALlProducts ",
+      message: "All Products",
       products,
     });
   } catch (error) {

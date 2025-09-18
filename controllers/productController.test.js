@@ -37,7 +37,7 @@ describe("Product Controller", () => {
       expect(res.send).toHaveBeenCalledWith({
         success: true,
         counTotal: mockProducts.length,
-        message: "ALlProducts ",
+        message: "All Products",
         products: mockProducts,
       });
     });
@@ -98,6 +98,23 @@ describe("Product Controller", () => {
         })
       );
     });
+
+    it ("should handle when product not found", async () => {
+      req.params = { slug: "non-existent-slug" };
+      productModel.findOne.mockReturnValue({
+        select: jest.fn().mockReturnThis(),
+        populate: jest.fn().mockResolvedValue(null),
+      });
+
+      await getSingleProductController(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.send).toHaveBeenCalledWith({
+        success: true,
+        message: "Single Product Fetched",
+        product: null,
+      });
+    });
   });
 
   describe("productPhotoController", () => {
@@ -113,6 +130,19 @@ describe("Product Controller", () => {
       expect(res.set).toHaveBeenCalledWith("Content-type", "image/png");
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.send).toHaveBeenCalledWith(mockPhoto.data);
+    });
+
+    it("should not return photo if data is missing", async () => {
+      req.params = { pid: "123" };
+      productModel.findById.mockReturnValue({
+        select: jest.fn().mockResolvedValue({ photo: { data: null } }),
+      });
+
+      await productPhotoController(req, res);
+
+      expect(res.set).not.toHaveBeenCalled();
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.send).not.toHaveBeenCalled();
     });
 
     it("should handle errors", async () => {
