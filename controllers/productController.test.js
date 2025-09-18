@@ -209,6 +209,25 @@ describe("Product Controller", () => {
       });
     });
 
+    it("should handle empty filters", async () => {
+      req.body = {
+        checked: [],
+        radio: [],
+      };
+      const mockProducts = [{ name: "AllProducts" }];
+      productModel.find.mockResolvedValue(mockProducts);
+
+      await productFiltersController(req, res);
+
+      expect(productModel.find).toHaveBeenCalledWith({});
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.send).toHaveBeenCalledWith({
+        success: true,
+        message: "Filtered Products",
+        products: mockProducts,
+      });
+    });
+
     it("should handle errors in filtering", async () => {
       req.body = {
         checked: ["cat1", "cat2"],
