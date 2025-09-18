@@ -28,7 +28,7 @@ const CreateProduct = () => {
         toast.error(data.message); // added error feedback to align with other behaviours
       }
     } catch (error) {
-      console.error(error);
+      console.log(error);
       toast.error("Something went wrong in getting category");
     }
   };
@@ -60,7 +60,7 @@ const CreateProduct = () => {
         navigate("/dashboard/admin/products");
       }
     } catch (error) {
-      console.error(error);
+      console.log(error);
       toast.error("Something went wrong with product creation"); 
     }
   };

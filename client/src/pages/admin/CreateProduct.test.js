@@ -1,5 +1,5 @@
 import React from "react";
-import { render, fireEvent, waitFor, within } from '@testing-library/react';
+import { render, fireEvent, waitFor } from '@testing-library/react';
 import CreateProduct from "./CreateProduct";
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import axios from 'axios';
@@ -28,7 +28,6 @@ export const testProduct = {
 describe('CreateProduct Component', () => {
     beforeEach(() => {
         global.URL.createObjectURL = jest.fn(() => 'mocked-url');
-        jest.spyOn(console, 'error').mockImplementation(() => {});
         jest.resetAllMocks();
         // console.log(expect.getState().currentTestName);
     });
@@ -43,10 +42,9 @@ describe('CreateProduct Component', () => {
             </MemoryRouter>
         );
 
-        await expect(axios.get).toHaveBeenCalledWith('/api/v1/category/get-category');
+        await waitFor(() => expect(axios.get).toHaveBeenCalledWith('/api/v1/category/get-category'));
 
-
-        expect(getByText('AdminMenu')).toBeInTheDocument();
+        await waitFor(() => expect(getByText('AdminMenu')).toBeInTheDocument());
         expect(getByText('Select a category')).toBeInTheDocument();
         expect(getByLabelText('Upload Photo')).toBeInTheDocument();
         expect(getByPlaceholderText('Input name')).toBeInTheDocument();
@@ -66,20 +64,20 @@ describe('CreateProduct Component', () => {
             </MemoryRouter>
         );
 
-        await expect(axios.get).toHaveBeenCalledWith('/api/v1/category/get-category');
+        await waitFor(() => expect(axios.get).toHaveBeenCalledWith('/api/v1/category/get-category'));
 
         expect(toast.error).toHaveBeenCalledWith('Failed to fetch');
     });
 
 
     it('should show error toast on category fetch unexpected error', async () => {
-        axios.get.mockRejectedValue(new Error('Unexpected Error'));
+        axios.get.mockRejectedValue(new Error('Intentional Test Error'));
         render(
             <MemoryRouter>
                 <CreateProduct />
             </MemoryRouter>
         );
-        await expect(axios.get).toHaveBeenCalledWith('/api/v1/category/get-category');
+        await waitFor(() => expect(axios.get).toHaveBeenCalledWith('/api/v1/category/get-category'));
         expect(toast.error).toHaveBeenCalledWith('Something went wrong in getting category');
     });
 
@@ -188,7 +186,7 @@ describe('CreateProduct Component', () => {
 
     it('should show unexpected error on create exception', async () => {
         axios.get.mockResolvedValueOnce({ data: { success: true, category: testCategories } });
-        axios.post.mockRejectedValueOnce(new Error('Unexpected Error'));
+        axios.post.mockRejectedValueOnce(new Error('Intentional Test Error'));
 
         const utils = render(
             <MemoryRouter>

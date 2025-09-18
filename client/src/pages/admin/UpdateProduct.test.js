@@ -58,7 +58,6 @@ const mockHappyGetRequests = () => {
 describe('UpdateProduct Component:', () => {
     beforeEach(() => {
         global.URL.createObjectURL = jest.fn(() => 'mocked-url');
-        jest.spyOn(console, 'error').mockImplementation(() => {});
         jest.resetAllMocks();
     });
 
@@ -102,7 +101,7 @@ describe('UpdateProduct Component:', () => {
         it('should show error toast on category fetch unexpected error', async () => {
             axios.get.mockImplementation((url) => {
                 if (url.includes('get-category')) {
-                    return Promise.reject(new Error('Unexpected Error'));
+                    return Promise.reject(new Error('Intentional Test Error'));
                 }
                 if (url.includes(`get-product/${testSlug}`)) {
                     return Promise.resolve({ data: { product: testProduct } });
@@ -125,7 +124,7 @@ describe('UpdateProduct Component:', () => {
                     return Promise.resolve({ data: { success: true, category: testCategory } });
                 }
                 if (url.includes(`get-product/${testSlug}`)) {
-                    return Promise.reject(new Error('Unexpected Error'));
+                    return Promise.reject(new Error('Intentional Test Error'));
                 }
             });
 
@@ -245,7 +244,7 @@ describe('UpdateProduct Component:', () => {
 
         it('should show error toast on unexpected error', async () => {
             mockHappyGetRequests();
-            axios.put.mockRejectedValue(new Error('Unexpected Error'));
+            axios.put.mockRejectedValue(new Error('Intentional Test Error'));
 
             const utils = renderWithRouter(<UpdateProduct />);
             await waitFor(() => expect(axios.get).toHaveBeenCalledWith('/api/v1/category/get-category'));
@@ -291,7 +290,7 @@ describe('UpdateProduct Component:', () => {
 
         it('should show error on deletion failure', async () => {
             mockHappyGetRequests();
-            axios.delete.mockRejectedValue(new Error('Unexpected Error'));
+            axios.delete.mockRejectedValue(new Error('Intentional Test Error'));
             jest.spyOn(window, 'prompt').mockReturnValue('yes'); 
 
             const utils = renderWithRouter(<UpdateProduct />);

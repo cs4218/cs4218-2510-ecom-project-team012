@@ -32,7 +32,6 @@ const testCategories = [
 
 describe('CreateCategory Component:', () => {
     beforeEach(() => {
-        jest.spyOn(console, 'error').mockImplementation(() => {});
         jest.resetAllMocks();
         // console.log(expect.getState().currentTestName);
     });
@@ -70,7 +69,7 @@ describe('CreateCategory Component:', () => {
         });
 
         it('should display error message on unexpected error', async () => {
-            axios.get.mockRejectedValueOnce( new Error('Unexpected error') );
+            axios.get.mockRejectedValueOnce( new Error('Intentional Error') );
 
             render(<CreateCategory />);
             await waitFor(() => {
@@ -119,7 +118,7 @@ describe('CreateCategory Component:', () => {
         it('should display error message on unexpected error', async () => {
 
             axios.get.mockResolvedValueOnce({ data: { success: true, category: [] } });
-            axios.post.mockRejectedValueOnce(new Error('Unexpected error'));
+            axios.post.mockRejectedValueOnce(new Error('Intentional Test Error'));
 
             await testCreateCategory({
                 categoryName: 'FailCategory',
