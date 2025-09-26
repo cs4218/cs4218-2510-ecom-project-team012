@@ -1,7 +1,9 @@
 import JWT from "jsonwebtoken";
+import userModel from "../models/userModel.js";
+import { requireSignIn, isAdmin } from "./authMiddleware.js";
 
-// mock JWT
-jest.mock('JWT');
+jest.mock("jsonwebtoken");
+jest.mock("../models/userModel.js");
 
 describe("requireSignIn", () => {
   beforeEach(() => {
@@ -13,7 +15,7 @@ describe("requireSignIn", () => {
  
   it("should set the user's credentials if verification is successful", async () => {
     const mockRes = {};
-    JWT.verify.mockReturnValue({ name: 'testUser' });
+    jsonwebtoken.JWT.verify.mockReturnValue({ name: 'testUser' });
 
     await requireSignIn(mockReq, mockRes, next);
 
@@ -43,7 +45,7 @@ describe("requireSignIn", () => {
 
     const next = jest.fn();
 
-    it("should call next if user is admin", async () => {
+    it("should allow user to continue if user is admin", async () => {
       const testUser = { _id: 'testId', role: 1 }
       const mockReq = { user: testUser };
       const mockRes = {};

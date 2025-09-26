@@ -10,11 +10,13 @@ export default {
 
   // jest code coverage
   collectCoverage: true,
-  collectCoverageFrom: ["controllers/**"],
+  collectCoverageFrom: ["controllers/**", "middlewares/**", "helpers/**"],
   coverageThreshold: {
     global: {
       lines: 90,
       functions: 90,
     },
   },
+
+  "setupFilesAfterEnv": ["<rootDir>/jest.backend.setup.js"]
 };
