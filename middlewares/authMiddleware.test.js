@@ -10,12 +10,12 @@ describe("requireSignIn", () => {
     jest.clearAllMocks();
   });
 
-  const mockReq = { headers: { authorization: 'token' }, user: null };
   const next = jest.fn();
  
   it("should set the user's credentials if verification is successful", async () => {
+    const mockReq = { headers: { authorization: 'token' }, user: null };
     const mockRes = {};
-    jsonwebtoken.JWT.verify.mockReturnValue({ name: 'testUser' });
+    JWT.verify.mockReturnValue({ name: 'testUser' });
 
     await requireSignIn(mockReq, mockRes, next);
 
@@ -25,6 +25,7 @@ describe("requireSignIn", () => {
   });
 
   it("should send response with unsuccessful message if error is caught", async () => {
+    const mockReq = { headers: { authorization: 'token' }, user: null };
     const mockRes = { status: jest.fn().mockReturnThis(), send: jest.fn() };
     JWT.verify.mockImplementation(() => { throw new Error("Invalid token") });
 
