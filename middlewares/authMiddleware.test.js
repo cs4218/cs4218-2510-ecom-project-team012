@@ -9,63 +9,61 @@ describe("requireSignIn", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
-
-  const next = jest.fn();
  
   it("should set the user's credentials if verification is successful", async () => {
     const mockReq = { headers: { authorization: 'token' }, user: null };
     const mockRes = {};
+    const mockNext = jest.fn();
     JWT.verify.mockReturnValue({ name: 'testUser' });
 
-    await requireSignIn(mockReq, mockRes, next);
+    await requireSignIn(mockReq, mockRes, mockNext);
 
-    // expect(JWT.verify).toHaveBeenCalledWith('token', process.env.JWT_SECRET);
     expect(mockReq.user).toEqual({ name: 'testUser' });
-    expect(next).toHaveBeenCalled();
+    expect(mockNext).toHaveBeenCalled();
   });
 
   it("should send response with unsuccessful message if error is caught", async () => {
     const mockReq = { headers: { authorization: 'token' }, user: null };
     const mockRes = { status: jest.fn().mockReturnThis(), send: jest.fn() };
+    const mockNext = jest.fn();
     JWT.verify.mockImplementation(() => { throw new Error("Invalid token") });
 
-    await requireSignIn(mockReq, mockRes, next);
+    await requireSignIn(mockReq, mockRes, mockNext);
     
     expect(mockReq.user).toBeNull();
-    expect(next).not.toHaveBeenCalled();
+    expect(mockNext).not.toHaveBeenCalled();
     expect(mockRes.status).toHaveBeenCalledWith(401);
     // not using exact message as it may change in future
     expect(mockRes.send).toHaveBeenCalledTimes(1);
   });
 
-  // test isAdmin 
   describe("isAdmin", () => {
     beforeEach(() => {
       jest.clearAllMocks();
     });
 
-    const next = jest.fn();
-
     it("should allow user to continue if user is admin", async () => {
       const testUser = { _id: 'testId', role: 1 }
       const mockReq = { user: testUser };
       const mockRes = {};
+      const mockNext = jest.fn();
       userModel.findById.mockResolvedValue(testUser);
-      
-      await isAdmin(mockReq, mockRes, next);
 
-      expect(next).toHaveBeenCalled();
+      await isAdmin(mockReq, mockRes, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
     });
 
-    it("should send response with message with HTTP code 401 Unauthorized if user is not admin", async () => {
+    it("should send response with unsuccessful message with HTTP code 401 Unauthorized if user is not admin", async () => {
       const testUser = { _id: 'testId', role: 0 }
       const mockReq = { user: testUser };
       const mockRes = { status: jest.fn().mockReturnThis(), send: jest.fn() };
+      const mockNext = jest.fn();
       userModel.findById.mockResolvedValue(testUser);
 
-      await isAdmin(mockReq, mockRes, next);
+      await isAdmin(mockReq, mockRes, mockNext);
 
-      expect(next).not.toHaveBeenCalled();
+      expect(mockNext).not.toHaveBeenCalled();
       expect(mockRes.status).toHaveBeenCalledWith(401);
       // not using exact message as it may change in future
       expect(mockRes.send).toHaveBeenCalledTimes(1);
@@ -74,11 +72,12 @@ describe("requireSignIn", () => {
     it("should send response with unsuccessful message if error is caught", async () => {
       const mockReq = { user: { _id: 'invalidId', role: 1 } };
       const mockRes = { status: jest.fn().mockReturnThis(), send: jest.fn() };
+      const mockNext = jest.fn();
       userModel.findById.mockRejectedValue(new Error("Invalid user ID"));
 
-      await isAdmin(mockReq, mockRes, next);
+      await isAdmin(mockReq, mockRes, mockNext);
 
-      expect(next).not.toHaveBeenCalled();
+      expect(mockNext).not.toHaveBeenCalled();
       expect(mockRes.status).toHaveBeenCalledWith(401);
       // not using exact message as it may change in future
       expect(mockRes.send).toHaveBeenCalledTimes(1);

@@ -31,13 +31,11 @@ describe("Auth Context", () => {
     jest.clearAllMocks();
   });
 
-  // Verify if default auth state is null user and empty token
   it("should have null user and empty token by default", () => {
     const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
     expect(result.current[0]).toEqual({ user: null, token: "" });
   });
 
-  // Verify if authentication state is correctly updated when mounted
   it("should update when mounted", () => {
     const testData = { user: "Test User", token: "testToken" };
     localStorage.getItem.mockReturnValue(JSON.stringify(testData));
