@@ -98,8 +98,7 @@ describe("Login Component", () => {
       </MemoryRouter>
     );
 
-    // minimally form elements, login and forgot password buttons
-    // should be present, title may change in future
+    expect(getByText("LOGIN FORM")).toBeInTheDocument();
     expect(getByPlaceholderText("Enter Your Email")).toBeInTheDocument();
     expect(getByPlaceholderText("Enter Your Password")).toBeInTheDocument();
     expect(getByText("Forgot Password")).toBeInTheDocument();

@@ -48,7 +48,7 @@ describe("Register Component", () => {
     jest.clearAllMocks();
   });
 
-  it("should register the user successfully", async () => {
+  it("should display success message on successful registration", async () => {
     axios.post.mockResolvedValueOnce({ data: { success: true } });
 
     const { getByText, getByPlaceholderText } = render(
@@ -68,16 +68,16 @@ describe("Register Component", () => {
     fireEvent.change(getByPlaceholderText("Enter Your Password"), {
       target: { value: "password123" },
     });
-    fireEvent.change(getByPlaceholderText("Enter Your Phone"), {
+    fireEvent.change(getByPlaceholderText("Enter Your Phone Number"), {
       target: { value: "1234567890" },
     });
     fireEvent.change(getByPlaceholderText("Enter Your Address"), {
       target: { value: "123 Street" },
     });
-    fireEvent.change(getByPlaceholderText("Enter Your DOB"), {
+    fireEvent.change(getByPlaceholderText("Enter Your Date of Birth"), {
       target: { value: "2000-01-01" },
     });
-    fireEvent.change(getByPlaceholderText("What is Your Favorite sports"), {
+    fireEvent.change(getByPlaceholderText("What is your favorite sport?"), {
       target: { value: "Football" },
     });
 
@@ -85,12 +85,49 @@ describe("Register Component", () => {
 
     await waitFor(() => expect(axios.post).toHaveBeenCalled());
     expect(toast.success).toHaveBeenCalledWith(
-      "Register Successfully, please login"
+      "Registered successfully, please login!"
     );
   });
 
-  it("should display error message on failed registration", async () => {
-    axios.post.mockRejectedValueOnce({ message: "User already exists" });
+  it("should navigate to login on successful registration", async () => {
+    axios.post.mockResolvedValueOnce({ data: { success: true } });
+
+    const { getByText, getByPlaceholderText } = render(
+      <MemoryRouter initialEntries={["/register"]}>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+   fireEvent.change(getByPlaceholderText("Enter Your Name"), {
+      target: { value: "John Doe" },
+    });
+    fireEvent.change(getByPlaceholderText("Enter Your Email"), {
+      target: { value: "test@example.com" },
+    });
+    fireEvent.change(getByPlaceholderText("Enter Your Password"), {
+      target: { value: "password123" },
+    });
+    fireEvent.change(getByPlaceholderText("Enter Your Phone Number"), {
+      target: { value: "1234567890" },
+    });
+    fireEvent.change(getByPlaceholderText("Enter Your Address"), {
+      target: { value: "123 Street" },
+    });
+    fireEvent.change(getByPlaceholderText("Enter Your Date of Birth"), {
+      target: { value: "2000-01-01" },
+    });
+    fireEvent.change(getByPlaceholderText("What is your favorite sport?"), {
+      target: { value: "Football" },
+    });
+s
+    fireEvent.click(getByText("REGISTER"));
+    expect(getByText("LOGIN FORM")).toBeInTheDocument();
+  });
+
+  it("should display unsuccessful message on failed registration", async () => {
+    axios.post.mockResolvedValueOnce({ message: "User already exists" });
 
     const { getByText, getByPlaceholderText } = render(
       <MemoryRouter initialEntries={["/register"]}>
@@ -109,16 +146,55 @@ describe("Register Component", () => {
     fireEvent.change(getByPlaceholderText("Enter Your Password"), {
       target: { value: "password123" },
     });
-    fireEvent.change(getByPlaceholderText("Enter Your Phone"), {
+    fireEvent.change(getByPlaceholderText("Enter Your Phone Number"), {
       target: { value: "1234567890" },
     });
     fireEvent.change(getByPlaceholderText("Enter Your Address"), {
       target: { value: "123 Street" },
     });
-    fireEvent.change(getByPlaceholderText("Enter Your DOB"), {
+    fireEvent.change(getByPlaceholderText("Enter Your Date of Birth"), {
       target: { value: "2000-01-01" },
     });
-    fireEvent.change(getByPlaceholderText("What is Your Favorite sports"), {
+    fireEvent.change(getByPlaceholderText("What is your favorite sport?"), {
+      target: { value: "Football" },
+    });
+
+    fireEvent.click(getByText("REGISTER"));
+
+    await waitFor(() => expect(axios.post).toHaveBeenCalled());
+    expect(toast.error).toHaveBeenCalledWith("User already exists");
+  });
+
+  it("should display error message on error being caught", async () => {
+    axios.post.mockRejectedValueOnce(new Error("Network Error"));
+
+    const { getByText, getByPlaceholderText } = render(
+      <MemoryRouter initialEntries={["/register"]}>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    fireEvent.change(getByPlaceholderText("Enter Your Name"), {
+      target: { value: "John Doe" },
+    });
+    fireEvent.change(getByPlaceholderText("Enter Your Email"), {
+      target: { value: "test@example.com" },
+    });
+    fireEvent.change(getByPlaceholderText("Enter Your Password"), {
+      target: { value: "password123" },
+    });
+    fireEvent.change(getByPlaceholderText("Enter Your Phone Number"), {
+      target: { value: "1234567890" },
+    });
+    fireEvent.change(getByPlaceholderText("Enter Your Address"), {
+      target: { value: "123 Street" },
+    });
+    fireEvent.change(getByPlaceholderText("Enter Your Date of Birth"), {
+      target: { value: "2000-01-01" },
+    });
+    fireEvent.change(getByPlaceholderText("What is your favorite sport?"), {
       target: { value: "Football" },
     });
 
@@ -126,5 +202,229 @@ describe("Register Component", () => {
 
     await waitFor(() => expect(axios.post).toHaveBeenCalled());
     expect(toast.error).toHaveBeenCalledWith("Something went wrong");
+  });
+});
+
+describe("Register Component Rendering", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should render register form", () => {
+    const { getByText, getByPlaceholderText } = render(
+      <MemoryRouter initialEntries={["/register"]}>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(getByText("REGISTER FORM")).toBeInTheDocument();
+    expect(getByPlaceholderText("Enter Your Name")).toBeInTheDocument();
+    expect(getByPlaceholderText("Enter Your Email")).toBeInTheDocument();
+    expect(getByPlaceholderText("Enter Your Password")).toBeInTheDocument();
+    expect(getByPlaceholderText("Enter Your Phone")).toBeInTheDocument();
+    expect(getByPlaceholderText("Enter Your Address")).toBeInTheDocument();
+    expect(getByPlaceholderText("Enter Your Date of Birth")).toBeInTheDocument();
+    expect(
+      getByPlaceholderText("What is your favorite sport?")
+    ).toBeInTheDocument();
+    expect(getByText("REGISTER")).toBeInTheDocument();
+  });
+
+  it("should have empty name initially", () => {
+    const { getByPlaceholderText } = render(
+      <MemoryRouter initialEntries={["/register"]}>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(getByPlaceholderText("Enter Your Name").value).toBe("");
+  });
+
+  it("should have empty email initially", () => {
+    const { getByPlaceholderText } = render(
+      <MemoryRouter initialEntries={["/register"]}>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(getByPlaceholderText("Enter Your Email").value).toBe("");
+  });
+
+  it("should have empty password initially", () => {
+    const { getByPlaceholderText } = render(
+      <MemoryRouter initialEntries={["/register"]}>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(getByPlaceholderText("Enter Your Password").value).toBe("");
+  });
+
+  it("should have empty phone number initially", () => {
+    const { getByPlaceholderText } = render(
+      <MemoryRouter initialEntries={["/register"]}>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(getByPlaceholderText("Enter Your Phone Number").value).toBe("");
+  });
+
+  it("should have empty address initially", () => {
+    const { getByPlaceholderText } = render(
+      <MemoryRouter initialEntries={["/register"]}>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(getByPlaceholderText("Enter Your Address").value).toBe("");
+  });
+
+  it("should have empty date of birth initially", () => {
+    const { getByPlaceholderText } = render(
+      <MemoryRouter initialEntries={["/register"]}>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(getByPlaceholderText("Enter Your Date of Birth").value).toBe("");
+  });
+
+  it("should have empty security answer initially", () => {
+    const { getByPlaceholderText } = render(
+      <MemoryRouter initialEntries={["/register"]}>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </MemoryRouter>
+    );
+    
+    expect(getByPlaceholderText("What is your favorite sport?").value).toBe("");
+  });
+
+  it("should allow typing of name", () => {
+      const { getByPlaceholderText } = render(
+        <MemoryRouter initialEntries={["/register"]}>
+          <Routes>
+            <Route path="/register" element={<Register />} />
+          </Routes>
+        </MemoryRouter>
+      );
+  
+      fireEvent.change(getByPlaceholderText("Enter Your Name"), {
+        target: { value: "John Doe" },
+      });
+
+      expect(getByPlaceholderText("Enter Your Name").value).toBe("John Doe");
+  });
+
+  it("should allow typing of email", () => {
+    const { getByPlaceholderText } = render(
+      <MemoryRouter initialEntries={["/register"]}>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    fireEvent.change(getByPlaceholderText("Enter Your Email"), {
+      target: { value: "test@example.com" },
+    });
+
+    expect(getByPlaceholderText("Enter Your Email").value).toBe("test@example.com");
+  });
+
+  it("should allow typing of password", () => {
+    const { getByPlaceholderText } = render(
+      <MemoryRouter initialEntries={["/register"]}>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    fireEvent.change(getByPlaceholderText("Enter Your Password"), {
+      target: { value: "password123" },
+    });
+
+    expect(getByPlaceholderText("Enter Your Password").value).toBe("password123");
+  });
+
+  it("should allow typing of phone number", () => {
+    const { getByPlaceholderText } = render(
+      <MemoryRouter initialEntries={["/register"]}>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    fireEvent.change(getByPlaceholderText("Enter Your Phone Number"), {
+      target: { value: "1234567890" },
+    });
+
+    expect(getByPlaceholderText("Enter Your Phone Number").value).toBe("1234567890");
+  });
+
+  it("should allow typing of address", () => {
+    const { getByPlaceholderText } = render(
+      <MemoryRouter initialEntries={["/register"]}>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    fireEvent.change(getByPlaceholderText("Enter Your Address"), {
+      target: { value: "123 Street" },
+    });
+
+    expect(getByPlaceholderText("Enter Your Address").value).toBe("123 Street");
+  });
+
+  it("should allow typing of date of birth", () => {
+    const { getByPlaceholderText } = render(
+      <MemoryRouter initialEntries={["/register"]}>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    fireEvent.change(getByPlaceholderText("Enter Your Date of Birth"), {
+      target: { value: "2000-01-01" },
+    });
+
+    expect(getByPlaceholderText("Enter Your Date of Birth").value).toBe("2000-01-01");
+  });
+
+  it("should allow typing of security answer", () => {
+    const { getByPlaceholderText } = render(
+      <MemoryRouter initialEntries={["/register"]}>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    fireEvent.change(getByPlaceholderText("What is your favorite sport?"), {
+      target: { value: "Football" },
+    });
+
+    expect(getByPlaceholderText("What is your favorite sport?").value).toBe("Football");
   });
 });
