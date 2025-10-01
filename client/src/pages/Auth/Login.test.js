@@ -106,7 +106,7 @@ describe("Login Component", () => {
     expect(getByText("LOGIN")).toBeInTheDocument();
   });
 
-  it("should have empty inputs initially", () => {
+  it("should have empty email initially", () => {
     const { getByPlaceholderText } = render(
       <MemoryRouter initialEntries={["/login"]}>
         <Routes>
@@ -116,10 +116,21 @@ describe("Login Component", () => {
     );
 
     expect(getByPlaceholderText("Enter Your Email").value).toBe("");
+  });
+
+  it("should have empty password initially", () => {
+    const { getByPlaceholderText } = render(
+      <MemoryRouter initialEntries={["/login"]}>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </MemoryRouter>
+    );
+    
     expect(getByPlaceholderText("Enter Your Password").value).toBe("");
   });
 
-  it("should allow typing of email and password", () => {
+  it("should allow typing of email", () => {
     const { getByPlaceholderText } = render(
       <MemoryRouter initialEntries={["/login"]}>
         <Routes>
@@ -131,12 +142,25 @@ describe("Login Component", () => {
     fireEvent.change(getByPlaceholderText("Enter Your Email"), {
       target: { value: "test@example.com" },
     });
-    fireEvent.change(getByPlaceholderText("Enter Your Password"), {
-      target: { value: "password123" },
-    });
+
     expect(getByPlaceholderText("Enter Your Email").value).toBe(
       "test@example.com"
     );
+  });
+
+  it("should allow typing of password", () => {
+      const { getByPlaceholderText } = render(
+      <MemoryRouter initialEntries={["/login"]}>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    fireEvent.change(getByPlaceholderText("Enter Your Password"), {
+      target: { value: "password123" },
+    });
+
     expect(getByPlaceholderText("Enter Your Password").value).toBe(
       "password123"
     );
@@ -192,7 +216,7 @@ describe("Login Component", () => {
     });
   });
 
-  it("should display error message on failed login", async () => {
+  it("should display unsuccessful message on failed login", async () => {
     axios.post.mockResolvedValueOnce({
       data: {
         success: false,
