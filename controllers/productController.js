@@ -72,7 +72,9 @@ export const getProductController = async (req, res) => {
       .sort({ createdAt: -1 });
     res.status(200).send({
       success: true,
-      counTotal: products.length,
+      // FIXED BUG: variable typo:
+      // counTotal: products.length,
+      countTotal: products.length,
       // FIXED BUG: Message typo:
       // message: "ALlProducts ",
       message: "All Products",
@@ -82,7 +84,9 @@ export const getProductController = async (req, res) => {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Erorr in getting products",
+      // FIXED BUG: Message typo:
+      // message: "Erorr in getting products",
+      message: "Error in getting products",
       error: error.message,
     });
   }

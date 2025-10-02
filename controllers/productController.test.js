@@ -40,7 +40,7 @@ describe("Product Controller", () => {
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.send).toHaveBeenCalledWith({
         success: true,
-        counTotal: mockProducts.length,
+        countTotal: mockProducts.length,
         message: "All Products",
         products: mockProducts,
       });
@@ -48,7 +48,7 @@ describe("Product Controller", () => {
 
     it("should handle errors", async () => {
       productModel.find.mockImplementation(() => {
-        throw new Error("Erorr in getting products");
+        throw new Error("Error in getting products");
       });
 
       await getProductController(req, res);
@@ -59,7 +59,7 @@ describe("Product Controller", () => {
       );
       // Good practice will be to make the error message a constant and import it here
       expect(res.send).toHaveBeenCalledWith(
-        expect.objectContaining({ message: "Erorr in getting products" })
+        expect.objectContaining({ message: "Error in getting products" })
       );
     });
   });
