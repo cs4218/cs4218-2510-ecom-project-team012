@@ -5,6 +5,7 @@ import { MemoryRouter, Routes, Route } from "react-router-dom";
 import "@testing-library/jest-dom/extend-expect";
 import toast from "react-hot-toast";
 import Register from "./Register";
+import { mock } from "node:test";
 
 // Mocking axios.post
 jest.mock("axios");
@@ -23,6 +24,15 @@ jest.mock("../../context/cart", () => ({
 jest.mock("../../context/search", () => ({
   useSearch: jest.fn(() => [{ keyword: "" }, jest.fn()]), // Mock useSearch hook to return null state and a mock function
 }));
+
+const mockNavigate = jest.fn();
+jest.mock("react-router-dom", () => {
+  const actual = jest.requireActual("react-router-dom");
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 Object.defineProperty(window, "localStorage", {
   value: {
@@ -49,7 +59,12 @@ describe("Register Component", () => {
   });
 
   it("should display success message on successful registration", async () => {
-    axios.post.mockResolvedValueOnce({ data: { success: true } });
+    axios.post.mockResolvedValueOnce({
+      data: {
+        success: true,
+        message: "Registration successful",
+      }
+    });
 
     const { getByText, getByPlaceholderText } = render(
       <MemoryRouter initialEntries={["/register"]}>
@@ -90,9 +105,14 @@ describe("Register Component", () => {
   });
 
   it("should navigate to login on successful registration", async () => {
-    axios.post.mockResolvedValueOnce({ data: { success: true } });
+    axios.post.mockResolvedValueOnce({
+      data: {
+        success: true,
+        message: "Registration successful",
+      } 
+    });
 
-    const { getByText, getByPlaceholderText } = render(
+    const { getByPlaceholderText, getByText } = render(
       <MemoryRouter initialEntries={["/register"]}>
         <Routes>
           <Route path="/register" element={<Register />} />
@@ -121,13 +141,19 @@ describe("Register Component", () => {
     fireEvent.change(getByPlaceholderText("What is your favorite sport?"), {
       target: { value: "Football" },
     });
-s
+
     fireEvent.click(getByText("REGISTER"));
-    expect(getByText("LOGIN FORM")).toBeInTheDocument();
+    await waitFor(() => expect(axios.post).toHaveBeenCalled());
+    expect(mockNavigate).toHaveBeenCalledWith("/login");
   });
 
   it("should display unsuccessful message on failed registration", async () => {
-    axios.post.mockResolvedValueOnce({ message: "User already exists" });
+    axios.post.mockResolvedValueOnce({
+      data: {
+        success: false,
+        message: "User already exists"
+      }
+    });
 
     const { getByText, getByPlaceholderText } = render(
       <MemoryRouter initialEntries={["/register"]}>
@@ -166,7 +192,7 @@ s
   });
 
   it("should display error message on error being caught", async () => {
-    axios.post.mockRejectedValueOnce(new Error("Network Error"));
+    axios.post.mockRejectedValueOnce(new Error("Something went wrong"));
 
     const { getByText, getByPlaceholderText } = render(
       <MemoryRouter initialEntries={["/register"]}>
@@ -223,7 +249,7 @@ describe("Register Component Rendering", () => {
     expect(getByPlaceholderText("Enter Your Name")).toBeInTheDocument();
     expect(getByPlaceholderText("Enter Your Email")).toBeInTheDocument();
     expect(getByPlaceholderText("Enter Your Password")).toBeInTheDocument();
-    expect(getByPlaceholderText("Enter Your Phone")).toBeInTheDocument();
+    expect(getByPlaceholderText("Enter Your Phone Number")).toBeInTheDocument();
     expect(getByPlaceholderText("Enter Your Address")).toBeInTheDocument();
     expect(getByPlaceholderText("Enter Your Date of Birth")).toBeInTheDocument();
     expect(
