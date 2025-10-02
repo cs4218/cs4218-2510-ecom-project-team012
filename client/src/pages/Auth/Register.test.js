@@ -34,24 +34,7 @@ jest.mock("react-router-dom", () => {
   };
 });
 
-Object.defineProperty(window, "localStorage", {
-  value: {
-    setItem: jest.fn(),
-    getItem: jest.fn(),
-    removeItem: jest.fn(),
-  },
-  writable: true,
-});
-
-window.matchMedia =
-  window.matchMedia ||
-  function () {
-    return {
-      matches: false,
-      addListener: function () {},
-      removeListener: function () {},
-    };
-  };
+// localStorage not used in Register component and was thus removed
 
 describe("Register Component", () => {
   beforeEach(() => {
@@ -147,7 +130,7 @@ describe("Register Component", () => {
     expect(mockNavigate).toHaveBeenCalledWith("/login");
   });
 
-  it("should display unsuccessful message on failed registration", async () => {
+  it("should display failure message on failed registration", async () => {
     axios.post.mockResolvedValueOnce({
       data: {
         success: false,
@@ -231,7 +214,7 @@ describe("Register Component", () => {
   });
 });
 
-describe("Register Component Rendering", () => {
+describe("Register Component Initial State", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
