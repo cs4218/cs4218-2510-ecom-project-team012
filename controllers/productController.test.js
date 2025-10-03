@@ -6,9 +6,9 @@ import {
   productCountController,
   productListController,
   searchProductController,
+  realtedProductController,
 } from "./productController.js";
 import productModel from "../models/productModel.js";
-import e from "cors";
 
 // General structure generated with the help of AI
 jest.mock("../models/productModel.js");
@@ -897,9 +897,10 @@ describe("searchProductController", () => {
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
-      success: false,
-      message: expect.stringMatching(/keyword is required/i),
-    }));
+        success: false,
+        message: expect.stringMatching(/keyword is required/i),
+      })
+    );
   });
 
   it("should handle errors in searching products and return 400 status code", async () => {
@@ -912,6 +913,132 @@ describe("searchProductController", () => {
 
     // Act
     await searchProductController(req, res);
+
+    // Assert
+    expect(res.status).toHaveBeenCalledWith(400);
+    // Good practice will be to make the error message a constant and import it here
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        message: error.message,
+        error,
+      })
+    );
+  });
+});
+
+describe("realtedProductController", () => {
+  let req, res;
+
+  beforeEach(() => {
+    req = { params: {} };
+    res = {
+      status: jest.fn().mockReturnThis(),
+      send: jest.fn(),
+    };
+    jest.clearAllMocks();
+  });
+
+  it("should return related products with success", async () => {
+    // Arrange
+    req.params = { pid: mockProduct1._id, cid: mockCategory1._id };
+    const mockRelatedProducts = [mockProduct2];
+    productModel.find.mockReturnValue({
+      select: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockReturnThis(),
+      populate: jest.fn().mockResolvedValue(mockRelatedProducts),
+    });
+
+    // Act
+    await realtedProductController(req, res);
+
+    // Assert
+    expect(productModel.find).toHaveBeenCalledWith({
+      category: mockCategory1._id,
+      _id: { $ne: mockProduct1._id },
+    });
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        message: expect.stringMatching(/related products/i),
+        products: mockRelatedProducts,
+      })
+    );
+  });
+
+  it("should handle no related products found", async () => {
+    // Arrange
+    req.params = { pid: mockProduct1._id, cid: mockCategory1._id };
+    const mockRelatedProducts = [];
+    productModel.find.mockReturnValue({
+      select: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockReturnThis(),
+      populate: jest.fn().mockResolvedValue(mockRelatedProducts),
+    });
+
+    // Act
+    await realtedProductController(req, res);
+
+    // Assert
+    expect(productModel.find).toHaveBeenCalledWith({
+      category: mockCategory1._id,
+      _id: { $ne: mockProduct1._id },
+    });
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        message: expect.stringMatching(/related products/i),
+        products: mockRelatedProducts,
+      })
+    );
+  });
+
+  it("should handle missing pid and return 400 status code", async () => {
+    // Arrange
+    req.params = { cid: mockCategory1._id }; // Missing pid
+
+    // Act
+    await realtedProductController(req, res);
+
+    // Assert
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        message: expect.stringMatching(/required/i),
+      })
+    );
+  });
+
+  it("should handle missing cid and return 400 status code", async () => {
+    // Arrange
+    req.params = { pid: mockProduct1._id }; // Missing cid
+
+    // Act
+    await realtedProductController(req, res);
+
+    // Assert
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        message: expect.stringMatching(/required/i),
+      })
+    );
+  });
+
+  it("should handle errors in fetching related products and return 400 status code", async () => {
+    // Arrange
+    req.params = { pid: mockProduct1._id, cid: mockCategory1._id };
+    const error = new Error("error while geting related product");
+    productModel.find.mockImplementation(() => {
+      throw error;
+    });
+
+    // Act
+    await realtedProductController(req, res);
 
     // Assert
     expect(res.status).toHaveBeenCalledWith(400);

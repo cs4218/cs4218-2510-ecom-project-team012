@@ -375,6 +375,12 @@ export const searchProductController = async (req, res) => {
 export const realtedProductController = async (req, res) => {
   try {
     const { pid, cid } = req.params;
+    if (!pid || !cid) {
+      return res.status(400).send({
+        success: false,
+        message: "Product ID and Category ID are required",
+      });
+    }
     const products = await productModel
       .find({
         category: cid,
@@ -385,6 +391,8 @@ export const realtedProductController = async (req, res) => {
       .populate("category");
     res.status(200).send({
       success: true,
+      // FIXED BUG: Missing message key:
+      message: "Related Products Fetched",
       products,
     });
   } catch (error) {
