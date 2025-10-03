@@ -1,60 +1,95 @@
-import userModel from "../models/userModel.js";
+import userModel from "../../models/userModel.js";
 
-import { hashPassword } from "./../helpers/authHelper.js";
+import { hashPassword } from "./../../helpers/authHelper.js";
 
 export const registerController = async (req, res) => {
   try {
-    const { name, email, password, phone, address, answer } = req.body;
-    //validations
+    // FIXED BUG: missing DOB variable
+    const { name, email, password, phone, address, dob, answer } = req.body;
+
+    // FIXED BUG: 
+    // Add HTTP code for responses
+    // Standardise content of response to be success flag and message
     if (!name) {
-      return res.send({ error: "Name is Required" });
-    }
-    if (!email) {
-      return res.send({ message: "Email is Required" });
-    }
-    if (!password) {
-      return res.send({ message: "Password is Required" });
-    }
-    if (!phone) {
-      return res.send({ message: "Phone no is Required" });
-    }
-    if (!address) {
-      return res.send({ message: "Address is Required" });
-    }
-    if (!answer) {
-      return res.send({ message: "Answer is Required" });
-    }
-    //check user
-    const exisitingUser = await userModel.findOne({ email });
-    //exisiting user
-    if (exisitingUser) {
-      return res.status(200).send({
+      return res.status(400).send({
         success: false,
-        message: "Already Register please login",
+        message: "Name is required",
       });
     }
-    //register user
+    if (!email) {
+      return res.status(400).send({
+        success: false,
+        message: "Email is required",
+      });
+    }
+    if (!password) {
+      return res.status(400).send({
+        success: false,
+        message: "Password is required",
+      });
+    }
+    if (!phone) {
+      return res.status(400).send({
+        success: false,
+        message: "Phone number is required",
+      });
+    }
+    if (!address) {
+      return res.status(400).send({
+        success: false,
+        message: "Address is required",
+      });
+    }
+    // FIXED BUG: missing DOB validation
+    if (!dob) {
+      return res.status(400).send({
+        success: false,
+        message: "Date of birth is required",
+      });
+    }
+    if (!answer) {
+      return res.status(400).send({
+        success: false,
+        message: "Answer to the security question is required",
+      });
+    }
+
+    // FIXED BUG: typo
+    // const exisitingUser...
+    const existingUser = await userModel.findOne({ email });
+
+    // FIXED BUG: typo
+    // if(exisitingUser){...
+    if (existingUser) {
+      return res.status(409).send({
+        success: false,
+        message: "Already registered, please login",
+      });
+    }
+
     const hashedPassword = await hashPassword(password);
-    //save
+
+    // FIXED BUG: added DOB
     const user = await new userModel({
       name,
       email,
+      password: hashedPassword,
       phone,
       address,
-      password: hashedPassword,
+      dob,
       answer,
     }).save();
 
     res.status(201).send({
       success: true,
-      message: "User Register Successfully",
+      message: "User registered successfully",
       user,
     });
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Errro in Registeration",
+      message: "Something went wrong",
       error,
     });
   }

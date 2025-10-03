@@ -18,8 +18,8 @@ describe("Forgot Password Controller", () => {
   });
 
   const res = {
-      status: jest.fn().mockReturnThis(),
-      send: jest.fn(),
+    status: jest.fn().mockReturnThis(),
+    send: jest.fn(),
   };
 
   it("should successfully reset password", async () => {
