@@ -778,22 +778,25 @@ describe("productListController", () => {
     });
   });
 
-  it("should handle errors in paginated listing", async () => {
+  it("should handle errors in paginated listing and return 400 status code", async () => {
+    // Arrange
     req.params = { page: "2" };
+    const error = new Error("error in per page ctrl");
     productModel.find.mockImplementation(() => {
-      throw new Error("Error in paginated listing");
+      throw error;
     });
 
+    // Act
     await productListController(req, res);
 
+    // Assert
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith(
-      expect.objectContaining({ success: false })
-    );
     // Good practice will be to make the error message a constant and import it here
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: "error in per page ctrl",
+        success: false,
+        message: error.message,
+        error,
       })
     );
   });
