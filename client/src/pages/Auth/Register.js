@@ -10,7 +10,7 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
-  const [DOB, setDOB] = useState("");
+  const [dob, setDob] = useState("");
   const [answer, setAnswer] = useState("");
   const navigate = useNavigate();
 
@@ -24,11 +24,11 @@ const Register = () => {
         password,
         phone,
         address,
-        DOB,
+        dob,
         answer,
       });
       if (res && res.data.success) {
-        toast.success("Register Successfully, please login");
+        toast.success("Registered successfully, please login!");
         navigate("/login");
       } else {
         toast.error(res.data.message);
@@ -63,7 +63,7 @@ const Register = () => {
               onChange={(e) => setEmail(e.target.value)}
               className="form-control"
               id="exampleInputEmail1"
-              placeholder="Enter Your Email "
+              placeholder="Enter Your Email"
               required
             />
           </div>
@@ -85,7 +85,7 @@ const Register = () => {
               onChange={(e) => setPhone(e.target.value)}
               className="form-control"
               id="exampleInputPhone1"
-              placeholder="Enter Your Phone"
+              placeholder="Enter Your Phone Number"
               required
             />
           </div>
@@ -95,7 +95,7 @@ const Register = () => {
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               className="form-control"
-              id="exampleInputaddress1"
+              id="exampleInputAddress1"
               placeholder="Enter Your Address"
               required
             />
@@ -103,11 +103,11 @@ const Register = () => {
           <div className="mb-3">
             <input
               type="Date"
-              value={DOB}
-              onChange={(e) => setDOB(e.target.value)}
+              value={dob}
+              onChange={(e) => setDob(e.target.value)}
               className="form-control"
-              id="exampleInputDOB1"
-              placeholder="Enter Your DOB"
+              id="exampleInputDob1"
+              placeholder="Enter Your Date of Birth"
               required
             />
           </div>
@@ -117,8 +117,8 @@ const Register = () => {
               value={answer}
               onChange={(e) => setAnswer(e.target.value)}
               className="form-control"
-              id="exampleInputanswer1"
-              placeholder="What is Your Favorite sports"
+              id="exampleInputAnswer1"
+              placeholder="What is your favorite sport?"
               required
             />
           </div>
