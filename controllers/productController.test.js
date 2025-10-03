@@ -778,7 +778,7 @@ describe("productListController", () => {
     });
   });
 
-  it("should return empty array when no products found for the page", async () => {
+  it("should handle errors for invalid page number and return 400 status code", async () => {
     // Arrange
     req.params = { page: "invalid-page" };
     const mockProducts = [mockProduct1, mockProduct2];
@@ -793,14 +793,13 @@ describe("productListController", () => {
     await productListController(req, res);
 
     // Assert
-    expect(productModel.find).toHaveBeenCalled();
-    expect(productModel.find().skip).toHaveBeenCalledWith(0);
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.send).toHaveBeenCalledWith({
-      success: true,
-      message: expect.stringMatching(/product list fetched/i),
-      products: mockProducts,
-    });
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        message: expect.stringMatching(/invalid page number/i),
+      })
+    );
   });
 
   it("should handle errors in paginated listing and return 400 status code", async () => {

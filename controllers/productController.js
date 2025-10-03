@@ -302,12 +302,22 @@ export const productCountController = async (req, res) => {
 export const productListController = async (req, res) => {
   try {
     const perPage = 6;
-    if (req.params.page && req.params.page > 0) {
-      req.params.page = req.params.page;
-    } else {
-      req.params.page = 1;
+    if (req.params.page) {
+      req.params.page = parseInt(req.params.page);
+      if (isNaN(req.params.page)) {
+        return res.status(400).send({
+          success: false,
+          message: "Invalid page number",
+        }); 
+      } else {
+        if (req.params.page > 0) {
+          req.params.page = req.params.page;
+        } else {
+          req.params.page = 1;
+        }
+      }
     }
-    const page = req.params.page;
+    const page = req.params.page || 1;
     const products = await productModel
       .find({})
       .select("-photo")
