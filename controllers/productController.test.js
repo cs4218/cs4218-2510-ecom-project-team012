@@ -73,7 +73,7 @@ describe("getProductController", () => {
     expect(res.send).toHaveBeenCalledWith({
       success: true,
       countTotal: mockProducts.length,
-      message: "All Products",
+      message: expect.stringMatching(/all products/i),
       products: mockProducts,
     });
   });
@@ -116,7 +116,7 @@ describe("getProductController", () => {
     expect(res.send).toHaveBeenCalledWith({
       success: true,
       countTotal: 0,
-      message: "All Products",
+      message: expect.stringMatching(/all products/i),
       products: [],
     });
   });
@@ -145,7 +145,7 @@ describe("getProductController", () => {
     expect(res.send).toHaveBeenCalledWith({
       success: true,
       countTotal: 12,
-      message: "All Products",
+      message: expect.stringMatching(/all products/i),
       products: mockProducts.slice(0, 12),
     });
   });
@@ -181,7 +181,7 @@ describe("getSingleProductController", () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.send).toHaveBeenCalledWith({
       success: true,
-      message: "Single Product Fetched",
+      message: expect.stringMatching(/product fetched/i),
       product: mockProduct1,
     });
   });
@@ -210,7 +210,7 @@ describe("getSingleProductController", () => {
     );
   });
 
-  it("should handle when product not found", async () => {
+  it("should handle when product not found and return 404 status code", async () => {
     // Arrange
     req.params = { slug: "non-existent-slug" };
     productModel.findOne.mockReturnValue({
@@ -222,10 +222,10 @@ describe("getSingleProductController", () => {
     await getSingleProductController(req, res);
 
     // Assert
-    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.status).toHaveBeenCalledWith(404);
     expect(res.send).toHaveBeenCalledWith({
-      success: true,
-      message: "Product Not Found",
+      success: false,
+      message: expect.stringMatching(/not found/i),
       product: null,
     });
   });

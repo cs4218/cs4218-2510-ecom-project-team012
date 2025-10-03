@@ -102,8 +102,8 @@ export const getSingleProductController = async (req, res) => {
     // FIXED BUG: Add check for product existence:
     // will handle case where product is not found
     if (!product) {
-      return res.status(200).send({
-        success: true,
+      return res.status(404).send({
+        success: false,
         message: "Product Not Found",
         product: null,
       });
