@@ -7,11 +7,14 @@ import {
   productListController,
   searchProductController,
   realtedProductController,
+  productCategoryController,
 } from "./productController.js";
 import productModel from "../models/productModel.js";
+import categoryModel from "../models/categoryModel.js";
 
 // General structure generated with the help of AI
 jest.mock("../models/productModel.js");
+jest.mock("../models/categoryModel.js");
 
 const mockCategory1 = {
   _id: "mock-category-id",
@@ -1043,6 +1046,160 @@ describe("realtedProductController", () => {
     // Assert
     expect(res.status).toHaveBeenCalledWith(400);
     // Good practice will be to make the error message a constant and import it here
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        message: error.message,
+        error,
+      })
+    );
+  });
+});
+
+describe("productCategoryController", () => {
+  let req, res;
+
+  beforeEach(() => {
+    req = { params: {} };
+    res = {
+      status: jest.fn().mockReturnThis(),
+      send: jest.fn(),
+    };
+    jest.clearAllMocks();
+  });
+
+  it("should return products of a category with success", async () => {
+    // Arrange
+    req.params = { slug: mockCategory1.slug };
+    const mockProducts = [mockProduct1, mockProduct2];
+    categoryModel.findOne.mockResolvedValue(mockCategory1);
+    productModel.find.mockReturnValue({
+      populate: jest.fn().mockResolvedValue(mockProducts),
+    });
+
+    // Act
+    await productCategoryController(req, res);
+
+    // Assert
+    expect(categoryModel.findOne).toHaveBeenCalledWith({
+      slug: mockCategory1.slug,
+    });
+    expect(productModel.find).toHaveBeenCalledWith({ category: mockCategory1 });
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        message: expect.stringMatching(/fetched/i),
+        category: mockCategory1,
+        products: mockProducts,
+      })
+    );
+  });
+
+  it("should handle category not found and return 404 status code", async () => {
+    // Arrange
+    req.params = { slug: "non-existent-slug" };
+    categoryModel.findOne.mockResolvedValue(null);
+
+    // Act
+    await productCategoryController(req, res);
+
+    // Assert
+    expect(categoryModel.findOne).toHaveBeenCalledWith({
+      slug: "non-existent-slug",
+    });
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        message: expect.stringMatching(/category not found/i),
+      })
+    );
+  });
+
+  it("should handle no products found in category", async () => {
+    // Arrange
+    req.params = { slug: mockCategory1.slug };
+    categoryModel.findOne.mockResolvedValue(mockCategory1);
+    productModel.find.mockReturnValue({
+      populate: jest.fn().mockResolvedValue([]),
+    });
+
+    // Act
+    await productCategoryController(req, res);
+
+    // Assert
+    expect(categoryModel.findOne).toHaveBeenCalledWith({
+      slug: mockCategory1.slug,
+    });
+    expect(productModel.find).toHaveBeenCalledWith({ category: mockCategory1 });
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        message: expect.stringMatching(/fetched/i),
+        category: mockCategory1,
+        products: [],
+      })
+    );
+  });
+
+  it("should handle missing slug and return 400 status code", async () => {
+    // Arrange
+    req.params = {}; // Missing slug
+
+    // Act
+    await productCategoryController(req, res);
+
+    // Assert
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        message: expect.stringMatching(/slug is required/i),
+      })
+    );
+  });
+
+  it("should handle errors in fetching category and return 400 status code", async () => {
+    // Arrange
+    req.params = { slug: mockCategory1.slug };
+    const error = new Error("Error While Getting products");
+    categoryModel.findOne.mockImplementation(() => {
+      throw error;
+    });
+
+    // Act
+    await productCategoryController(req, res);
+
+    // Assert
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        message: error.message,
+        error,
+      })
+    );
+  });
+
+  it("should handle errors in fetching category products and return 400 status code", async () => {
+    // Arrange
+    req.params = { slug: mockCategory1.slug };
+    const error = new Error("Error While Getting products");
+    categoryModel.findOne.mockResolvedValue(mockCategory1);
+    productModel.find.mockImplementation(() => {
+      throw error;
+    });
+
+    // Act
+    await productCategoryController(req, res);
+
+    // Assert
+    expect(categoryModel.findOne).toHaveBeenCalledWith({
+      slug: mockCategory1.slug,
+    });
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: false,
