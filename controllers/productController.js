@@ -151,7 +151,6 @@ export const productPhotoController = async (req, res) => {
         message: "Photo Not Found",
       });
     }
-
   } catch (error) {
     console.log(error);
     res.status(500).send({
@@ -236,8 +235,31 @@ export const productFiltersController = async (req, res) => {
   try {
     const { checked, radio } = req.body;
     let args = {};
-    if (checked.length > 0) args.category = checked;
-    if (radio.length) args.price = { $gte: radio[0], $lte: radio[1] };
+    if (!Array.isArray(checked) || !Array.isArray(radio)) {
+      return res.status(400).send({
+        success: false,
+        message: "Invalid filter inputs",
+      });
+    }
+    if (checked.length > 0) {
+      args.category = checked;
+    }
+    if (radio.length > 0) {
+      if (
+        radio.length == 2 &&
+        radio[0] > 0 &&
+        radio[1] > 0 &&
+        radio[0] < radio[1]
+      ) {
+        args.price = { $gte: radio[0], $lte: radio[1] };
+      } else {
+        return res.status(400).send({
+          success: false,
+          message: "Invalid filter inputs",
+        });
+      }
+    }
+    
     const products = await productModel.find(args);
     res.status(200).send({
       success: true,

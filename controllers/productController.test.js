@@ -349,74 +349,286 @@ describe("productFiltersController", () => {
     res = {
       status: jest.fn().mockReturnThis(),
       send: jest.fn(),
-      json: jest.fn(),
-      set: jest.fn(),
     };
     jest.clearAllMocks();
   });
 
-  it("should filter products based on category and price", async () => {
+  it("should filter products based on category and price with success", async () => {
     req.body = {
-      checked: ["cat1", "cat2"],
-      radio: [10, 50],
+      checked: [mockCategory1._id],
+      radio: [100, 500],
     };
-    const mockProducts = [{ name: "FilteredProduct" }];
-    productModel.find.mockResolvedValue(mockProducts);
+    const mockFilteredProducts = [mockProduct1];
+    productModel.find.mockResolvedValue(mockFilteredProducts);
 
     await productFiltersController(req, res);
 
-    expect(productModel.find).toHaveBeenCalledWith({
-      category: ["cat1", "cat2"],
-      price: { $gte: 10, $lte: 50 },
-    });
+    expect(productModel.find).toHaveBeenCalledWith(
+      expect.objectContaining({
+        category: [mockCategory1._id],
+        price: { $gte: 100, $lte: 500 },
+      })
+    );
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: true,
-        message: "Filtered Products",
+        message: expect.stringMatching(/filtered products/i),
+        products: mockFilteredProducts,
+      })
+    );
+  });
+
+  it("should handle empty filters and return all products", async () => {
+    // Arrange
+    req.body = {
+      checked: [],
+      radio: [],
+    };
+    const mockProducts = [mockProduct1, mockProduct2];
+    productModel.find.mockResolvedValue(mockProducts);
+
+    // Act
+    await productFiltersController(req, res);
+
+    // Assert
+    expect(productModel.find).toHaveBeenCalledWith({});
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        message: expect.stringMatching(/filtered products/i),
         products: mockProducts,
       })
     );
   });
 
-  it("should handle empty filters", async () => {
+  it("should filter products based on price range only", async () => {
+    // Arrange
     req.body = {
       checked: [],
-      radio: [],
+      radio: [150, 250],
     };
-    const mockProducts = [{ name: "AllProducts" }];
-    productModel.find.mockResolvedValue(mockProducts);
+    const mockFilteredProducts = [mockProduct2];
+    productModel.find.mockResolvedValue(mockFilteredProducts);
 
+    // Act
     await productFiltersController(req, res);
 
-    expect(productModel.find).toHaveBeenCalledWith({});
+    // Assert
+    expect(productModel.find).toHaveBeenCalledWith(
+      expect.objectContaining({
+        price: { $gte: 150, $lte: 250 },
+      })
+    );
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.send).toHaveBeenCalledWith({
-      success: true,
-      message: "Filtered Products",
-      products: mockProducts,
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        message: expect.stringMatching(/filtered products/i),
+        products: mockFilteredProducts,
+      })
+    );
+  });
+
+  it("should filter products based on category only", async () => {
+    // Arrange
+    req.body = {
+      checked: [mockCategory1._id],
+      radio: [],
+    };
+    const mockFilteredProducts = [mockProduct1, mockProduct2];
+    productModel.find.mockResolvedValue(mockFilteredProducts);
+
+    // Act
+    await productFiltersController(req, res);
+
+    // Assert
+    expect(productModel.find).toHaveBeenCalledWith(
+      expect.objectContaining({
+        category: [mockCategory1._id],
+      })
+    );
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        message: expect.stringMatching(/filtered products/i),
+        products: mockFilteredProducts,
+      })
+    );
+  });
+
+  it("should handle invalid filter inputs: invalid price range", async () => {
+    // Arrange
+    req.body = {
+      checked: [],
+      radio: [100, 10], // Invalid range
+    };
+    const error = new Error("Invalid filter inputs");
+    productModel.find.mockImplementation(() => {
+      throw error;
     });
+
+    // Act
+    await productFiltersController(req, res);
+
+    // Assert
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        message: error.message,
+      })
+    );
+  });
+
+  it("should handle invalid filter inputs: more than 2 inputs in radio", async () => {
+    // Arrange
+    req.body = {
+      checked: [],
+      radio: [100, 200, 300], // Invalid length
+    };
+    const error = new Error("Invalid filter inputs");
+    productModel.find.mockImplementation(() => {
+      throw error;
+    });
+
+    // Act
+    await productFiltersController(req, res);
+
+    // Assert
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        message: error.message,
+      })
+    );
+  });
+
+  it("should handle invalid filter inputs: non-numeric price values", async () => {
+    // Arrange
+    req.body = {
+      checked: [],
+      radio: ["a", "b"], // Non-numeric values
+    };
+    const error = new Error("Invalid filter inputs");
+    productModel.find.mockImplementation(() => {
+      throw error;
+    });
+
+    // Act
+    await productFiltersController(req, res);
+
+    // Assert
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        message: error.message,
+      })
+    );
+  });
+
+  it("should handle invalid filter inputs: negative price values", async () => {
+    // Arrange
+    req.body = {
+      checked: [],
+      radio: [-100, 200], // Negative price
+    };
+    const error = new Error("Invalid filter inputs");
+    productModel.find.mockImplementation(() => {
+      throw error;
+    });
+
+    // Act
+    await productFiltersController(req, res);
+
+    // Assert
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        message: error.message,
+      })
+    );
+  });
+
+  it("should handle invalid filter inputs: non-array types", async () => {
+    // Arrange
+    req.body = {
+      checked: "not-an-array", // Invalid type
+      radio: [],
+    };
+    const error = new Error("Invalid filter inputs");
+    productModel.find.mockImplementation(() => {
+      throw error;
+    });
+
+    // Act
+    await productFiltersController(req, res);
+
+    // Assert
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        message: error.message,
+      })
+    );
   });
 
   it("should handle errors in filtering", async () => {
+    // Arrange
     req.body = {
-      checked: ["cat1", "cat2"],
-      radio: [10, 50],
+      checked: [mockCategory1._id],
+      radio: [100, 500],
     };
+    const error = new Error("Error while filtering products");
     productModel.find.mockImplementation(() => {
-      throw new Error("Error while filtering products");
+      throw error;
     });
 
+    // Act
     await productFiltersController(req, res);
 
+    // Assert
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith(
-      expect.objectContaining({ success: false })
-    );
     // Good practice will be to make the error message a constant and import it here
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: "Error while filtering products",
+        success: false,
+        message: error.message,
+        error,
+      })
+    );
+  });
+
+  it("should handle no products found after filtering", async () => {
+    // Arrange
+    req.body = {
+      checked: [mockCategory1._id],
+      radio: [1000, 2000], // Price range that matches no products
+    };
+    productModel.find.mockResolvedValue([]);
+
+    // Act
+    await productFiltersController(req, res);
+
+    // Assert
+    expect(productModel.find).toHaveBeenCalledWith(
+      expect.objectContaining({
+        category: [mockCategory1._id],
+        price: { $gte: 1000, $lte: 2000 },
+      })
+    );
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        message: expect.stringMatching(/filtered products/i),
+        products: [],
       })
     );
   });
@@ -473,7 +685,7 @@ describe("productListController", () => {
   let req, res;
 
   beforeEach(() => {
-    req = {};
+    req = { params: {} };
     res = {
       status: jest.fn().mockReturnThis(),
       send: jest.fn(),
