@@ -1,5 +1,5 @@
-import userModel from "../models/userModel.js";
-import { comparePassword } from "./../helpers/authHelper.js";
+import userModel from "../../models/userModel.js";
+import { comparePassword } from "./../../helpers/authHelper.js";
 import JWT from "jsonwebtoken";
 
 //POST LOGIN
@@ -24,7 +24,7 @@ export const loginController = async (req, res) => {
 
     const match = await comparePassword(password, user.password);
     if (!match) {
-      return res.status(200).send({
+      return res.status(401).send({
         success: false,
         message: "Invalid password",
       });
@@ -51,7 +51,7 @@ export const loginController = async (req, res) => {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Error in login",
+      message: "Something went wrong",
       error,
     });
   }
