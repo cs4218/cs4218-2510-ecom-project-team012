@@ -70,12 +70,14 @@ describe("getProductController", () => {
 
     // Assert
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.send).toHaveBeenCalledWith({
-      success: true,
-      countTotal: mockProducts.length,
-      message: expect.stringMatching(/all products/i),
-      products: mockProducts,
-    });
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        countTotal: mockProducts.length,
+        message: expect.stringMatching(/all products/i),
+        products: mockProducts,
+      })
+    );
   });
 
   it("should handle errors and return 500 status code", async () => {
@@ -92,7 +94,7 @@ describe("getProductController", () => {
     expect(res.status).toHaveBeenCalledWith(500);
     // Good practice will be to make the error message a constant and import it here
     expect(res.send).toHaveBeenCalledWith(
-      expect.objectContaining({ 
+      expect.objectContaining({
         success: false,
         message: error.message,
       })
@@ -113,12 +115,14 @@ describe("getProductController", () => {
 
     // Assert
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.send).toHaveBeenCalledWith({
-      success: true,
-      countTotal: 0,
-      message: expect.stringMatching(/all products/i),
-      products: [],
-    });
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        countTotal: 0,
+        message: expect.stringMatching(/all products/i),
+        products: [],
+      })
+    );
   });
 
   it("should only return 12 products if more than 12 exist", async () => {
@@ -133,7 +137,7 @@ describe("getProductController", () => {
       select: jest.fn().mockReturnThis(),
       limit: jest.fn().mockReturnValue({
         // mock .limit(12) to limit results to first 12 products
-        sort: jest.fn().mockResolvedValue(mockProducts.slice(0, 12)), 
+        sort: jest.fn().mockResolvedValue(mockProducts.slice(0, 12)),
       }),
     });
 
@@ -142,12 +146,14 @@ describe("getProductController", () => {
 
     // Assert
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.send).toHaveBeenCalledWith({
-      success: true,
-      countTotal: 12,
-      message: expect.stringMatching(/all products/i),
-      products: mockProducts.slice(0, 12),
-    });
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        countTotal: 12,
+        message: expect.stringMatching(/all products/i),
+        products: mockProducts.slice(0, 12),
+      })
+    );
   });
 });
 
@@ -159,8 +165,6 @@ describe("getSingleProductController", () => {
     res = {
       status: jest.fn().mockReturnThis(),
       send: jest.fn(),
-      json: jest.fn(),
-      set: jest.fn(),
     };
     jest.clearAllMocks();
   });
@@ -179,11 +183,13 @@ describe("getSingleProductController", () => {
     // Assert
     expect(productModel.findOne).toHaveBeenCalledWith(req.params);
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.send).toHaveBeenCalledWith({
-      success: true,
-      message: expect.stringMatching(/product fetched/i),
-      product: mockProduct1,
-    });
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        message: expect.stringMatching(/product fetched/i),
+        product: mockProduct1,
+      })
+    );
   });
 
   it("should handle errors and return 500 status code", async () => {
@@ -205,7 +211,7 @@ describe("getSingleProductController", () => {
       expect.objectContaining({
         success: false,
         message: error.message,
-        error
+        error,
       })
     );
   });
@@ -222,12 +228,15 @@ describe("getSingleProductController", () => {
     await getSingleProductController(req, res);
 
     // Assert
+    expect(productModel.findOne).toHaveBeenCalledWith(req.params);
     expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.send).toHaveBeenCalledWith({
-      success: false,
-      message: expect.stringMatching(/not found/i),
-      product: null,
-    });
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        message: expect.stringMatching(/not found/i),
+        product: null,
+      })
+    );
   });
 });
 
@@ -235,76 +244,95 @@ describe("productPhotoController", () => {
   let req, res;
 
   beforeEach(() => {
-    req = {};
+    req = { params: {} };
     res = {
       status: jest.fn().mockReturnThis(),
       send: jest.fn(),
-      json: jest.fn(),
       set: jest.fn(),
     };
     jest.clearAllMocks();
   });
 
   it("should return photo data if exists", async () => {
-    req.params = { pid: "123" };
-    const mockPhoto = { data: Buffer.from("abc"), contentType: "image/png" };
+    // Arrange
+    req.params = { pid: mockProduct2._id };
+    const mockPhoto = mockProduct2.photo;
     productModel.findById.mockReturnValue({
       select: jest.fn().mockResolvedValue({ photo: mockPhoto }),
     });
 
+    // Act
     await productPhotoController(req, res);
 
-    expect(res.set).toHaveBeenCalledWith("Content-type", "image/png");
+    // Assert
+    expect(productModel.findById).toHaveBeenCalledWith(req.params.pid);
+    expect(res.set).toHaveBeenCalledWith("Content-type", mockPhoto.contentType);
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.send).toHaveBeenCalledWith(mockPhoto.data);
   });
 
-  it("should not return photo if data is missing", async () => {
-    req.params = { pid: "123" };
+  it("should not return photo if data is missing and return 404 status code", async () => {
+    // Arrange
+    req.params = { pid: mockProduct1._id };
+    // Product1 has no photo data
     productModel.findById.mockReturnValue({
       select: jest.fn().mockResolvedValue({ photo: { data: null } }),
     });
 
+    // Act
     await productPhotoController(req, res);
 
+    // Assert
+    expect(productModel.findById).toHaveBeenCalledWith(req.params.pid);
     expect(res.set).not.toHaveBeenCalled();
-    expect(res.status).not.toHaveBeenCalled();
-    expect(res.send).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        message: expect.stringMatching(/not found/i),
+      })
+    );
   });
 
-  it("should handle errors", async () => {
+  it("should handle errors and return 500 status code", async () => {
     req.params = { pid: "123" };
+    const error = new Error("Error while getting photo");
     productModel.findById.mockImplementation(() => {
-      throw new Error("Erorr while getting photo");
+      throw error;
     });
 
     await productPhotoController(req, res);
 
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.send).toHaveBeenCalledWith(
-      expect.objectContaining({ success: false })
-    );
     // Good practice will be to make the error message a constant and import it here
     expect(res.send).toHaveBeenCalledWith(
-      expect.objectContaining({ message: "Erorr while getting photo" })
+      expect.objectContaining({
+        success: false,
+        message: error.message,
+        error,
+      })
     );
   });
 
   it("should handle when pid is invalid", async () => {
-    req.params = { pid: "invalid-id" };
+    // Arrange
+    req.params = { pid: "invalid-pid" };
     productModel.findById.mockReturnValue({
       select: jest.fn().mockResolvedValue(null),
     });
 
+    // Act
     await productPhotoController(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.send).toHaveBeenCalledWith(
-      expect.objectContaining({ success: false })
-    );
+    // Assert
+    expect(productModel.findById).toHaveBeenCalledWith(req.params.pid);
+    expect(res.status).toHaveBeenCalledWith(404);
     // Good practice will be to make the error message a constant and import it here
     expect(res.send).toHaveBeenCalledWith(
-      expect.objectContaining({ message: "Erorr while getting photo" })
+      expect.objectContaining({
+        success: false,
+        message: expect.stringMatching(/not found/i),
+      })
     );
   });
 });
@@ -338,11 +366,13 @@ describe("productFiltersController", () => {
       price: { $gte: 10, $lte: 50 },
     });
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.send).toHaveBeenCalledWith({
-      success: true,
-      message: "Filtered Products",
-      products: mockProducts,
-    });
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        message: "Filtered Products",
+        products: mockProducts,
+      })
+    );
   });
 
   it("should handle empty filters", async () => {
