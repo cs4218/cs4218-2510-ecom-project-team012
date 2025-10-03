@@ -11,23 +11,53 @@ import productModel from "../models/productModel.js";
 
 jest.mock("../models/productModel.js");
 
+const mockCategory1 = {
+  _id: "mock-category-id",
+  name: "MockCategory",
+  slug: "mock-category",
+  description: "This is a mock category",
+};
+
+const mockProduct1 = {
+  _id: "mock-product-1",
+  name: "Product1",
+  slug: "mock-product-1",
+  description: "Description1",
+  price: 159.3,
+  category: mockCategory1._id,
+  quantity: 10,
+  createdAt: new Date(),
+};
+
+const mockProduct2 = {
+  _id: "mock-product-2",
+  name: "Product2",
+  slug: "mock-product-2",
+  description: "Description2",
+  price: 200,
+  category: mockCategory1._id,
+  quantity: 20,
+  photo: { data: Buffer.from("mock-image-data"), contentType: "image/png" },
+  shipping: true,
+  createdAt: new Date(Date.now() - 1000 * 60 * 60), // 1 hour earlier from now
+};
+
 // General structure generated with the help of AI
 describe("getProductController", () => {
   let req, res;
-  
-  beforeEach(() => { 
+
+  beforeEach(() => {
     req = {};
     res = {
       status: jest.fn().mockReturnThis(),
-      send: jest.fn(),
-      json: jest.fn(),
-      set: jest.fn(),
+      send: jest.fn().mockReturnThis(),
     };
     jest.clearAllMocks();
   });
 
-  it("should return products with success", async () => {
-    const mockProducts = [{ name: "Test" }];
+  it("should get all products with success", async () => {
+    const mockProducts = [mockProduct1, mockProduct2];
+    // Arrange
     productModel.find.mockReturnValue({
       populate: jest.fn().mockReturnThis(),
       select: jest.fn().mockReturnThis(),
@@ -35,8 +65,10 @@ describe("getProductController", () => {
       sort: jest.fn().mockResolvedValue(mockProducts),
     });
 
+    // Act
     await getProductController(req, res);
 
+    // Assert
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.send).toHaveBeenCalledWith({
       success: true,
@@ -46,13 +78,16 @@ describe("getProductController", () => {
     });
   });
 
-  it("should handle errors", async () => {
+  it("should handle errors and return 500 status code", async () => {
+    // Arrange
     productModel.find.mockImplementation(() => {
       throw new Error("Error in getting products");
     });
 
+    // Act
     await getProductController(req, res);
 
+    // Assert
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({ success: false })
@@ -62,12 +97,88 @@ describe("getProductController", () => {
       expect.objectContaining({ message: "Error in getting products" })
     );
   });
+
+  it("should return empty array when no products found", async () => {
+    // Arrange
+    productModel.find.mockReturnValue({
+      populate: jest.fn().mockReturnThis(),
+      select: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockReturnThis(),
+      sort: jest.fn().mockResolvedValue([]),
+    });
+
+    // Act
+    await getProductController(req, res);
+
+    // Assert
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith({
+      success: true,
+      countTotal: 0,
+      message: "All Products",
+      products: [],
+    });
+  });
+
+  it("should only return 12 products if more than 12 exist", async () => {
+    // Arrange
+    const mockProducts = Array.from({ length: 15 }, (_, i) => ({
+      ...mockProduct1,
+      _id: `mock-product-${i + 1}`,
+      name: `Product${i + 1}`,
+    }));
+    productModel.find.mockReturnValue({
+      populate: jest.fn().mockReturnThis(),
+      select: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockReturnValue({
+        // mock .limit(12) to limit results to first 12 products
+        sort: jest.fn().mockResolvedValue(mockProducts.slice(0, 12)), 
+      }),
+    });
+
+    // Act
+    await getProductController(req, res);
+
+    // Assert
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith({
+      success: true,
+      countTotal: 12,
+      message: "All Products",
+      products: mockProducts.slice(0, 12),
+    });
+  });
+
+  it("should return products with populated category and selected fields", async () => {
+    // Arrange
+    const mockProducts = [mockProduct1, mockProduct2];
+    const populateMock = jest.fn().mockReturnThis();
+    const selectMock = jest.fn().mockReturnThis();
+    const limitMock = jest.fn().mockReturnThis();
+    const sortMock = jest.fn().mockResolvedValue(mockProducts);
+    
+    productModel.find.mockReturnValue({
+      populate: populateMock,
+      select: selectMock,
+      limit: limitMock,
+      sort: sortMock,
+    });
+
+    // Act
+    await getProductController(req, res);
+
+    // Assert
+    expect(populateMock).toHaveBeenCalledWith("category");
+    expect(selectMock).toHaveBeenCalledWith("-photo");
+    expect(limitMock).toHaveBeenCalledWith(12);
+    expect(sortMock).toHaveBeenCalledWith({ createdAt: -1 });
+  });
 });
 
 describe("getSingleProductController", () => {
   let req, res;
-  
-  beforeEach(() => { 
+
+  beforeEach(() => {
     req = {};
     res = {
       status: jest.fn().mockReturnThis(),
@@ -136,8 +247,8 @@ describe("getSingleProductController", () => {
 
 describe("productPhotoController", () => {
   let req, res;
-  
-  beforeEach(() => { 
+
+  beforeEach(() => {
     req = {};
     res = {
       status: jest.fn().mockReturnThis(),
@@ -214,8 +325,8 @@ describe("productPhotoController", () => {
 
 describe("productFiltersController", () => {
   let req, res;
-  
-  beforeEach(() => { 
+
+  beforeEach(() => {
     req = { body: {} };
     res = {
       status: jest.fn().mockReturnThis(),
@@ -293,8 +404,8 @@ describe("productFiltersController", () => {
 
 describe("productCountController", () => {
   let req, res;
-  
-  beforeEach(() => { 
+
+  beforeEach(() => {
     req = {};
     res = {
       status: jest.fn().mockReturnThis(),
@@ -340,8 +451,8 @@ describe("productCountController", () => {
 
 describe("productListController", () => {
   let req, res;
-  
-  beforeEach(() => { 
+
+  beforeEach(() => {
     req = {};
     res = {
       status: jest.fn().mockReturnThis(),
@@ -417,8 +528,8 @@ describe("productListController", () => {
 
 describe("searchProductController", () => {
   let req, res;
-  
-  beforeEach(() => { 
+
+  beforeEach(() => {
     req = { params: {} };
     res = {
       status: jest.fn().mockReturnThis(),
