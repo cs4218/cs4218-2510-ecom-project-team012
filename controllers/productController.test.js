@@ -80,8 +80,9 @@ describe("getProductController", () => {
 
   it("should handle errors and return 500 status code", async () => {
     // Arrange
+    const error = new Error("Error in getting products");
     productModel.find.mockImplementation(() => {
-      throw new Error("Error in getting products");
+      throw error;
     });
 
     // Act
@@ -89,12 +90,12 @@ describe("getProductController", () => {
 
     // Assert
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.send).toHaveBeenCalledWith(
-      expect.objectContaining({ success: false })
-    );
     // Good practice will be to make the error message a constant and import it here
     expect(res.send).toHaveBeenCalledWith(
-      expect.objectContaining({ message: "Error in getting products" })
+      expect.objectContaining({ 
+        success: false,
+        message: error.message,
+      })
     );
   });
 
@@ -154,7 +155,7 @@ describe("getSingleProductController", () => {
   let req, res;
 
   beforeEach(() => {
-    req = {};
+    req = { params: {} };
     res = {
       status: jest.fn().mockReturnThis(),
       send: jest.fn(),
@@ -164,57 +165,67 @@ describe("getSingleProductController", () => {
     jest.clearAllMocks();
   });
 
-  it("should return a single product", async () => {
+  it("should return a single product with success", async () => {
+    // Arrange
     req.params = { slug: "test-slug" };
-    const mockProduct = { name: "Test" };
     productModel.findOne.mockReturnValue({
       select: jest.fn().mockReturnThis(),
-      populate: jest.fn().mockResolvedValue(mockProduct),
+      populate: jest.fn().mockResolvedValue(mockProduct1),
     });
 
+    // Act
     await getSingleProductController(req, res);
 
+    // Assert
+    expect(productModel.findOne).toHaveBeenCalledWith(req.params);
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.send).toHaveBeenCalledWith({
       success: true,
       message: "Single Product Fetched",
-      product: mockProduct,
+      product: mockProduct1,
     });
   });
 
-  it("should handle errors", async () => {
+  it("should handle errors and return 500 status code", async () => {
+    // Arrange
     req.params = { slug: "test-slug" };
+    const error = new Error("Error while getting single product");
     productModel.findOne.mockImplementation(() => {
-      throw new Error("Error while getting single product");
+      throw error;
     });
 
+    // Act
     await getSingleProductController(req, res);
 
+    // Assert
+    expect(productModel.findOne).toHaveBeenCalledWith(req.params);
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.send).toHaveBeenCalledWith(
-      expect.objectContaining({ success: false })
-    );
     // Good practice will be to make the error message a constant and import it here
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: "Error while getting single product",
+        success: false,
+        message: error.message,
+        error
       })
     );
   });
 
   it("should handle when product not found", async () => {
+    // Arrange
     req.params = { slug: "non-existent-slug" };
     productModel.findOne.mockReturnValue({
       select: jest.fn().mockReturnThis(),
       populate: jest.fn().mockResolvedValue(null),
     });
 
+    // Act
     await getSingleProductController(req, res);
 
+    // Assert
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.send).toHaveBeenCalledWith({
       success: true,
-      message: "Single Product Fetched",
+      message: "Product Not Found",
       product: null,
     });
   });

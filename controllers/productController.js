@@ -98,6 +98,17 @@ export const getSingleProductController = async (req, res) => {
       .findOne({ slug: req.params.slug })
       .select("-photo")
       .populate("category");
+
+    // FIXED BUG: Add check for product existence:
+    // will handle case where product is not found
+    if (!product) {
+      return res.status(200).send({
+        success: true,
+        message: "Product Not Found",
+        product: null,
+      });
+    }
+
     res.status(200).send({
       success: true,
       message: "Single Product Fetched",
