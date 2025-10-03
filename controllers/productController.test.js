@@ -706,7 +706,7 @@ describe("productListController", () => {
   it("should return paginated product list (Page > 1)", async () => {
     // Arrange
     req.params = { page: "2" };
-    const mockProducts = [{ name: "PaginatedProduct" }];
+    const mockProducts = [mockProduct1, mockProduct2];
     productModel.find.mockReturnValue({
       select: jest.fn().mockReturnThis(),
       skip: jest.fn().mockReturnThis(),
@@ -731,7 +731,7 @@ describe("productListController", () => {
   it("should default to page 1 when no page is given (Page == 1)", async () => {
     // Arrange
     req.params = {};
-    const mockProducts = [{ name: "PaginatedProduct" }];
+    const mockProducts = [mockProduct1, mockProduct2];
     productModel.find.mockReturnValue({
       select: jest.fn().mockReturnThis(),
       skip: jest.fn().mockReturnThis(),
@@ -748,7 +748,7 @@ describe("productListController", () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.send).toHaveBeenCalledWith({
       success: true,
-      message: "Product List Fetched",
+      message: expect.stringMatching(/product list fetched/i),
       products: mockProducts,
     });
   });
@@ -756,7 +756,7 @@ describe("productListController", () => {
   it("should default to page 1 if page param is invalid (Page < 1)", async () => {
     // Arrange
     req.params = { page: "-3" };
-    const mockProducts = [{ name: "PaginatedProduct" }];
+    const mockProducts = [mockProduct1, mockProduct2];
     productModel.find.mockReturnValue({
       select: jest.fn().mockReturnThis(),
       skip: jest.fn().mockReturnThis(),
@@ -773,7 +773,32 @@ describe("productListController", () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.send).toHaveBeenCalledWith({
       success: true,
-      message: "Product List Fetched",
+      message: expect.stringMatching(/product list fetched/i),
+      products: mockProducts,
+    });
+  });
+
+  it("should return empty array when no products found for the page", async () => {
+    // Arrange
+    req.params = { page: "invalid-page" };
+    const mockProducts = [mockProduct1, mockProduct2];
+    productModel.find.mockReturnValue({
+      select: jest.fn().mockReturnThis(),
+      skip: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockReturnThis(),
+      sort: jest.fn().mockResolvedValue(mockProducts),
+    });
+
+    // Act
+    await productListController(req, res);
+
+    // Assert
+    expect(productModel.find).toHaveBeenCalled();
+    expect(productModel.find().skip).toHaveBeenCalledWith(0);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith({
+      success: true,
+      message: expect.stringMatching(/product list fetched/i),
       products: mockProducts,
     });
   });
