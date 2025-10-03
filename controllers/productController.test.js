@@ -253,7 +253,7 @@ describe("productPhotoController", () => {
     jest.clearAllMocks();
   });
 
-  it("should return photo data if exists", async () => {
+  it("should return photo data if exist with success", async () => {
     // Arrange
     req.params = { pid: mockProduct2._id };
     const mockPhoto = mockProduct2.photo;
@@ -318,7 +318,7 @@ describe("productPhotoController", () => {
     );
   });
 
-  it("should handle when pid is invalid", async () => {
+  it("should handle when pid is invalid and return 404 status code", async () => {
     // Arrange
     req.params = { pid: "invalid-pid" };
     productModel.findById.mockReturnValue({
