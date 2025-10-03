@@ -242,4 +242,7 @@ describe("User Model", () => {
     await expect(userWithSpaces.validate()).resolves.toBeUndefined();
     expect(userWithSpaces.name).toBe("Test User");
   });
+
+  // Should we test for roles outside expected values (0,1)?
+  // Not sure if its too specific to the code and becomes a brittle test.
 });
