@@ -942,10 +942,75 @@ describe("realtedProductController", () => {
     jest.clearAllMocks();
   });
 
-  it("should return related products with success", async () => {
+  it("should return related products with success (less than 3 products)", async () => {
     // Arrange
     req.params = { pid: mockProduct1._id, cid: mockCategory1._id };
     const mockRelatedProducts = [mockProduct2];
+    productModel.find.mockReturnValue({
+      select: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockReturnThis(),
+      populate: jest.fn().mockResolvedValue(mockRelatedProducts),
+    });
+
+    // Act
+    await realtedProductController(req, res);
+
+    // Assert
+    expect(productModel.find).toHaveBeenCalledWith({
+      category: mockCategory1._id,
+      _id: { $ne: mockProduct1._id },
+    });
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        message: expect.stringMatching(/related products/i),
+        products: mockRelatedProducts,
+      })
+    );
+  });
+
+  it("should return 3 results when there are more than 3 matches", async () => {
+    // Arrange
+    req.params = { pid: mockProduct1._id, cid: mockCategory1._id };
+    const mockRelatedProducts = [
+      { ...mockProduct2, _id: "related-1" },
+      { ...mockProduct2, _id: "related-2" },
+      { ...mockProduct2, _id: "related-3" },
+      { ...mockProduct2, _id: "related-4" },
+    ];
+    productModel.find.mockReturnValue({
+      select: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockReturnThis(),
+      populate: jest.fn().mockResolvedValue(mockRelatedProducts.slice(0, 3)),
+    });
+
+    // Act
+    await realtedProductController(req, res);
+
+    // Assert
+    expect(productModel.find).toHaveBeenCalledWith({
+      category: mockCategory1._id,
+      _id: { $ne: mockProduct1._id },
+    });
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        message: expect.stringMatching(/fetched/i),
+        products: mockRelatedProducts.slice(0, 3),
+      })
+    );
+  });
+
+  it("should return 3 results when there are exactly 3 matches", async () => {
+    // Arrange
+    req.params = { pid: mockProduct1._id, cid: mockCategory1._id };
+    const mockRelatedProducts = [
+      { ...mockProduct2, _id: "related-1" },
+      { ...mockProduct2, _id: "related-2" },
+      { ...mockProduct2, _id: "related-3" },
+    ];
     productModel.find.mockReturnValue({
       select: jest.fn().mockReturnThis(),
       limit: jest.fn().mockReturnThis(),
