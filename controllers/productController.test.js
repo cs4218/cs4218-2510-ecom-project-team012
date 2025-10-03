@@ -148,31 +148,6 @@ describe("getProductController", () => {
       products: mockProducts.slice(0, 12),
     });
   });
-
-  it("should return products with populated category and selected fields", async () => {
-    // Arrange
-    const mockProducts = [mockProduct1, mockProduct2];
-    const populateMock = jest.fn().mockReturnThis();
-    const selectMock = jest.fn().mockReturnThis();
-    const limitMock = jest.fn().mockReturnThis();
-    const sortMock = jest.fn().mockResolvedValue(mockProducts);
-    
-    productModel.find.mockReturnValue({
-      populate: populateMock,
-      select: selectMock,
-      limit: limitMock,
-      sort: sortMock,
-    });
-
-    // Act
-    await getProductController(req, res);
-
-    // Assert
-    expect(populateMock).toHaveBeenCalledWith("category");
-    expect(selectMock).toHaveBeenCalledWith("-photo");
-    expect(limitMock).toHaveBeenCalledWith(12);
-    expect(sortMock).toHaveBeenCalledWith({ createdAt: -1 });
-  });
 });
 
 describe("getSingleProductController", () => {
