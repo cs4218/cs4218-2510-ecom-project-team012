@@ -34,7 +34,9 @@ describe("requireSignIn", () => {
     expect(mockNext).not.toHaveBeenCalled();
     expect(mockRes.status).toHaveBeenCalledWith(401);
     // not using exact message as it may change in future
-    expect(mockRes.send).toHaveBeenCalledTimes(1);
+    expect(mockRes.send).toHaveBeenCalledWith(
+      expect.objectContaining({ success: false })
+    );
   });
 
   describe("isAdmin", () => {
@@ -66,7 +68,9 @@ describe("requireSignIn", () => {
       expect(mockNext).not.toHaveBeenCalled();
       expect(mockRes.status).toHaveBeenCalledWith(401);
       // not using exact message as it may change in future
-      expect(mockRes.send).toHaveBeenCalledTimes(1);
+      expect(mockRes.send).toHaveBeenCalledWith(
+        expect.objectContaining({ success: false })
+      );
     });
 
     it("should send response with unsuccessful message if error is caught", async () => {
@@ -80,7 +84,9 @@ describe("requireSignIn", () => {
       expect(mockNext).not.toHaveBeenCalled();
       expect(mockRes.status).toHaveBeenCalledWith(401);
       // not using exact message as it may change in future
-      expect(mockRes.send).toHaveBeenCalledTimes(1);
+      expect(mockRes.send).toHaveBeenCalledWith(
+        expect.objectContaining({ success: false })
+      );
     });
   });
 });
