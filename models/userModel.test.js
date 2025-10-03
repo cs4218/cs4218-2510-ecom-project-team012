@@ -14,6 +14,7 @@ describe("User Model", () => {
       phone: "1234567890",
       address: { street: "123 Test St", city: "Testville" },
       answer: "Test Answer",
+      dob: new Date("2002-01-01"),
     });
 
     // Act & Assert
@@ -26,6 +27,7 @@ describe("User Model", () => {
       street: "123 Test St",
       city: "Testville",
     });
+    expect(validUser.dob).toEqual(new Date("2002-01-01"));
     expect(validUser.answer).toBe("Test Answer");
     expect(validUser.role).toBe(0); // Ensure that it goes to default value when omitted from input
   });
@@ -46,6 +48,7 @@ describe("User Model", () => {
         phone: expect.anything(),
         address: expect.anything(),
         answer: expect.anything(),
+        dob: expect.anything(),
       },
     });
   });
@@ -58,6 +61,7 @@ describe("User Model", () => {
       phone: "1234567890",
       address: { street: "123 Test St", city: "Testville" },
       answer: "Test Answer",
+      dob: new Date("2002-01-01"),
     });
 
     // Act & Assert
@@ -79,6 +83,7 @@ describe("User Model", () => {
       phone: "1234567890",
       address: { street: "123 Test St", city: "Testville" },
       answer: "Test Answer",
+      dob: new Date("2002-01-01"),
     });
 
     // Act & Assert
@@ -100,6 +105,7 @@ describe("User Model", () => {
       phone: "1234567890",
       address: { street: "123 Test St", city: "Testville" },
       answer: "Test Answer",
+      dob: new Date("2002-01-01"),
     });
 
     // Act & Assert
@@ -121,6 +127,7 @@ describe("User Model", () => {
       password: "password123",
       address: { street: "123 Test St", city: "Testville" },
       answer: "Test Answer",
+      dob: new Date("2002-01-01"),
     });
 
     // Act & Assert
@@ -142,6 +149,7 @@ describe("User Model", () => {
       password: "password123",
       phone: "1234567890",
       answer: "Test Answer",
+      dob: new Date("2002-01-01"),
     });
 
     // Act & Assert
@@ -155,6 +163,27 @@ describe("User Model", () => {
     });
   });
 
+  it("should fail to create a user without dob", async () => {
+    // Arrange
+    const invalidUser = new userModel({
+      name: "Test User",
+      email: "testuser@gmail.com",
+      phone: "1234567890",
+      address: { street: "123 Test St", city: "Testville" },
+      password: "password123",
+    });
+
+    // Act & Assert
+    await expect(invalidUser.validate()).rejects.toMatchObject({
+      errors: {
+        dob: expect.objectContaining({
+          kind: "required",
+          path: "dob",
+        }),
+      },
+    });
+  });
+
   it("should fail to create a user without answer", async () => {
     // Arrange
     const invalidUser = new userModel({
@@ -163,6 +192,7 @@ describe("User Model", () => {
       phone: "1234567890",
       address: { street: "123 Test St", city: "Testville" },
       password: "password123",
+      dob: new Date("2002-01-01"),
     });
 
     // Act & Assert
@@ -185,6 +215,7 @@ describe("User Model", () => {
       address: { street: "123 Test St", city: "Testville" },
       answer: "Test Answer",
       password: "password123",
+      dob: new Date("2002-01-01"),
       role: 1,
     });
 
@@ -204,6 +235,7 @@ describe("User Model", () => {
       address: { street: "123 Test St", city: "Testville" },
       answer: "Test Answer",
       password: "password123",
+      dob: new Date("2002-01-01"),
     });
 
     // Act & Assert
