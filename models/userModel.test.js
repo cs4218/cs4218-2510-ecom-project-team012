@@ -6,6 +6,7 @@ import userModel from "./userModel.js";
 
 describe("User Model", () => {
   it("should create a user with min required fields", async () => {
+    // Arrange
     const validUser = new userModel({
       name: "Test User",
       email: "testuser@gmail.com",
@@ -14,6 +15,8 @@ describe("User Model", () => {
       address: { street: "123 Test St", city: "Testville" },
       answer: "Test Answer",
     });
+
+    // Act & Assert
     await expect(validUser.validate()).resolves.toBeUndefined();
     expect(validUser.name).toBe("Test User");
     expect(validUser.email).toBe("testuser@gmail.com");
@@ -24,14 +27,17 @@ describe("User Model", () => {
       city: "Testville",
     });
     expect(validUser.answer).toBe("Test Answer");
-    expect(validUser.role).toBe(0); // default value
+    expect(validUser.role).toBe(0); // Ensure that it goes to default value when omitted from input
   });
 
   it("should fail validation if required fields are missing", async () => {
+    // Arrange
     const invalidUser = new userModel({});
     await expect(invalidUser.validate()).rejects.toBeInstanceOf(
       mongoose.Error.ValidationError
     );
+
+    // Act & Assert
     await expect(invalidUser.validate()).rejects.toMatchObject({
       errors: {
         name: expect.anything(),
@@ -45,6 +51,7 @@ describe("User Model", () => {
   });
 
   it("should fail to create a user without name", async () => {
+    // Arrange
     const invalidUser = new userModel({
       email: "testuser@gmail.com",
       password: "password123",
@@ -53,6 +60,7 @@ describe("User Model", () => {
       answer: "Test Answer",
     });
 
+    // Act & Assert
     await expect(invalidUser.validate()).rejects.toMatchObject({
       errors: {
         name: expect.objectContaining({
@@ -64,6 +72,7 @@ describe("User Model", () => {
   });
 
   it("should fail to create a user without email", async () => {
+    // Arrange
     const invalidUser = new userModel({
       name: "Test User",
       password: "password123",
@@ -72,6 +81,7 @@ describe("User Model", () => {
       answer: "Test Answer",
     });
 
+    // Act & Assert
     await expect(invalidUser.validate()).rejects.toMatchObject({
       errors: {
         email: expect.objectContaining({
@@ -83,6 +93,7 @@ describe("User Model", () => {
   });
 
   it("should fail to create a user without password", async () => {
+    // Arrange
     const invalidUser = new userModel({
       name: "Test User",
       email: "testuser@gmail.com",
@@ -91,6 +102,7 @@ describe("User Model", () => {
       answer: "Test Answer",
     });
 
+    // Act & Assert
     await expect(invalidUser.validate()).rejects.toMatchObject({
       errors: {
         password: expect.objectContaining({
@@ -102,6 +114,7 @@ describe("User Model", () => {
   });
 
   it("should fail to create a user without phone", async () => {
+    // Arrange
     const invalidUser = new userModel({
       name: "Test User",
       email: "testuser@gmail.com",
@@ -110,6 +123,7 @@ describe("User Model", () => {
       answer: "Test Answer",
     });
 
+    // Act & Assert
     await expect(invalidUser.validate()).rejects.toMatchObject({
       errors: {
         phone: expect.objectContaining({
@@ -121,6 +135,7 @@ describe("User Model", () => {
   });
 
   it("should fail to create a user without address", async () => {
+    // Arrange
     const invalidUser = new userModel({
       name: "Test User",
       email: "testuser@gmail.com",
@@ -129,6 +144,7 @@ describe("User Model", () => {
       answer: "Test Answer",
     });
 
+    // Act & Assert
     await expect(invalidUser.validate()).rejects.toMatchObject({
       errors: {
         address: expect.objectContaining({
@@ -140,6 +156,7 @@ describe("User Model", () => {
   });
 
   it("should fail to create a user without answer", async () => {
+    // Arrange
     const invalidUser = new userModel({
       name: "Test User",
       email: "testuser@gmail.com",
@@ -148,6 +165,7 @@ describe("User Model", () => {
       password: "password123",
     });
 
+    // Act & Assert
     await expect(invalidUser.validate()).rejects.toMatchObject({
       errors: {
         answer: expect.objectContaining({
@@ -159,6 +177,7 @@ describe("User Model", () => {
   });
 
   it("should create a user with role when provided", async () => {
+    // Arrange
     const validUser = new userModel({
       name: "Admin User",
       email: "testuser@gmail.com",
@@ -168,6 +187,8 @@ describe("User Model", () => {
       password: "password123",
       role: 1,
     });
+
+    // Act & Assert
     await expect(validUser.validate()).resolves.toBeUndefined();
     expect(validUser.role).toBe(1);
   });
@@ -175,6 +196,7 @@ describe("User Model", () => {
   // Trim name field
   // More of a Mongoose feature test than a schema test, but good to validate
   it("should create user with name trimmed", async () => {
+    // Arrange
     const userWithSpaces = new userModel({
       name: "   Test User   ",
       email: "testuser@gmail.com",
@@ -183,6 +205,8 @@ describe("User Model", () => {
       answer: "Test Answer",
       password: "password123",
     });
+
+    // Act & Assert
     await expect(userWithSpaces.validate()).resolves.toBeUndefined();
     expect(userWithSpaces.name).toBe("Test User");
   });
