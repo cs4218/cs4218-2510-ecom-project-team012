@@ -835,20 +835,22 @@ describe("searchProductController", () => {
       status: jest.fn().mockReturnThis(),
       send: jest.fn(),
       json: jest.fn(),
-      set: jest.fn(),
     };
     jest.clearAllMocks();
   });
 
-  it("should return search results", async () => {
+  it("should return search results with success", async () => {
+    // Arrange
     req.params = { keyword: "test" };
-    const mockResults = [{ name: "SearchResult" }];
+    const mockResults = [mockProduct1, mockProduct2];
     productModel.find.mockReturnValue({
       select: jest.fn().mockResolvedValue(mockResults),
     });
 
+    // Act
     await searchProductController(req, res);
 
+    // Assert
     expect(productModel.find).toHaveBeenCalledWith({
       $or: [
         { name: { $regex: "test", $options: "i" } },
@@ -859,35 +861,18 @@ describe("searchProductController", () => {
     expect(res.json).toHaveBeenCalledWith(mockResults);
   });
 
-  it("should handle errors in searching products", async () => {
-    req.params = { keyword: "test" };
-    productModel.find.mockImplementation(() => {
-      throw new Error("Error in searching products");
-    });
-
-    await searchProductController(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith(
-      expect.objectContaining({ success: false })
-    );
-    // Good practice will be to make the error message a constant and import it here
-    expect(res.send).toHaveBeenCalledWith(
-      expect.objectContaining({
-        message: "Error In Search Product API",
-      })
-    );
-  });
-
-  it("should handle when no results found", async () => {
+  it("should return empty array if no matches found", async () => {
+    // Arrange
     req.params = { keyword: "non-existent-keyword" };
     const mockResults = [];
     productModel.find.mockReturnValue({
       select: jest.fn().mockResolvedValue(mockResults),
     });
 
+    // Act
     await searchProductController(req, res);
 
+    // Assert
     expect(productModel.find).toHaveBeenCalledWith({
       $or: [
         { name: { $regex: "non-existent-keyword", $options: "i" } },
@@ -898,22 +883,45 @@ describe("searchProductController", () => {
     expect(res.json).toHaveBeenCalledWith(mockResults);
   });
 
-  it("should handle invalid keyword parameter", async () => {
-    req.params = { keyword: "" }; // Empty keyword
-    const mockResults = [];
+  it("should handle error if keyword is empty and return 400 status code", async () => {
+    // Arrange
+    req.params = { keyword: null };
     productModel.find.mockReturnValue({
-      select: jest.fn().mockResolvedValue(mockResults),
+      select: jest.fn().mockResolvedValue([]),
     });
 
+    // Act
     await searchProductController(req, res);
 
-    expect(productModel.find).toHaveBeenCalledWith({
-      $or: [
-        { name: { $regex: "", $options: "i" } },
-        { description: { $regex: "", $options: "i" } },
-      ],
+    // Assert
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+      success: false,
+      message: expect.stringMatching(/keyword is required/i),
+    }));
+  });
+
+  it("should handle errors in searching products and return 400 status code", async () => {
+    // Arrange
+    req.params = { keyword: "test" };
+    const error = new Error("Error In Search Product API");
+    productModel.find.mockImplementation(() => {
+      throw error;
     });
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(mockResults);
+
+    // Act
+    await searchProductController(req, res);
+
+    // Assert
+    expect(res.status).toHaveBeenCalledWith(400);
+    // Good practice will be to make the error message a constant and import it here
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        message: error.message,
+        error,
+      })
+    );
   });
 });

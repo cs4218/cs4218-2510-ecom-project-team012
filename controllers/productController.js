@@ -259,7 +259,7 @@ export const productFiltersController = async (req, res) => {
         });
       }
     }
-    
+
     const products = await productModel.find(args);
     res.status(200).send({
       success: true,
@@ -308,7 +308,7 @@ export const productListController = async (req, res) => {
         return res.status(400).send({
           success: false,
           message: "Invalid page number",
-        }); 
+        });
       } else {
         if (req.params.page > 0) {
           req.params.page = req.params.page;
@@ -344,7 +344,13 @@ export const productListController = async (req, res) => {
 export const searchProductController = async (req, res) => {
   try {
     const { keyword } = req.params;
-    const resutls = await productModel
+    if (!keyword || keyword.trim() === "") {
+      return res.status(400).send({
+        success: false,
+        message: "Keyword is required for search",
+      });
+    }
+    const results = await productModel
       .find({
         $or: [
           { name: { $regex: keyword, $options: "i" } },
@@ -354,7 +360,7 @@ export const searchProductController = async (req, res) => {
       .select("-photo");
     // FIXED BUG: Missing status code:
     // Original: res.json(resutls);
-    res.status(200).json(resutls);
+    res.status(200).json(results);
   } catch (error) {
     console.log(error);
     res.status(400).send({
