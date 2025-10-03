@@ -14,7 +14,6 @@ const ForgotPassword = () => {
   const [auth, setAuth] = useAuth();
   
   const navigate = useNavigate();
-  const location = useLocation();
 
   // form function
   const handleSubmit = async (e) => {
@@ -33,10 +32,12 @@ const ForgotPassword = () => {
 
       if (res && res.data.success) {
         toast.success("Password reset successfully. Please log in again.");
+        
         setAuth({
             user: null,
             token: "",
         });
+        
         navigate("/login");
       } else {
         toast.error(res.data.message);

@@ -75,36 +75,6 @@ describe("handleSubmit", () => {
       "Password reset successfully. Please log in again."
     );
   });
-
-  it("should display failure message if new and confirmed passwords do not match", async () => {
-    const { getByPlaceholderText, getByText } = render(
-      <MemoryRouter>
-        <Routes>
-          <Route path="/" element={<ForgotPassword />} />
-        </Routes>
-      </MemoryRouter>
-    );
-
-    fireEvent.change(getByPlaceholderText("Enter Your Email"), {
-      target: { value: "test@example.com" }
-    });
-    fireEvent.change(getByPlaceholderText("What is your favorite sport?"), {
-      target: { value: "test answer" }
-    });
-    fireEvent.change(getByPlaceholderText("Enter Your New Password"), {
-      target: { value: "newpassword123" }
-    });
-    fireEvent.change(getByPlaceholderText("Confirm Your New Password"), {
-      target: { value: "newpassword" }
-    });
-    fireEvent.click(getByText("RESET PASSWORD"));
-
-    await waitFor(() => expect(axios.post).not.toHaveBeenCalled());
-
-    expect(toast.error).toHaveBeenCalledWith(
-      "New password and confirmed password do not match"
-    );
-  });
 });
 
 describe("Forgot Password Component", () => {
@@ -195,6 +165,35 @@ describe("Forgot Password Component", () => {
     expect(mockNavigate).toHaveBeenCalledWith("/login");
   });
 
+  it("should display failure message if new and confirmed passwords do not match", async () => {
+    const { getByPlaceholderText, getByText } = render(
+      <MemoryRouter>
+        <Routes>
+          <Route path="/" element={<ForgotPassword />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    fireEvent.change(getByPlaceholderText("Enter Your Email"), {
+      target: { value: "test@example.com" }
+    });
+    fireEvent.change(getByPlaceholderText("What is your favorite sport?"), {
+      target: { value: "test answer" }
+    });
+    fireEvent.change(getByPlaceholderText("Enter Your New Password"), {
+      target: { value: "newpassword123" }
+    });
+    fireEvent.change(getByPlaceholderText("Confirm Your New Password"), {
+      target: { value: "newpassword" }
+    });
+    fireEvent.click(getByText("RESET PASSWORD"));
+
+    await waitFor(() => expect(axios.post).not.toHaveBeenCalled());
+    expect(toast.error).toHaveBeenCalledWith(
+      "New password and confirmed password do not match"
+    );
+  });
+
   it("should display failure message on failed password reset", async () => {
     axios.post.mockResolvedValueOnce({
       data: { 
@@ -230,7 +229,9 @@ describe("Forgot Password Component", () => {
   });
 
   it("should display error message on error being caught", async () => {
-    axios.post.mockRejectedValueOnce(new Error("Something went wrong"));
+    axios.post.mockRejectedValueOnce(
+      new Error("Something went wrong")
+    );
     const { getByPlaceholderText, getByText } = render(
       <MemoryRouter>
         <Routes>
