@@ -5,7 +5,6 @@ import { MemoryRouter, Routes, Route } from "react-router-dom";
 import "@testing-library/jest-dom/extend-expect";
 import toast from "react-hot-toast";
 import Register from "./Register";
-import { mock } from "node:test";
 
 // Mocking axios.post
 jest.mock("axios");

@@ -5,7 +5,6 @@ import { MemoryRouter, Routes, Route } from "react-router-dom";
 import "@testing-library/jest-dom/extend-expect";
 import toast from "react-hot-toast";
 import Login from "./Login";
-import { useAuth } from "../../context/auth";
 
 // Mocking axios.post
 jest.mock("axios");
@@ -297,7 +296,7 @@ describe("Login Component Initial State", () => {
   });
 
   it("should allow typing of password", () => {
-      const { getByPlaceholderText } = render(
+    const { getByPlaceholderText } = render(
       <MemoryRouter initialEntries={["/login"]}>
         <Routes>
           <Route path="/login" element={<Login />} />
