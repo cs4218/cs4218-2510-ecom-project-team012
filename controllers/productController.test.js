@@ -295,14 +295,18 @@ describe("productPhotoController", () => {
   });
 
   it("should handle errors and return 500 status code", async () => {
+    // Arrange
     req.params = { pid: "123" };
     const error = new Error("Error while getting photo");
     productModel.findById.mockImplementation(() => {
       throw error;
     });
 
+    // Act
     await productPhotoController(req, res);
 
+    // Assert
+    expect(productModel.findById).toHaveBeenCalledWith(req.params.pid);
     expect(res.status).toHaveBeenCalledWith(500);
     // Good practice will be to make the error message a constant and import it here
     expect(res.send).toHaveBeenCalledWith(
