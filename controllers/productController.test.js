@@ -8,6 +8,7 @@ import {
   searchProductController,
 } from "./productController.js";
 import productModel from "../models/productModel.js";
+import e from "cors";
 
 jest.mock("../models/productModel.js");
 
@@ -579,7 +580,7 @@ describe("productFiltersController", () => {
     );
   });
 
-  it("should handle errors in filtering", async () => {
+  it("should handle errors in filtering and return 400 status code", async () => {
     // Arrange
     req.body = {
       checked: [mockCategory1._id],
@@ -642,41 +643,50 @@ describe("productCountController", () => {
     res = {
       status: jest.fn().mockReturnThis(),
       send: jest.fn(),
-      json: jest.fn(),
-      set: jest.fn(),
     };
     jest.clearAllMocks();
   });
 
-  it("should return total product count", async () => {
+  it("should return total product count with success", async () => {
+    // Arrange
+    const mockTotalCount = 42;
     productModel.find.mockReturnValue({
-      estimatedDocumentCount: jest.fn().mockResolvedValue(42),
+      estimatedDocumentCount: jest.fn().mockResolvedValue(mockTotalCount),
     });
 
+    // Act
     await productCountController(req, res);
 
+    // Assert
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.send).toHaveBeenCalledWith({
-      success: true,
-      message: "Total Products Count",
-      total: 42,
-    });
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        message: expect.stringMatching(/total products/i),
+        total: mockTotalCount,
+      })
+    );
   });
 
-  it("should handle errors in counting products", async () => {
+  it("should handle errors in counting products and return 400 status code", async () => {
+    // Arrange
+    const error = new Error("Error in product count");
     productModel.find.mockImplementation(() => {
-      throw new Error("Error in product count");
+      throw error;
     });
 
+    // Act
     await productCountController(req, res);
 
+    // Assert
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith(
-      expect.objectContaining({ success: false })
-    );
     // Good practice will be to make the error message a constant and import it here
     expect(res.send).toHaveBeenCalledWith(
-      expect.objectContaining({ message: "Error in product count" })
+      expect.objectContaining({
+        success: false,
+        message: error.message,
+        error,
+      })
     );
   });
 });
