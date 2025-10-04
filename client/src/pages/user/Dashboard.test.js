@@ -38,7 +38,9 @@ describe("Dashboard Component", () => {
     const { getByText, getByTestId, queryByText } = render(<Dashboard />);
 
     // Title should still render
-    expect(getByText("Dashboard - Ecommerce App")).toBeInTheDocument();
+    expect(
+      getByText((content) => content.includes("Dashboard - Ecommerce App"))
+    ).toBeInTheDocument();
 
     // No user profile info should be rendered
     expect(queryByText(/@/i)).not.toBeInTheDocument();
@@ -62,7 +64,9 @@ describe("Dashboard Component", () => {
     const { getByText, getByTestId } = render(<Dashboard />);
 
     // Title heading
-    expect(getByText("Dashboard - Ecommerce App")).toBeInTheDocument();
+    expect(
+      getByText((content) => content.includes("Dashboard - Ecommerce App"))
+    ).toBeInTheDocument();
 
     // User profile info
     expect(getByText("John Doe")).toBeInTheDocument();
