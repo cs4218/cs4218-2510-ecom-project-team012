@@ -32,25 +32,6 @@ const CreateCategory = () => {
     }
   };
 
-  // //get all cat
-  // const getAllCategory = async () => {
-  //   try {
-  //     const { data } = await axios.get("/api/v1/category/get-category");
-  //     if (data.success) {
-  //       setCategories(data.category);
-  //     } else {
-  //       toast.error(data.message); // added error feedback to align with other behaviours
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     toast.error("Something went wrong in getting category");
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getAllCategory();
-  // }, []);
-
   //update category
   const handleUpdate = async (e) => {
     e.preventDefault();

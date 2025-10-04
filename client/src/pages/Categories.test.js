@@ -13,7 +13,10 @@ describe("Categories component", () => {
             { _id: "1", name: "Books", slug: "books" },
             { _id: "2", name: "Games", slug: "games" },
         ];
-        useCategory.mockReturnValue(mockCategories);
+
+        useCategory.mockReturnValue({
+            categories: mockCategories,
+        });
 
         render(
             <MemoryRouter>
@@ -29,7 +32,9 @@ describe("Categories component", () => {
     });
 
     it("renders nothing when categories are empty", () => {
-        useCategory.mockReturnValue([]);
+        useCategory.mockReturnValue({
+            categories: [],
+        });
 
         render(
             <MemoryRouter>
