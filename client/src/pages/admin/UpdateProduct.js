@@ -5,12 +5,14 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { Select } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
+import useCategory from "../../hooks/useCategory";
 const { Option } = Select;
 
 const UpdateProduct = () => {
   const navigate = useNavigate();
   const params = useParams();
-  const [categories, setCategories] = useState([]);
+  // changed to make use of hook
+  const {categories} = useCategory();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -42,25 +44,6 @@ const UpdateProduct = () => {
   useEffect(() => {
     getSingleProduct();
     //eslint-disable-next-line
-  }, []);
-
-  //get all category
-  const getAllCategory = async () => {
-    try {
-      const { data } = await axios.get("/api/v1/category/get-category");
-      if (data?.success) {
-        setCategories(data?.category);
-      } else {
-        toast.error(data.message); // added error feedback to align with other behaviours
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error("Something went wrong in getting category");
-    }
-  };
-
-  useEffect(() => {
-    getAllCategory();
   }, []);
 
   //create product function
@@ -99,8 +82,14 @@ const UpdateProduct = () => {
       const { data } = await axios.delete(
         `/api/v1/product/delete-product/${id}`
       );
-      toast.success("Product Deleted Successfully");
-      navigate("/dashboard/admin/products");
+      // change to match other handling
+      if (data.success) {
+        toast.success("Product Deleted Successfully");
+        navigate("/dashboard/admin/products");
+      } else {
+        toast.error(data.message);
+      }
+
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong with product deletion");
