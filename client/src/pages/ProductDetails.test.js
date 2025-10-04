@@ -388,6 +388,10 @@ describe("ProductDetails Component", () => {
       );
     });
 
+    await waitFor(() => {
+      expect(getByText(mockRelatedProducts[0].name)).toBeInTheDocument();
+    });
+
     const relatedProductCard = getByText(mockRelatedProducts[0].name);
 
     const moreDetailsButton = within(
