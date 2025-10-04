@@ -305,7 +305,7 @@ describe("ProductDetails Component", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByText(`${exactDescriptionProduct.description}...`)
+        getByText(`${exactDescriptionProduct.description}...`)
       ).toBeInTheDocument();
     });
   });
