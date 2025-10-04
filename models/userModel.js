@@ -28,6 +28,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    // Missing from the schema the DOB field
+    dob: {
+      type: Date,
+      required: true,
+    },
     role: {
       type: Number,
       default: 0,
