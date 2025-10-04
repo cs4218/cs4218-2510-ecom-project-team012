@@ -249,7 +249,7 @@ describe("ProductDetails Component", () => {
     });
   });
 
-  it("should render related products description with truncated text if its too long", async () => {
+  it("should render related products description with truncated text if its more than 60 characters", async () => {
     axios.get
       .mockResolvedValueOnce({ data: { product: mockProduct1 } })
       .mockResolvedValueOnce({ data: { products: mockRelatedProducts } });
@@ -268,7 +268,7 @@ describe("ProductDetails Component", () => {
     });
   });
 
-  it("should render related products description with full text if its short", async () => {
+  it("should render related products description with full text if its less than 60 characters", async () => {
     const shortDescriptionProduct = [
       {
         ...mockRelatedProducts[0],
@@ -286,6 +286,26 @@ describe("ProductDetails Component", () => {
     await waitFor(() => {
       expect(
         getByText(shortDescriptionProduct[0].description + "...")
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("should render related products description with full text if its exactly 60 characters", async () => {
+    const exactDescriptionProduct = {
+      ...mockRelatedProducts[0],
+      description: "This description is exactly sixty characters long!!",
+    };
+    axios.get
+      .mockResolvedValueOnce({ data: { product: mockProduct1 } })
+      .mockResolvedValueOnce({ data: { products: [exactDescriptionProduct] } });
+
+    const { getByText } = renderWithRouter(mockProduct1.slug);
+
+    expect(getByText("Similar Products ➡️")).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(`${exactDescriptionProduct.description}...`)
       ).toBeInTheDocument();
     });
   });
