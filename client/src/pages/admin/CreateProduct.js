@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState} from "react";
 import Layout from "./../../components/Layout";
 import AdminMenu from "./../../components/AdminMenu";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { Select } from "antd";
 import { useNavigate } from "react-router-dom";
+import useCategory from "../../hooks/useCategory";
 const { Option } = Select;
 
 const CreateProduct = () => {
   const navigate = useNavigate();
-  const [categories, setCategories] = useState([]);
+  // changed to make use of hook
+  const {categories} = useCategory();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -17,23 +19,6 @@ const CreateProduct = () => {
   const [quantity, setQuantity] = useState("");
   const [shipping, setShipping] = useState("");
   const [photo, setPhoto] = useState("");
-
-  //get all category
-  const getAllCategory = async () => {
-    try {
-      const { data } = await axios.get("/api/v1/category/get-category");
-      if (data?.success) {
-        setCategories(data?.category);
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error("Something wwent wrong in getting catgeory");
-    }
-  };
-
-  useEffect(() => {
-    getAllCategory();
-  }, []);
 
   //create product function
   const handleCreate = async (e) => {
@@ -46,11 +31,12 @@ const CreateProduct = () => {
       productData.append("quantity", quantity);
       productData.append("photo", photo);
       productData.append("category", category);
-      const { data } = axios.post(
+      productData.append("shipping", shipping); // missing initially
+      const { data } = await axios.post(
         "/api/v1/product/create-product",
         productData
       );
-      if (data?.success) {
+      if (!data?.success) { // flipped condition
         toast.error(data?.message);
       } else {
         toast.success("Product Created Successfully");
@@ -58,7 +44,7 @@ const CreateProduct = () => {
       }
     } catch (error) {
       console.log(error);
-      toast.error("something went wrong");
+      toast.error("Something went wrong with product creation"); 
     }
   };
 
@@ -73,7 +59,8 @@ const CreateProduct = () => {
             <h1>Create Product</h1>
             <div className="m-1 w-75">
               <Select
-                bordered={false}
+                data-testid="category-select"
+                variant="borderless"
                 placeholder="Select a category"
                 size="large"
                 showSearch
@@ -105,7 +92,7 @@ const CreateProduct = () => {
                   <div className="text-center">
                     <img
                       src={URL.createObjectURL(photo)}
-                      alt="product_photo"
+                      alt="product-photo"
                       height={"200px"}
                       className="img img-responsive"
                     />
@@ -116,7 +103,7 @@ const CreateProduct = () => {
                 <input
                   type="text"
                   value={name}
-                  placeholder="write a name"
+                  placeholder="Input name"
                   className="form-control"
                   onChange={(e) => setName(e.target.value)}
                 />
@@ -125,7 +112,7 @@ const CreateProduct = () => {
                 <textarea
                   type="text"
                   value={description}
-                  placeholder="write a description"
+                  placeholder="Input description"
                   className="form-control"
                   onChange={(e) => setDescription(e.target.value)}
                 />
@@ -135,7 +122,7 @@ const CreateProduct = () => {
                 <input
                   type="number"
                   value={price}
-                  placeholder="write a Price"
+                  placeholder="Input Price"
                   className="form-control"
                   onChange={(e) => setPrice(e.target.value)}
                 />
@@ -144,14 +131,15 @@ const CreateProduct = () => {
                 <input
                   type="number"
                   value={quantity}
-                  placeholder="write a quantity"
+                  placeholder="Input quantity"
                   className="form-control"
                   onChange={(e) => setQuantity(e.target.value)}
                 />
               </div>
               <div className="mb-3">
                 <Select
-                  bordered={false}
+                  data-testid="shipping-select"
+                  variant="borderless"
                   placeholder="Select Shipping "
                   size="large"
                   showSearch

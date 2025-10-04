@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import useCategory from "../hooks/useCategory";
 import Layout from "../components/Layout";
 const Categories = () => {
-  const categories = useCategory();
+  const { categories } = useCategory();
   return (
     <Layout title={"All Categories"}>
       <div className="container">
