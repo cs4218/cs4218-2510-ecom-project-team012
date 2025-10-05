@@ -24,7 +24,8 @@ export default {
     "<rootDir>/client/src/pages/**/*.test.js",
     "<rootDir>/client/src/components/*.test.js",
     "<rootDir>/client/src/context/cart.test.js",
-    "<rootDir>/client/src/context/*.test.js"
+    "<rootDir>/client/src/context/*.test.js",
+    "<rootDir>/client/src/components/Routes/Private.test.js"
   ],
 
   // jest code coverage
@@ -35,7 +36,7 @@ export default {
     "client/src/context/cart.js",
     "client/src/context/auth.js"
   ],
-
+    
   coverageThreshold: {
     global: {
       lines: 10,
