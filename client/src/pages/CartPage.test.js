@@ -604,6 +604,43 @@ describe("CartPage", () => {
     );
   });
 
+  it("should mantain cart state when user without an addressnavigates to profile and back", async () => {
+    const setCart = jest.fn();
+    mockUseAuth.mockReturnValue([
+      { user: mockUserWithoutAddress, token: mockAuthToken },
+    ]);
+    mockUseCart.mockReturnValue([[mockProduct1], setCart]);
+    axios.get.mockReturnValue({ data: { clientToken: "mock-client-token" } });
+
+    const { getByText } = renderCartPage();
+
+    await waitFor(() => {
+      expect(
+        getByText((content) => content.includes("Update Address"))
+      ).toBeInTheDocument();
+    });
+
+    const updateAddressButton = getByText((content) =>
+      content.includes("Update Address")
+    );
+    expect(updateAddressButton).toBeInTheDocument();
+
+    fireEvent.click(updateAddressButton);
+
+    expect(mockNavigate).toHaveBeenCalledWith(
+      expect.stringContaining("profile")
+    );
+
+    // Simulate user navigating back to cart after updating address
+    mockUseAuth.mockReturnValue([{ user: mockUser, token: mockAuthToken }]);
+    renderCartPage();
+
+    await waitFor(() => {
+      expect(mockUseCart().length).toBe(2);
+      expect(localStorage.removeItem).not.toHaveBeenCalled();
+    });
+  });
+
   it("should navigate user with address to update profile when Update Address button is clicked", async () => {
     mockUseAuth.mockReturnValue([{ user: mockUser, token: mockAuthToken }]);
     mockUseCart.mockReturnValue([[mockProduct1], jest.fn()]);
@@ -627,6 +664,40 @@ describe("CartPage", () => {
     expect(mockNavigate).toHaveBeenCalledWith(
       expect.stringContaining("profile")
     );
+  });
+
+  it("should mantain cart state when user navigates to profile and back", async () => {
+    const setCart = jest.fn();
+    mockUseAuth.mockReturnValue([{ user: mockUser, token: mockAuthToken }]);
+    mockUseCart.mockReturnValue([[mockProduct1], setCart]);
+    axios.get.mockReturnValue({ data: { clientToken: "mock-client-token" } });
+
+    const { getByText } = renderCartPage();
+
+    await waitFor(() => {
+      expect(
+        getByText((content) => content.includes("Update Address"))
+      ).toBeInTheDocument();
+    });
+
+    const updateAddressButton = getByText((content) =>
+      content.includes("Update Address")
+    );
+    expect(updateAddressButton).toBeInTheDocument();
+
+    fireEvent.click(updateAddressButton);
+
+    expect(mockNavigate).toHaveBeenCalledWith(
+      expect.stringContaining("profile")
+    );
+
+    // Simulate user navigating back to cart after updating address
+    renderCartPage();
+
+    await waitFor(() => {
+      expect(mockUseCart().length).toBe(2);
+      expect(localStorage.removeItem).not.toHaveBeenCalled();
+    });
   });
 
   it("should navigate unauthenticated user to login with redirect to cart when Please Login to checkout button is clicked", async () => {
@@ -656,6 +727,45 @@ describe("CartPage", () => {
         state: expect.stringContaining("/cart"),
       }
     );
+  });
+
+  it("should mantain cart state when user navigates to login and back", async () => {
+    const setCart = jest.fn();
+    mockUseAuth.mockReturnValue([null, jest.fn()]);
+    mockUseCart.mockReturnValue([[mockProduct1], setCart]);
+    const err = { message: "Error while fetching" };
+    axios.get.mockRejectedValue(err);
+
+    const { getByText } = renderCartPage();
+
+    await waitFor(() => {
+      expect(
+        getByText((content) => content.includes("please login to checkout"))
+      ).toBeInTheDocument();
+    });
+
+    const loginButton = getByText((content) =>
+      content.includes("Please Login to checkout")
+    );
+    expect(loginButton).toBeInTheDocument();
+
+    fireEvent.click(loginButton);
+
+    expect(mockNavigate).toHaveBeenCalledWith(
+      expect.stringContaining("/login"),
+      {
+        state: expect.stringContaining("/cart"),
+      }
+    );
+
+    // Simulate user navigating back to cart after login
+    mockUseAuth.mockReturnValue([{ user: mockUser, token: mockAuthToken }]);
+    renderCartPage();
+
+    await waitFor(() => {
+      expect(mockUseCart().length).toBe(2);
+      expect(localStorage.removeItem).not.toHaveBeenCalled();
+    });
   });
 
   it("should not show DropIn UI when clientToken is not available", async () => {
