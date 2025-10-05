@@ -1,40 +1,51 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
-
-// Mock child shells so we isolate Layout behavior
-jest.mock("../src/components/Header", () => () => <div data-testid="header" />);
-jest.mock("../src/components/Footer", () => () => <div data-testid="footer" />);
-// Mock Toaster
-jest.mock("react-hot-toast", () => ({ Toaster: () => <div data-testid="toaster" /> }));
-
+import { render, screen, waitFor } from "@testing-library/react";
 import Layout from "./Layout";
 
-const getMeta = (name) => document.querySelector(`meta[name="${name}"]`);
+// keep the shells mocked so we focus on Helmet + structure
+jest.mock("./Header", () => () => <div data-testid="hdr" />);
+jest.mock("./Footer", () => () => <div data-testid="ftr" />);
+jest.mock("react-hot-toast", () => ({ Toaster: () => <div data-testid="toaster" /> }));
 
-test("applies provided head tags and renders children", () => {
-    render(
-        <Layout title="My Page" description="desc" keywords="kw" author="me">
-        <div>child-content</div>
+const meta = (name) => document.querySelector(`meta[name="${name}"]`);
+
+describe("Layout", () => {
+    beforeEach(() => {
+        // clear previous head side-effects between tests
+        document.title = "";
+        const metas = document.head.querySelectorAll('meta[name="description"], meta[name="keywords"], meta[name="author"]');
+        metas.forEach((m) => m.parentNode.removeChild(m));
+    });
+
+    it("applies head tags from props and renders children + shells", async () => {
+        render(
+        <Layout title="T1" description="D1" keywords="K1" author="A1">
+            <div>child</div>
         </Layout>
-    );
+        );
 
-    expect(document.title).toBe("My Page");
-    expect(getMeta("description")?.getAttribute("content")).toBe("desc");
-    expect(getMeta("keywords")?.getAttribute("content")).toBe("kw");
-    expect(getMeta("author")?.getAttribute("content")).toBe("me");
+        // wait for react-helmet to commit head changes
+        await waitFor(() => expect(document.title).toBe("T1"));
+        await waitFor(() => expect(meta("description")?.getAttribute("content")).toBe("D1"));
+        await waitFor(() => expect(meta("keywords")?.getAttribute("content")).toBe("K1"));
+        await waitFor(() => expect(meta("author")?.getAttribute("content")).toBe("A1"));
 
-    expect(screen.getByTestId("header")).toBeInTheDocument();
-    expect(screen.getByTestId("footer")).toBeInTheDocument();
-    expect(screen.getByTestId("toaster")).toBeInTheDocument();
-    expect(screen.getByText("child-content")).toBeInTheDocument();
-});
+        expect(screen.getByTestId("hdr")).toBeInTheDocument();
+        expect(screen.getByTestId("ftr")).toBeInTheDocument();
+        expect(screen.getByTestId("toaster")).toBeInTheDocument();
+        expect(screen.getByText("child")).toBeInTheDocument();
+    });
 
-test("uses default props when not provided (title/description/keywords/author)", () => {
-    render(<Layout><div>ok</div></Layout>);
+    it("uses default meta/title when not provided", async () => {
+        render(
+        <Layout>
+            <div>ok</div>
+        </Layout>
+        );
 
-    // Defaults from Layout.defaultProps
-    expect(document.title).toBe("Ecommerce app - shop now");
-    expect(getMeta("description")?.getAttribute("content")).toBe("mern stack project");
-    expect(getMeta("keywords")?.getAttribute("content")).toBe("mern,react,node,mongodb");
-    expect(getMeta("author")?.getAttribute("content")).toBe("Techinfoyt");
+        await waitFor(() => expect(document.title).toBe("Ecommerce app - shop now"));
+        await waitFor(() => expect(meta("description")?.getAttribute("content")).toBe("mern stack project"));
+        await waitFor(() => expect(meta("keywords")?.getAttribute("content")).toBe("mern,react,node,mongodb"));
+        await waitFor(() => expect(meta("author")?.getAttribute("content")).toBe("Techinfoyt"));
+    });
 });
