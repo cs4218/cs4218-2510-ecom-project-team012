@@ -63,6 +63,23 @@ describe("CartContext", () => {
     spy.mockRestore();
   });
 
+  it("should handle cart items when rerendered page", () => {
+    const { getByTestId, rerender } = renderWithProvider();
+
+    expect(getByTestId("cart").textContent).toBe("[]");
+
+    fireEvent.click(getByTestId("add-item-button"));
+    expect(getByTestId("cart").textContent).toContain("item1");
+
+    rerender(
+      <CartProvider>
+        <MockComponentThatUsesCart />
+      </CartProvider>
+    );
+
+    expect(getByTestId("cart").textContent).toContain("item1");
+  });
+
   it("should initialize with an empty cart if localStorage is empty", () => {
     const { getByTestId } = renderWithProvider();
 
