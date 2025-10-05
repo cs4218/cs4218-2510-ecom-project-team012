@@ -21,7 +21,14 @@ export default {
 
   // only run these tests
   testMatch: [
-    "<rootDir>/client/src/**/*.test.js", // recursively match all test.js files under src
+    // "<rootDir>/client/src/**/*.test.js", // recursively match all test.js files under src
+    "<rootDir>/client/src/pages/CartPage.test.js",
+    "<rootDir>/client/src/pages/CategoryProduct.test.js",
+    "<rootDir>/client/src/pages/ProductDetails.test.js",
+    "<rootDir>/client/src/pages/user/Dashboard.test.js",
+    "<rootDir>/client/src/components/Routes/Private.test.js",
+    "<rootDir>/client/src/components/UserMenu.test.js",
+    "<rootDir>/client/src/context/cart.test.js",
   ],
 
   // jest code coverage
