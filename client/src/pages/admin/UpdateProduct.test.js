@@ -288,6 +288,33 @@ describe('UpdateProduct Component:', () => {
             });
         });
 
+        it('should show error toast on delete API failure', async () => {
+            mockHappyGetRequests();
+            
+            axios.delete.mockResolvedValueOnce({ data: { success: false, message: 'Failed to delete' } });
+            jest.spyOn(window, 'prompt').mockReturnValue('yes'); // user confirms deletion
+
+            const utils = renderWithRouter(<UpdateProduct />);
+
+            await waitFor(() => expect(axios.get).toHaveBeenCalledWith('/api/v1/category/get-category'));
+            await waitFor(() => expect(axios.get).toHaveBeenCalledWith(`/api/v1/product/get-product/${testSlug}`));
+
+            await waitFor(() =>
+                expect(utils.getByPlaceholderText('Input name')).toHaveValue(testProduct.name)
+            );
+
+
+            fireEvent.click(utils.getByText('DELETE PRODUCT'));
+
+            await waitFor(() =>
+                expect(axios.delete).toHaveBeenCalledWith(`/api/v1/product/delete-product/${testProduct._id}`)
+            );
+
+            await waitFor(() => {
+                expect(toast.error).toHaveBeenCalledWith('Failed to delete');
+            });
+        });
+
         it('should show error on deletion failure', async () => {
             mockHappyGetRequests();
             axios.delete.mockRejectedValue(new Error('Intentional Test Error'));

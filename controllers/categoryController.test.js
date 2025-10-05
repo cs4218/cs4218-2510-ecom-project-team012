@@ -2,8 +2,11 @@ import categoryModel from "../models/categoryModel.js";
 import {
     createCategoryController,
     updateCategoryController,
-    deleteCategoryController
+    deleteCategoryController,
+    singleCategoryController,
+    categoryController
 } from "../controllers/categoryController.js";
+import { describe } from "node:test";
 
 
 jest.mock("../models/categoryModel.js"); 
@@ -156,4 +159,78 @@ describe("categoryController:", () => {
         });
     });
 
+    // ================= SINGLE =================
+
+    describe("singleCategoryController", () => {
+        it("should get a single category by slug", async () => {
+            const req = { params: { slug: "test-category" } };
+            const res = mockResponse();
+            categoryModel.findOne.mockResolvedValue({ name: "Test Category", slug: "test-category" });
+
+            await singleCategoryController(req, res);
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.send).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    success: true,
+                    message: "Get single Category successfully",
+                    category: expect.objectContaining({ name: "Test Category", slug: "test-category" }),
+                })
+            );
+        });
+
+        it("should handle errors", async () => {
+            const req = { params: { slug: "error-category" } };
+            const res = mockResponse();
+            categoryModel.findOne.mockImplementation(() => { throw new Error("Intentional Test Error"); }); 
+            await singleCategoryController(req, res);
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.send).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    success: false,
+                    message: "Error while getting single Category",
+                    error: expect.any(Error),
+                })
+            );
+        });
+    });
+
+    // ================= ALL =================
+
+    describe("categoryController", () => {
+        it("should get all categories", async () => {
+            const req = {};
+            const res = mockResponse();
+            categoryModel.find.mockResolvedValue([
+                { name: "Cat1", slug: "cat1" },
+                { name: "Cat2", slug: "cat2" },
+            ]);
+            await categoryController(req, res);
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.send).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    success: true,
+                    message: "All Categories List",
+                    category: expect.arrayContaining([
+                        expect.objectContaining({ name: "Cat1", slug: "cat1" }),
+                        expect.objectContaining({ name: "Cat2", slug: "cat2" }),
+                    ]),
+                })
+            );
+        });
+
+        it("should handle errors", async () => {
+            const req = {};
+            const res = mockResponse();
+            categoryModel.find.mockImplementation(() => { throw new Error("Intentional Test Error"); }); 
+            await categoryController(req, res);
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.send).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    success: false,
+                    message: "Error while getting all Categories",
+                    error: expect.any(Error),
+                })
+            );
+        });
+    });
 });

@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState} from "react";
 import Layout from "./../../components/Layout";
 import AdminMenu from "./../../components/AdminMenu";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { Select } from "antd";
 import { useNavigate } from "react-router-dom";
+import useCategory from "../../hooks/useCategory";
 const { Option } = Select;
 
 const CreateProduct = () => {
   const navigate = useNavigate();
-  const [categories, setCategories] = useState([]);
+  // changed to make use of hook
+  const {categories} = useCategory();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -17,25 +19,6 @@ const CreateProduct = () => {
   const [quantity, setQuantity] = useState("");
   const [shipping, setShipping] = useState("");
   const [photo, setPhoto] = useState("");
-
-  //get all category
-  const getAllCategory = async () => {
-    try {
-      const { data } = await axios.get("/api/v1/category/get-category");
-      if (data?.success) {
-        setCategories(data?.category);
-      } else {
-        toast.error(data.message); // added error feedback to align with other behaviours
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error("Something went wrong in getting category");
-    }
-  };
-
-  useEffect(() => {
-    getAllCategory();
-  }, []);
 
   //create product function
   const handleCreate = async (e) => {

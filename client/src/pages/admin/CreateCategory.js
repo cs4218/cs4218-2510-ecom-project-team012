@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Layout from "./../../components/Layout";
 import AdminMenu from "./../../components/AdminMenu";
 import toast from "react-hot-toast";
 import axios from "axios";
 import CategoryForm from "../../components/Form/CategoryForm";
 import { Modal } from "antd";
+import  useCategory  from "../../hooks/useCategory";
 const CreateCategory = () => {
-  const [categories, setCategories] = useState([]);
+  // changed to make use of hook
+  const { categories, getAllCategories } = useCategory();
   const [name, setName] = useState("");
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -20,7 +22,7 @@ const CreateCategory = () => {
       });
       if (data?.success) {
         toast.success(`${name} is created`);
-        getAllCategory();
+        getAllCategories();
       } else {
         toast.error(data.message);
       }
@@ -29,25 +31,6 @@ const CreateCategory = () => {
       toast.error("Something went wrong in input form"); // fixed other typos too
     }
   };
-
-  //get all cat
-  const getAllCategory = async () => {
-    try {
-      const { data } = await axios.get("/api/v1/category/get-category");
-      if (data.success) {
-        setCategories(data.category);
-      } else {
-        toast.error(data.message); // added error feedback to align with other behaviours
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error("Something went wrong in getting category");
-    }
-  };
-
-  useEffect(() => {
-    getAllCategory();
-  }, []);
 
   //update category
   const handleUpdate = async (e) => {
@@ -62,7 +45,7 @@ const CreateCategory = () => {
         setSelected(null);
         setUpdatedName("");
         setVisible(false);
-        getAllCategory();
+        getAllCategories();
       } else {
         toast.error(data.message);
       }
@@ -80,7 +63,7 @@ const CreateCategory = () => {
       if (data.success) {
         toast.success(`Category is deleted`);
 
-        getAllCategory();
+        getAllCategories();
       } else {
         toast.error(data.message);
       }
