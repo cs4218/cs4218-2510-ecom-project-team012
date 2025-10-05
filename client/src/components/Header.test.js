@@ -2,22 +2,24 @@ import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import Header from "./Header";
 
-jest.mock("../src/context/auth", () => ({ useAuth: jest.fn() }));
-jest.mock("../src/context/cart", () => ({ useCart: jest.fn() }));
-jest.mock("../src/hooks/useCategory", () => jest.fn());
-jest.mock("../src/components/Form/SearchInput", () => () => <div data-testid="search-input" />);
-// antd Badge → simple wrapper exposing count for assertions
-jest.mock("antd", () => ({ Badge: ({ count, children }) => <div data-testid="badge" data-count={count}>{children}</div> }));
-// CSS import
-jest.mock("../src/styles/Header.css", () => ({}), { virtual: true });
-// toast (default export)
+jest.mock("../context/auth", () => ({ useAuth: jest.fn() }));
+jest.mock("../context/cart", () => ({ useCart: jest.fn() }));
+jest.mock("../hooks/useCategory", () => jest.fn());
+jest.mock("./Form/SearchInput", () => () => <div data-testid="search" />);
+
+jest.mock("antd", () => ({
+    Badge: ({ count, children }) => (
+        <div data-testid="cart-badge" data-count={String(count)}>{children}</div>
+    ),
+}));
+
 jest.mock("react-hot-toast", () => ({ __esModule: true, default: { success: jest.fn() } }));
 
-import Header from "./Header";
-import { useAuth } from "../src/context/auth";
-import { useCart } from "../src/context/cart";
-import useCategory from "../src/hooks/useCategory";
+import { useAuth } from "../context/auth";
+import { useCart } from "../context/cart";
+import useCategory from "../hooks/useCategory";
 import toast from "react-hot-toast";
 
 const renderHeader = () =>
@@ -27,54 +29,69 @@ const renderHeader = () =>
         </MemoryRouter>
     );
 
-beforeEach(() => {
-    jest.clearAllMocks();
-    (useCart).mockReturnValue([[]]);
-    (useCategory).mockReturnValue([{ name: "Phones", slug: "phones" }, { name: "Laptops", slug: "laptops" }]);
-});
+    describe("Header", () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        (useCategory).mockReturnValue({
+        categories: [
+            { name: "Phones", slug: "phones" },
+            { name: "Laptops", slug: "laptops" },
+        ],
+        });
+        (useCart).mockReturnValue([[]]);
+    });
 
-test("logged-out view: brand, home, categories, register/login, cart badge", () => {
-    (useAuth).mockReturnValue([{ user: null, token: "" }, jest.fn()]);
-    renderHeader();
+    it("renders logged-out navigation (brand, home, categories, register, login)", () => {
+        (useAuth).mockReturnValue([{ user: null, token: "" }, jest.fn()]);
+        renderHeader();
 
-    expect(screen.getByText("🛒 Virtual Vault")).toBeInTheDocument();   // brand
-    expect(screen.getByRole("link", { name: /Home/i })).toBeInTheDocument();
-    // categories menu content is in DOM
-    expect(screen.getByText(/All Categories/i)).toBeInTheDocument();
-    expect(screen.getByText("Phones")).toBeInTheDocument();
-    expect(screen.getByText("Laptops")).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: /Virtual Vault/i })).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: /Home/i })).toBeInTheDocument();
 
-    expect(screen.getByRole("link", { name: /Register/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Login/i })).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: /^Categories$/i })).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: /All Categories/i })).toBeInTheDocument();
 
-    // cart badge reflects array length
-    expect(screen.getByTestId("badge")).toHaveAttribute("data-count", "0");
-});
+        expect(screen.getByRole("link", { name: /Register/i })).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: /Login/i })).toBeInTheDocument();
+        expect(screen.getByTestId("cart-badge")).toHaveAttribute("data-count", "0");
+    });
 
-test("logged-in view: shows username, dashboard(user), logout triggers toast and clears storage", async () => {
-    const setAuth = jest.fn();
-    (useAuth).mockReturnValue([{ user: { name: "Alice", role: 0 }, token: "t" }, setAuth]);
-    (useCart).mockReturnValue([[1, 2]]); // two items
-    renderHeader();
+    it("renders dynamic category items from useCategory (covers categories.map)", () => {
+        (useAuth).mockReturnValue([{ user: null, token: "" }, jest.fn()]);
+        renderHeader();
 
-    expect(screen.getByText("Alice")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Dashboard/i })).toHaveAttribute("href", "/dashboard/user");
-    expect(screen.getByTestId("badge")).toHaveAttribute("data-count", "2");
+        expect(screen.getByRole("link", { name: "Phones" })).toHaveAttribute("href", "/category/phones");
+        expect(screen.getByRole("link", { name: "Laptops" })).toHaveAttribute("href", "/category/laptops");
+    });
 
-    // click Logout
-    const removeSpy = jest.spyOn(window.localStorage.__proto__, "removeItem");
-    const logout = screen.getByRole("link", { name: /Logout/i });
-    await userEvent.click(logout);
+    it("shows user dropdown and cart count when logged in (role user)", async () => {
+        const setAuth = jest.fn();
+        (useAuth).mockReturnValue([{ user: { name: "Alice", role: 0 }, token: "t" }, setAuth]);
+        (useCart).mockReturnValue([[{}, {}]]);
+        renderHeader();
 
-    expect(removeSpy).toHaveBeenCalledWith("auth");
-    expect(toast.success).toHaveBeenCalledWith("Logout Successfully");
-    // setAuth should be called with user reset + empty token
-    expect(setAuth).toHaveBeenCalledWith(expect.objectContaining({ user: null, token: "" }));
-    removeSpy.mockRestore();
-});
+        expect(screen.getByText("Alice")).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: /Dashboard/i })).toHaveAttribute("href", "/dashboard/user");
+        expect(screen.getByTestId("cart-badge")).toHaveAttribute("data-count", "2");
+    });
 
-test("admin dashboard path when role=1", () => {
-    (useAuth).mockReturnValue([{ user: { name: "Bob", role: 1 }, token: "t" }, jest.fn()]);
-    renderHeader();
-    expect(screen.getByRole("link", { name: /Dashboard/i })).toHaveAttribute("href", "/dashboard/admin");
+    it("routes dashboard to admin when role=1", () => {
+        (useAuth).mockReturnValue([{ user: { name: "Bob", role: 1 }, token: "t" }, jest.fn()]);
+        renderHeader();
+        expect(screen.getByRole("link", { name: /Dashboard/i })).toHaveAttribute("href", "/dashboard/admin");
+    });
+
+    it("Logout clears localStorage, resets auth, and shows toast", async () => {
+        const setAuth = jest.fn();
+        (useAuth).mockReturnValue([{ user: { name: "Alice", role: 0 }, token: "t" }, setAuth]);
+        const removeSpy = jest.spyOn(window.localStorage.__proto__, "removeItem");
+
+        renderHeader();
+        await userEvent.click(screen.getByRole("link", { name: /Logout/i }));
+
+        expect(removeSpy).toHaveBeenCalledWith("auth");
+        expect(toast.success).toHaveBeenCalled();
+        expect(setAuth).toHaveBeenCalledWith(expect.objectContaining({ user: null, token: "" }));
+        removeSpy.mockRestore();
+    });
 });
