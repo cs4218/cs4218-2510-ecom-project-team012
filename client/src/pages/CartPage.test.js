@@ -335,6 +335,26 @@ describe("CartPage", () => {
     logSpy.mockRestore();
   });
 
+  it("should handle product with missing price field gracefully during total price calculation", async () => {
+    const logSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
+    mockUseAuth.mockReturnValue([{ user: mockUser, token: mockAuthToken }]);
+    const faultyProduct = {
+      ...mockProduct1,
+      price: undefined,
+    };
+    mockUseCart.mockReturnValue([[faultyProduct], jest.fn()]);
+    axios.get.mockReturnValue({ data: { clientToken: "mock-client-token" } });
+
+    const { getByText } = renderCartPage();
+
+    await waitFor(() => {
+      expect(getByText("Total : $0.00")).toBeInTheDocument();
+    });
+
+    expect(logSpy).toHaveBeenCalled();
+    logSpy.mockRestore();
+  });
+
   it("should handle errors from toLocaleString gracefully", async () => {
     const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
     mockUseAuth.mockReturnValue([{ user: mockUser, token: mockAuthToken }]);
