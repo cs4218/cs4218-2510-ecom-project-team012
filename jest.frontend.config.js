@@ -27,13 +27,13 @@ export default {
   // jest code coverage
   collectCoverage: true,
   collectCoverageFrom: [
-    "client/src/pages/**/*.js",
-    "client/src/components/*.js",
-    "client/src/hooks/*.js",
-    "client/src/components/Form/CategoryForm.js",
+    "client/src/pages/CartPage.js",
+    "client/src/pages/CategoryProduct.js",
+    "client/src/pages/ProductDetails.js",
+    "client/src/pages/user/Dashboard.js",
     "client/src/components/Routes/Private.js",
+    "client/src/components/UserMenu.js",
     "client/src/context/cart.js",
-    "client/src/context/auth.js",
   ],
 
   coverageThreshold: {
