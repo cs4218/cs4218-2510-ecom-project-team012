@@ -29,7 +29,7 @@ const mockProduct1 = {
   slug: "mock-product-1",
   description: "Description1",
   price: 159.3,
-  category: mockCategory1._id,
+  category: mockCategory1,
   quantity: 10,
   createdAt: new Date(),
 };
@@ -40,7 +40,7 @@ const mockProduct2 = {
   slug: "mock-product-2",
   description: "Description2",
   price: 200,
-  category: mockCategory1._id,
+  category: mockCategory1,
   quantity: 20,
   photo: { data: Buffer.from("mock-image-data"), contentType: "image/png" },
   shipping: true,

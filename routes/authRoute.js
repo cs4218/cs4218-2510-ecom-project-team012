@@ -1,14 +1,14 @@
 import express from "express";
+import { registerController } from "../controllers/auth/registerController.js";
+import { loginController } from "../controllers/auth/loginController.js";
+import { forgotPasswordController } from "../controllers/auth/forgotPasswordController.js";
+import { updateProfileController } from "../controllers/auth/updateProfileController.js";
+import { testController } from "../controllers/auth/testController.js";
 import {
-  registerController,
-  loginController,
-  testController,
-  forgotPasswordController,
-  updateProfileController,
   getOrdersController,
   getAllOrdersController,
   orderStatusController,
-} from "../controllers/authController.js";
+} from "../controllers/orderController.js";
 import { isAdmin, requireSignIn } from "../middlewares/authMiddleware.js";
 
 //router object
@@ -31,6 +31,7 @@ router.get("/test", requireSignIn, isAdmin, testController);
 router.get("/user-auth", requireSignIn, (req, res) => {
   res.status(200).send({ ok: true });
 });
+
 //protected Admin route auth
 router.get("/admin-auth", requireSignIn, isAdmin, (req, res) => {
   res.status(200).send({ ok: true });
