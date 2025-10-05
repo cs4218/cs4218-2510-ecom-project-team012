@@ -8,6 +8,7 @@ export default {
   // which test to run
   testMatch: [
   "<rootDir>/controllers/*.test.js",
+  "<rootDir>/controllers/auth/*.test.js",
   "<rootDir>/models/*.test.js",
   "<rootDir>/middlewares/*.test.js",
   "<rootDir>/helpers/*.test.js"
