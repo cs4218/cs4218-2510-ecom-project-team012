@@ -23,6 +23,7 @@ export default {
   testMatch: [
     "<rootDir>/client/src/pages/**/*.test.js",
     "<rootDir>/client/src/components/*.test.js",
+    "<rootDir>/client/src/components/Form/*.test.js",
     "<rootDir>/client/src/context/cart.test.js",
     "<rootDir>/client/src/context/*.test.js",
     "<rootDir>/client/src/components/Routes/Private.test.js",
@@ -37,6 +38,7 @@ export default {
     "client/src/components/Routes/Private.js",
     "client/src/context/cart.js",
     "client/src/context/auth.js",
+    "client/src/context/search.js",
   ],
 
   coverageThreshold: {
