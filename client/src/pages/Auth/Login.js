@@ -11,10 +11,8 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [auth, setAuth] = useAuth();
   
-
   const navigate = useNavigate();
   const location = useLocation();
-  
 
   // form function
   const handleSubmit = async (e) => {
@@ -33,11 +31,13 @@ const Login = () => {
               color: "white",
             },
           });
+
         setAuth({
             ...auth,
             user: res.data.user,
             token: res.data.token,
         });
+
         localStorage.setItem("auth", JSON.stringify(res.data));
         navigate(location.state || "/");
       } else {
