@@ -1,37 +1,51 @@
-import { jest } from "@jest/globals";
+import { getAllOrdersController } from "./getAllOrdersController";
+import orderModel from "../../models/orderModel";
 
-jest.unstable_mockModule("../../models/orderModel.js", () => ({
-    __esModule: true,
-    default: { find: jest.fn() },
-    }));
+jest.mock("../../models/orderModel", () => ({
+    find: jest.fn(),
+}));
 
-    const { default: orderModel } = await import("../../models/orderModel.js");
-    const { getAllOrdersController } = await import("./getAllOrdersController.js");
-
-    const makeRes = () => {
-    const res = {};
-    res.status = jest.fn(() => res);
-    res.json = jest.fn(() => res);
-    res.send = jest.fn(() => res);
-    return res;
+describe("getAllOrdersController", () => {
+    const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+        send: jest.fn(),
     };
 
-    beforeEach(() => jest.clearAllMocks());
+    beforeEach(() => {
+        jest.clearAllMocks();
+        res.status.mockClear();
+        res.json.mockClear();
+        res.send.mockClear();
+    });
 
-    test("finds all, populates, sorts by createdAt desc", async () => {
-    const orders = [{ _id: "o2" }];
-    const sort = jest.fn().mockResolvedValue(orders);
-    const populate2 = jest.fn(() => ({ sort }));
-    const populate1 = jest.fn(() => ({ populate: populate2 }));
-    orderModel.find.mockReturnValue({ populate: populate1 });
+    it("finds all, populates, sorts desc by createdAt, returns 200", async () => {
+        const orders = [{ _id: "o2" }];
+        const sort = jest.fn().mockResolvedValue(orders);
+        const populate2 = jest.fn(() => ({ sort }));
+        const populate1 = jest.fn(() => ({ populate: populate2 }));
+        orderModel.find.mockReturnValue({ populate: populate1 });
 
-    const res = makeRes();
-    await getAllOrdersController({}, res);
+        await getAllOrdersController({}, res);
 
-    expect(orderModel.find).toHaveBeenCalledWith({});
-    expect(populate1).toHaveBeenCalledWith("products", "-photo");
-    expect(populate2).toHaveBeenCalledWith("buyer", "name");
-    expect(sort).toHaveBeenCalledWith({ createdAt: -1 });
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(orders);
+        expect(orderModel.find).toHaveBeenCalledWith({});
+        expect(populate1).toHaveBeenCalledWith("products", "-photo");
+        expect(populate2).toHaveBeenCalledWith("buyer", "name");
+        expect(sort).toHaveBeenCalledWith({ createdAt: -1 });
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith(orders);
+    });
+
+    it("returns 500 on error", async () => {
+        orderModel.find.mockImplementation(() => {
+        throw new Error("db err");
+        });
+
+        await getAllOrdersController({}, res);
+
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.send).toHaveBeenCalledWith(
+        expect.objectContaining({ success: false })
+        );
+    });
 });
