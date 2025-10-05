@@ -71,8 +71,6 @@ jest.mock("braintree-web-drop-in-react", () => {
   };
 });
 
-const flush = () => new Promise((r) => setTimeout(r, 0));
-
 Object.defineProperty(window, "localStorage", {
   value: {
     setItem: jest.fn(),
@@ -342,6 +340,33 @@ describe("CartPage", () => {
     });
 
     expect(logSpy).toHaveBeenCalled();
+    logSpy.mockRestore();
+  });
+
+  it("should handle errors from toLocaleString gracefully", async () => {
+    const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    mockUseAuth.mockReturnValue([{ user: mockUser, token: mockAuthToken }]);
+    const faultyProduct = {
+      ...mockProduct1,
+      price: "invalid-price",
+    };
+    mockUseCart.mockReturnValue([[faultyProduct], jest.fn()]);
+    axios.get.mockReturnValue({ data: { clientToken: "mock-client-token" } });
+
+    const toLocaleSpy = jest
+      .spyOn(Number.prototype, "toLocaleString")
+      .mockImplementation(() => {
+        throw new Error("toLocaleString error");
+      });
+
+    const { getByText } = renderCartPage();
+
+    await waitFor(() => {
+      expect(getByText("Total :")).toBeInTheDocument();
+    });
+
+    expect(logSpy).toHaveBeenCalled();
+    toLocaleSpy.mockRestore();
     logSpy.mockRestore();
   });
 
@@ -717,6 +742,107 @@ describe("CartPage", () => {
       expect(toast.success).toHaveBeenCalledWith(
         "Payment Completed Successfully"
       );
+    });
+  });
+
+  it("should handle error during payment process gracefully", async () => {
+    const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    mockUseAuth.mockReturnValue([{ user: mockUser, token: mockAuthToken }]);
+    mockUseCart.mockReturnValue([[mockProduct1], jest.fn()]);
+    axios.get.mockReturnValueOnce({
+      data: { clientToken: "mock-client-token" },
+    });
+    const paymentMethodError = new Error("Failed to get payment method");
+    mockRequestPaymentMethod.mockRejectedValue(paymentMethodError);
+
+    const { getByText } = renderCartPage();
+
+    await waitFor(() => {
+      expect(getByText("Make Payment")).toBeInTheDocument();
+    });
+
+    const makePaymentButton = getByText("Make Payment");
+    expect(makePaymentButton).toBeInTheDocument();
+    await waitFor(() => expect(makePaymentButton).not.toBeDisabled());
+    fireEvent.click(makePaymentButton);
+
+    await waitFor(() => {
+      expect(mockRequestPaymentMethod).toHaveBeenCalled();
+      expect(logSpy).toHaveBeenCalledWith(paymentMethodError);
+    });
+
+    expect(window.localStorage.removeItem).not.toHaveBeenCalledWith("cart");
+
+    logSpy.mockRestore();
+  });
+
+  it("should handle error during payment processing on server gracefully", async () => {
+    const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    mockUseAuth.mockReturnValue([{ user: mockUser, token: mockAuthToken }]);
+    mockUseCart.mockReturnValue([[mockProduct1], jest.fn()]);
+    axios.get.mockReturnValueOnce({
+      data: { clientToken: "mock-client-token" },
+    });
+    mockRequestPaymentMethod.mockResolvedValue({ nonce: "fake-nonce" });
+    const serverError = new Error("Server payment processing failed");
+    axios.post.mockRejectedValue(serverError);
+
+    const { getByText } = renderCartPage();
+
+    await waitFor(() => {
+      expect(getByText("Make Payment")).toBeInTheDocument();
+    });
+
+    const makePaymentButton = getByText("Make Payment");
+    expect(makePaymentButton).toBeInTheDocument();
+    await waitFor(() => expect(makePaymentButton).not.toBeDisabled());
+    fireEvent.click(makePaymentButton);
+
+    await waitFor(() => {
+      expect(mockRequestPaymentMethod).toHaveBeenCalled();
+    });
+
+    await waitFor(() => {
+      expect(axios.post).toHaveBeenCalledWith(
+        expect.stringContaining("braintree/payment"),
+        {
+          cart: [mockProduct1],
+          nonce: "fake-nonce",
+        }
+      );
+      expect(logSpy).toHaveBeenCalledWith(serverError);
+    });
+
+    expect(window.localStorage.removeItem).not.toHaveBeenCalledWith("cart");
+
+    logSpy.mockRestore();
+  });
+
+  it("should disable Make Payment button while payment is processing", async () => {
+    mockUseAuth.mockReturnValue([{ user: mockUser, token: mockAuthToken }]);
+    mockUseCart.mockReturnValue([[mockProduct1], jest.fn()]);
+    axios.get.mockReturnValueOnce({
+      data: { clientToken: "mock-client-token" },
+    });
+    // Make requestPaymentMethod return a promise that never resolves to simulate ongoing processing
+    mockRequestPaymentMethod.mockImplementation(
+      () => new Promise(() => {}) // Never resolves
+    );
+
+    const { getByText } = renderCartPage();
+
+    await waitFor(() => {
+      expect(getByText("Make Payment")).toBeInTheDocument();
+    });
+
+    const makePaymentButton = getByText("Make Payment");
+    expect(makePaymentButton).toBeInTheDocument();
+    await waitFor(() => expect(makePaymentButton).not.toBeDisabled());
+    fireEvent.click(makePaymentButton);
+
+    // Button should be disabled while payment is processing
+    await waitFor(() => {
+      expect(makePaymentButton).toBeDisabled();
     });
   });
 });
