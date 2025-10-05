@@ -8,7 +8,7 @@ jest.mock("../hooks/useCategory");
 jest.mock('./../components/Layout', () => ({ children }) => <div>{children}</div>);
 
 describe("Categories component", () => {
-    it("renders links correctly", () => {
+    it("should render links correctly", () => {
         const mockCategories = [
             { _id: "1", name: "Books", slug: "books" },
             { _id: "2", name: "Games", slug: "games" },
@@ -31,7 +31,7 @@ describe("Categories component", () => {
         expect(screen.getByRole("link", { name: "Games" })).toHaveAttribute("href", "/category/games");
     });
 
-    it("renders nothing when categories are empty", () => {
+    it("should render nothing when categories are empty", () => {
         useCategory.mockReturnValue({
             categories: [],
         });

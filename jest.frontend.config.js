@@ -21,19 +21,16 @@ export default {
 
   // only run these tests
   testMatch: [
-    "<rootDir>/client/src/pages/**/*.test.js",
-    "<rootDir>/client/src/components/*.test.js",
-    "<rootDir>/client/src/context/cart.test.js",
-    "<rootDir>/client/src/context/*.test.js",
-    "<rootDir>/client/src/components/Routes/Private.test.js",
+    "<rootDir>/client/src/**/*.test.js", // recursively match all test.js files under src
   ],
 
   // jest code coverage
   collectCoverage: true,
   collectCoverageFrom: [
-    "client/src/pages/**/**",
-    "client/src/components/**.js",
-    "client/src/components/Form/**",
+    "client/src/pages/**/*.js",
+    "client/src/components/*.js",
+    "client/src/hooks/*.js",
+    "client/src/components/Form/CategoryForm.js",
     "client/src/components/Routes/Private.js",
     "client/src/context/cart.js",
     "client/src/context/auth.js",
@@ -46,4 +43,5 @@ export default {
     },
   },
   setupFilesAfterEnv: ["<rootDir>/client/src/setupTests.js"],
+  coverageDirectory: "<rootDir>/coverage/front-tests",
 };

@@ -33,5 +33,6 @@ export default {
     },
   },
 
-  "setupFilesAfterEnv": ["<rootDir>/jest.backend.setup.js"]
+  "setupFilesAfterEnv": ["<rootDir>/jest.backend.setup.js"],
+  coverageDirectory: "<rootDir>/coverage/back-tests",
 };
