@@ -1,6 +1,5 @@
 // Add missing React import
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/auth";
 import { Outlet } from "react-router-dom";
 import axios from "axios";
@@ -22,12 +21,14 @@ export default function PrivateRoute() {
       }
     };
     if (auth?.token)
-      (async () => {try {
-        await authCheck();
-      } catch (error) {
-        console.log(error);
-        setOk(false);
-      }})();
+      (async () => {
+        try {
+          await authCheck();
+        } catch (error) {
+          console.log(error);
+          setOk(false);
+        }
+      })();
   }, [auth?.token]);
 
   return ok ? <Outlet /> : <Spinner path="" />;
