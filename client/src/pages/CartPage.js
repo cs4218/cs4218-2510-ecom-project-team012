@@ -11,7 +11,7 @@ import toast from "react-hot-toast";
 import "../styles/CartStyles.css";
 
 const CartPage = () => {
-  const [auth, setAuth] = useAuth();
+  const [auth] = useAuth();
   const [cart, setCart] = useCart();
   const [clientToken, setClientToken] = useState("");
   const [instance, setInstance] = useState("");
@@ -23,7 +23,7 @@ const CartPage = () => {
     try {
       let total = 0;
       cart?.map((item) => {
-        if (typeof item.price === "number" && !isNaN(item.price)) {
+        if (typeof item.price === "number" && !Number.isNaN(item.price)) {
           total = total + item.price;
         } else {
           console.warn(`Invalid price for item ${item._id}: ${item.price}`);
@@ -68,7 +68,7 @@ const CartPage = () => {
     try {
       setLoading(true);
       const { nonce } = await instance.requestPaymentMethod();
-      const { data } = await axios.post("/api/v1/product/braintree/payment", {
+      await axios.post("/api/v1/product/braintree/payment", {
         nonce,
         cart,
       });
@@ -88,15 +88,18 @@ const CartPage = () => {
         <div className="row">
           <div className="col-md-12">
             <h1 className="text-center bg-light p-2 mb-1">
-              {!auth?.user
-                ? "Hello Guest"
-                : `Hello  ${auth?.token && auth?.user?.name}`}
+              {auth?.user
+                ? `Hello  ${auth?.token && auth?.user?.name}`
+                : "Hello Guest"}
               <p className="text-center">
-                {cart?.length
-                  ? `You Have ${cart.length} items in your cart ${
-                      auth?.token ? "" : "please login to checkout !"
-                    }`
-                  : " Your Cart Is Empty"}
+                {cart?.length ? (
+                  <>
+                    You Have {cart.length} items in your cart{" "}
+                    {!auth?.token && "please login to checkout !"}
+                  </>
+                ) : (
+                  "Your Cart is Empty"
+                )}
               </p>
             </h1>
           </div>
