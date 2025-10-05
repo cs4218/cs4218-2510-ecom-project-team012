@@ -22,7 +22,11 @@ const CartPage = () => {
     try {
       let total = 0;
       cart?.map((item) => {
-        total = total + item.price;
+        if (typeof item.price === "number" && !isNaN(item.price)) {
+          total = total + item.price;
+        } else {
+          console.warn(`Invalid price for item ${item._id}: ${item.price}`);
+        }
       });
       return total.toLocaleString("en-US", {
         style: "currency",
@@ -71,7 +75,7 @@ const CartPage = () => {
       localStorage.removeItem("cart");
       setCart([]);
       navigate("/dashboard/user/orders");
-      toast.success("Payment Completed Successfully ");
+      toast.success("Payment Completed Successfully");
     } catch (error) {
       console.log(error);
       setLoading(false);
@@ -162,7 +166,7 @@ const CartPage = () => {
                         })
                       }
                     >
-                      Plase Login to checkout
+                      Please Login to checkout
                     </button>
                   )}
                 </div>
