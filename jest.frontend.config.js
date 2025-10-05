@@ -50,5 +50,5 @@ export default {
     },
   },
   setupFilesAfterEnv: ["<rootDir>/client/src/setupTests.js"],
-  coverageDirectory: "<rootDir>/coverage/front-tests",
+  // coverageDirectory: "<rootDir>/coverage/front-tests",
 };

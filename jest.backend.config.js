@@ -8,7 +8,8 @@ export default {
   // which test to run
   testMatch: [
     "<rootDir>/controllers/productController.test.js",
-    "<rootDir>/models/*.test.js",
+    "<rootDir>/models/productModel.test.js",
+    "<rootDir>/models/userModel.test.js",
   ],
 
   // jest code coverage
@@ -27,5 +28,5 @@ export default {
   },
 
   setupFilesAfterEnv: ["<rootDir>/jest.backend.setup.js"],
-  coverageDirectory: "<rootDir>/coverage/back-tests",
+  // coverageDirectory: "<rootDir>/coverage/back-tests",
 };
