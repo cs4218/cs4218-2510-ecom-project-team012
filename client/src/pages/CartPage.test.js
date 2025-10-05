@@ -4,6 +4,7 @@ import axios from "axios";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import "@testing-library/jest-dom/extend-expect";
 import CartPage from "./CartPage";
+import { toast } from "react-hot-toast";
 
 jest.mock("axios");
 jest.mock("react-hot-toast");
@@ -61,7 +62,9 @@ jest.mock("braintree-web-drop-in-react", () => {
     React.useEffect(() => {
       if (mockDropInProvided) return;
       mockDropInProvided = true;
-      const mockInstance = mockRequestPaymentMethod;
+      const mockInstance = {
+        requestPaymentMethod: mockRequestPaymentMethod,
+      };
       onInstance(mockInstance);
     }, [onInstance]);
     return <div data-testid="mock-dropin">Mock DropIn</div>;
@@ -644,7 +647,9 @@ describe("CartPage", () => {
   });
 
   it("should disable Make Payment button when user has no address", async () => {
-    mockUseAuth.mockReturnValue([{ user: mockUserWithoutAddress, token: mockAuthToken }]);
+    mockUseAuth.mockReturnValue([
+      { user: mockUserWithoutAddress, token: mockAuthToken },
+    ]);
     mockUseCart.mockReturnValue([[mockProduct1], jest.fn()]);
     axios.get.mockReturnValue({ data: { clientToken: "mock-client-token" } });
 
@@ -673,48 +678,45 @@ describe("CartPage", () => {
     });
   });
 
-  // it("should handle payment process correctly with authenticated user and cart with items", async () => {
-  //   mockUseAuth.mockReturnValue([{ user: mockUser, token: mockAuthToken }]);
-  //   mockUseCart.mockReturnValue([[mockProduct1], jest.fn()]);
-  //   axios.get.mockReturnValue({ data: { clientToken: "mock-client-token" } });
-  //   mockRequestPaymentMethod.mockResolvedValue({ nonce: "fake-nonce" });
-  //   axios.post.mockResolvedValueOnce({ data: { success: true } });
+  it("should handle payment process correctly with authenticated user and cart with items", async () => {
+    mockUseAuth.mockReturnValue([{ user: mockUser, token: mockAuthToken }]);
+    mockUseCart.mockReturnValue([[mockProduct1], jest.fn()]);
+    axios.get.mockReturnValueOnce({
+      data: { clientToken: "mock-client-token" },
+    });
+    mockRequestPaymentMethod.mockResolvedValue({ nonce: "fake-nonce" });
+    axios.post.mockResolvedValueOnce({ data: { success: true } });
 
-  //   const { getByText } = renderCartPage();
+    const { getByText } = renderCartPage();
 
-  //   await waitFor(() => {
-  //     expect(getByText("Make Payment")).toBeInTheDocument();
-  //   });
+    await waitFor(() => {
+      expect(getByText("Make Payment")).toBeInTheDocument();
+    });
 
-  //   const makePaymentButton = getByText("Make Payment");
-  //   expect(makePaymentButton).toBeInTheDocument();
-  //   await waitFor(() => expect(makePaymentButton).not.toBeDisabled());
-  //   fireEvent.click(makePaymentButton);
+    const makePaymentButton = getByText("Make Payment");
+    expect(makePaymentButton).toBeInTheDocument();
+    await waitFor(() => expect(makePaymentButton).not.toBeDisabled());
+    fireEvent.click(makePaymentButton);
 
-  //   await waitFor(() => {
-  //     expect(axios.post).toHaveBeenCalledWith(
-  //       expect.stringContaining("braintree/payment"),
-  //       {
-  //         nonce: "fake-nonce",
-  //         cart: [mockProduct1],
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${mockAuthToken}`,
-  //         },
-  //       }
-  //     );
-  //     expect(mockNavigate).toHaveBeenCalledWith(
-  //       expect.stringContaining("orders")
-  //     );
-  //     expect(window.localStorage.setItem).toHaveBeenCalledWith(
-  //       "cart",
-  //       JSON.stringify([])
-  //     ); // Cart should be cleared
-  //     expect(window.localStorage.removeItem).toHaveBeenCalledWith("cart");
-  //     expect(toast.success).toHaveBeenCalledWith(
-  //       "Payment Completed Successfully"
-  //     );
-  //   });
-  // });
+    await waitFor(() => {
+      expect(mockRequestPaymentMethod).toHaveBeenCalled();
+    });
+
+    await waitFor(() => {
+      expect(axios.post).toHaveBeenCalledWith(
+        expect.stringContaining("braintree/payment"),
+        {
+          cart: [mockProduct1],
+          nonce: "fake-nonce",
+        }
+      );
+      expect(mockNavigate).toHaveBeenCalledWith(
+        expect.stringContaining("orders")
+      );
+      expect(window.localStorage.removeItem).toHaveBeenCalledWith("cart");
+      expect(toast.success).toHaveBeenCalledWith(
+        "Payment Completed Successfully"
+      );
+    });
+  });
 });
