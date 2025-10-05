@@ -1,5 +1,5 @@
-import React from "react";
-import { useState, useContext, createContext, useEffect } from "react";
+import React, { useState, useContext, createContext, useEffect } from "react";
+import PropTypes from "prop-types";
 
 const CartContext = createContext();
 const CartProvider = ({ children }) => {
@@ -15,6 +15,10 @@ const CartProvider = ({ children }) => {
       {children}
     </CartContext.Provider>
   );
+};
+
+CartProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
 // custom hook
