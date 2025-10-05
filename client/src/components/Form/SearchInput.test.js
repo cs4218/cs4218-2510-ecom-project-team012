@@ -3,22 +3,21 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import axios from "axios";
+import SearchInput from "./SearchInput";
 
-// Mock dependencies
+// Mock dependencies - ALL mocks together
 jest.mock("axios");
 jest.mock("../../context/search", () => ({
   useSearch: jest.fn(),
 }));
 
-import SearchInput from "./SearchInput";
-import { useSearch } from "../../context/search";
-
-// Mock navigate function
 const mockNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useNavigate: () => mockNavigate,
 }));
+
+import { useSearch } from "../../context/search";
 
 describe("SearchInput Component", () => {
   let mockSetValues;

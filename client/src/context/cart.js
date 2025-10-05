@@ -1,5 +1,11 @@
-import React from "react";
-import { useState, useContext, createContext, useEffect } from "react";
+import React, {
+  useState,
+  useContext,
+  createContext,
+  useEffect,
+  useMemo,
+} from "react";
+import PropTypes from "prop-types";
 
 const CartContext = createContext();
 const CartProvider = ({ children }) => {
@@ -10,11 +16,13 @@ const CartProvider = ({ children }) => {
     if (existingCartItem) setCart(JSON.parse(existingCartItem));
   }, []);
 
-  return (
-    <CartContext.Provider value={[cart, setCart]}>
-      {children}
-    </CartContext.Provider>
-  );
+  const value = useMemo(() => [cart, setCart], [cart]);
+
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+};
+
+CartProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
 // custom hook

@@ -1,35 +1,76 @@
 import React from "react";
-import { render, screen, act } from "@testing-library/react";
-
-jest.useFakeTimers();
-
-// Mock react-router-dom navigation hooks
-const navigateMock = jest.fn();
-jest.mock("react-router-dom", () => ({
-    useNavigate: () => navigateMock,
-    useLocation: () => ({ pathname: "/secret" }),
-}));
-
+import { render, screen, waitFor } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
 import Spinner from "./Spinner";
 
-beforeEach(() => {
-    navigateMock.mockClear();
-    jest.clearAllTimers();
-});
+const mockNavigate = jest.fn();
+const mockLocation = { pathname: "/secret" };
 
-test("counts down 3→0 and navigates to /login by default", () => {
-    render(<Spinner />);
+jest.mock("react-router-dom", () => ({
+    ...jest.requireActual("react-router-dom"),
+    useNavigate: () => mockNavigate,
+    useLocation: () => mockLocation,
+}));
 
-    // initial text shows '3'
-    expect(screen.getByText(/redirecting to you in 3 second/i)).toBeInTheDocument();
+const mount = (pathProp) =>
+    render(
+        <BrowserRouter>
+        <Spinner path={pathProp} />
+        </BrowserRouter>
+    );
 
-    act(() => { jest.advanceTimersByTime(3000); });
+describe("Spinner", () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        jest.useFakeTimers();
+    });
 
-    expect(navigateMock).toHaveBeenCalledWith("/login", { state: "/secret" });
-});
+    afterEach(() => {
+        jest.runOnlyPendingTimers();
+        jest.useRealTimers();
+    });
 
-test("navigates to custom path", () => {
-    render(<Spinner path="register" />);
-    act(() => { jest.advanceTimersByTime(3000); });
-    expect(navigateMock).toHaveBeenCalledWith("/register", { state: "/secret" });
+    it("renders initial countdown and loader", () => {
+        mount();
+        expect(screen.getByText(/redirecting to you in 3 second/i)).toBeInTheDocument();
+        expect(screen.getByRole("status")).toBeInTheDocument();
+        expect(screen.getByText(/Loading/i)).toBeInTheDocument();
+    });
+
+    it("ticks down each second", async () => {
+        mount();
+        expect(screen.getByText(/3 second/i)).toBeInTheDocument();
+
+        jest.advanceTimersByTime(1000);
+        await waitFor(() => expect(screen.getByText(/2 second/i)).toBeInTheDocument());
+
+        jest.advanceTimersByTime(1000);
+        await waitFor(() => expect(screen.getByText(/1 second/i)).toBeInTheDocument());
+    });
+
+    it("navigates to /login by default after 3s and preserves state", async () => {
+        mount();
+        jest.advanceTimersByTime(3000);
+
+        await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith("/login", { state: "/secret" });
+        });
+    });
+
+    it("navigates to custom path when provided", async () => {
+        mount("register");
+        jest.advanceTimersByTime(3000);
+
+        await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith("/register", { state: "/secret" });
+        });
+    });
+
+    it("cleans up interval on unmount", () => {
+        const clearSpy = jest.spyOn(global, "clearInterval");
+        const { unmount } = mount();
+        unmount();
+        expect(clearSpy).toHaveBeenCalled();
+        clearSpy.mockRestore();
+    });
 });

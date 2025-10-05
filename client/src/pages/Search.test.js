@@ -1,7 +1,9 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
+import Search from "./Search";
+import { useSearch } from "../context/search";
 
-// Mock dependencies
+// Mock dependencies - ALL mocks together AFTER imports
 jest.mock("../context/search", () => ({
   useSearch: jest.fn(),
 }));
@@ -10,9 +12,6 @@ jest.mock("../components/Layout", () => ({ children, title }) => (
     {children}
   </div>
 ));
-
-import Search from "./Search";
-import { useSearch } from "../context/search";
 
 describe("Search Page", () => {
   beforeEach(() => {
@@ -86,4 +85,3 @@ describe("Search Page", () => {
     expect(screen.getByText("ADD TO CART")).toBeInTheDocument();
   });
 });
-

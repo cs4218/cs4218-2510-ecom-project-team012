@@ -49,6 +49,36 @@ describe("CartContext", () => {
       </CartProvider>
     );
   }
+  it("should render children components with success", () => {
+    const { getByTestId } = renderWithProvider();
+
+    expect(getByTestId("cart")).toBeInTheDocument();
+    expect(getByTestId("add-item-button")).toBeInTheDocument();
+  });
+
+  it("should handle when children component prop is missing", () => {
+    const spy = jest.spyOn(console, "error").mockImplementation(() => {});
+    render(<CartProvider />); // no children
+    expect(spy).toHaveBeenCalled();
+    spy.mockRestore();
+  });
+
+  it("should handle cart items when rerendered page", () => {
+    const { getByTestId, rerender } = renderWithProvider();
+
+    expect(getByTestId("cart").textContent).toBe("[]");
+
+    fireEvent.click(getByTestId("add-item-button"));
+    expect(getByTestId("cart").textContent).toContain("item1");
+
+    rerender(
+      <CartProvider>
+        <MockComponentThatUsesCart />
+      </CartProvider>
+    );
+
+    expect(getByTestId("cart").textContent).toContain("item1");
+  });
 
   it("should initialize with an empty cart if localStorage is empty", () => {
     const { getByTestId } = renderWithProvider();
@@ -67,6 +97,7 @@ describe("CartContext", () => {
   it("should update the cart when setCart is called", () => {
     const { getByTestId } = renderWithProvider();
 
+    expect(getByTestId("cart").textContent).toBe("[]");
     fireEvent.click(getByTestId("add-item-button"));
 
     expect(getByTestId("cart").textContent).toContain("item1");

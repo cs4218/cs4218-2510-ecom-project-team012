@@ -9,14 +9,6 @@ import { toast } from "react-hot-toast";
 jest.mock("axios");
 jest.mock("react-hot-toast");
 
-const mockLocation = { state: null };
-
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockNavigate,
-  useLocation: () => mockLocation,
-}));
-
 const mockUseAuth = jest.fn();
 jest.mock("../context/auth", () => ({
   useAuth: () => mockUseAuth(),
@@ -34,7 +26,7 @@ jest.mock("../context/search", () => ({
       results: [],
     },
     jest.fn(),
-  ]), // Mock for useSearch to return a state and setValue
+  ]),
 }));
 
 jest.mock(
@@ -329,6 +321,26 @@ describe("CartPage", () => {
     const faultyProduct = {
       ...mockProduct1,
       price: "invalid-price",
+    };
+    mockUseCart.mockReturnValue([[faultyProduct], jest.fn()]);
+    axios.get.mockReturnValue({ data: { clientToken: "mock-client-token" } });
+
+    const { getByText } = renderCartPage();
+
+    await waitFor(() => {
+      expect(getByText("Total : $0.00")).toBeInTheDocument();
+    });
+
+    expect(logSpy).toHaveBeenCalled();
+    logSpy.mockRestore();
+  });
+
+  it("should handle product with missing price field gracefully during total price calculation", async () => {
+    const logSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
+    mockUseAuth.mockReturnValue([{ user: mockUser, token: mockAuthToken }]);
+    const faultyProduct = {
+      ...mockProduct1,
+      price: undefined,
     };
     mockUseCart.mockReturnValue([[faultyProduct], jest.fn()]);
     axios.get.mockReturnValue({ data: { clientToken: "mock-client-token" } });
