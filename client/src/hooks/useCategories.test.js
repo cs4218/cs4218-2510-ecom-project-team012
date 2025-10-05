@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useCategories } from '../useCategories';
+import { useCategories } from './useCategories';
 
 // Mock axios
 jest.mock('axios');

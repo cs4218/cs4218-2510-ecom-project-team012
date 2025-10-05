@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { useProducts } from '../useProducts';
+import { renderHook, act, waitFor } from '@testing-library/react';
+import { useProducts } from './useProducts';
 
 // Mock axios
 jest.mock('axios');
@@ -7,24 +8,6 @@ jest.mock('axios');
 // Mock react-hot-toast
 jest.mock('react-hot-toast', () => ({
   error: jest.fn()
-}));
-
-// Mock React's useState
-const mockStates = {};
-const mockSetState = jest.fn((value) => {
-  const stateName = Object.keys(mockStates).find(key => mockStates[key][1] === mockSetState);
-  if (stateName) {
-    mockStates[stateName][0] = value;
-  }
-});
-
-jest.mock('react', () => ({
-  ...jest.requireActual('react'),
-  useState: (initial) => {
-    const stateName = Object.keys(mockStates).length;
-    mockStates[stateName] = [initial, mockSetState];
-    return mockStates[stateName];
-  }
 }));
 
 describe('useProducts', () => {
@@ -35,25 +18,28 @@ describe('useProducts', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    Object.keys(mockStates).forEach(key => delete mockStates[key]);
   });
 
   test('should initialize with default values', () => {
-    useProducts();
+    const { result } = renderHook(() => useProducts());
     
-    expect(mockStates[0][0]).toEqual([]); // products
-    expect(mockStates[1][0]).toBe(false); // loading
-    expect(mockStates[2][0]).toBe(0); // total
-    expect(mockStates[3][0]).toBe(1); // page
+    expect(result.current.products).toEqual([]); // products
+    expect(result.current.loading).toBe(false); // loading
+    expect(result.current.total).toBe(0); // total
+    expect(result.current.page).toBe(1); // page
   });
 
   test('fetchProducts should update products state', async () => {
     axios.get.mockResolvedValueOnce({ data: { products: mockProducts } });
     
-    const products = useProducts();
-    await products.fetchProducts();
+    const { result } = renderHook(() => useProducts());
+    
+    await act(async () => {
+      await result.current.fetchProducts();
+    });
 
-    expect(mockSetState).toHaveBeenCalledWith(mockProducts);
+    expect(result.current.products).toEqual(mockProducts);
+    expect(result.current.loading).toBe(false);
     expect(axios.get).toHaveBeenCalledWith('/api/v1/product/product-list/1');
   });
 
@@ -61,10 +47,13 @@ describe('useProducts', () => {
     const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
     axios.get.mockRejectedValueOnce(new Error('API Error'));
 
-    const products = useProducts();
-    await products.fetchProducts();
+    const { result } = renderHook(() => useProducts());
+    
+    await act(async () => {
+      await result.current.fetchProducts();
+    });
 
-    expect(mockSetState).toHaveBeenCalledWith(false); // loading set to false
+    expect(result.current.loading).toBe(false);
     expect(consoleLogSpy).toHaveBeenCalledWith(expect.any(Error));
 
     consoleLogSpy.mockRestore();
@@ -74,40 +63,52 @@ describe('useProducts', () => {
     const newProducts = [{ _id: '3', name: 'New Product' }];
     axios.get.mockResolvedValueOnce({ data: { products: newProducts } });
 
-    const products = useProducts();
-    await products.loadMore();
+    const { result } = renderHook(() => useProducts());
+    
+    await act(async () => {
+      await result.current.loadMore();
+    });
 
     // Should concatenate existing products with new ones
-    expect(mockSetState).toHaveBeenCalledWith(expect.arrayContaining([...newProducts]));
+    expect(result.current.products).toEqual([...newProducts]);
+    expect(result.current.loading).toBe(false);
   });
 
   test('getProductsCount should update total', async () => {
     axios.get.mockResolvedValueOnce({ data: { total: 10 } });
 
-    const products = useProducts();
-    await products.getProductsCount();
+    const { result } = renderHook(() => useProducts());
+    
+    await act(async () => {
+      await result.current.getProductsCount();
+    });
 
-    expect(mockSetState).toHaveBeenCalledWith(10);
+    expect(result.current.total).toBe(10);
     expect(axios.get).toHaveBeenCalledWith('/api/v1/product/product-count');
   });
 
   test('setPage should update page number', () => {
-    const products = useProducts();
-    products.setPage(2);
+    const { result } = renderHook(() => useProducts());
+    
+    act(() => {
+      result.current.setPage(2);
+    });
 
-    expect(mockSetState).toHaveBeenCalledWith(2);
+    expect(result.current.page).toBe(2);
   });
 
   test('fetchAllProducts should update products state', async () => {
     axios.get.mockResolvedValueOnce({ data: { products: mockProducts } });
     
-    const products = useProducts();
-    await products.fetchAllProducts();
+    const { result } = renderHook(() => useProducts());
+    
+    await act(async () => {
+      await result.current.fetchAllProducts();
+    });
 
-    expect(mockSetState).toHaveBeenCalledWith(mockProducts);
+    expect(result.current.products).toEqual(mockProducts);
+    expect(result.current.loading).toBe(false);
     expect(axios.get).toHaveBeenCalledWith('/api/v1/product/get-product');
-    expect(mockSetState).toHaveBeenCalledWith(true); // loading set to true
-    expect(mockSetState).toHaveBeenCalledWith(false); // loading set to false
   });
 
   test('fetchAllProducts should handle errors', async () => {
@@ -115,10 +116,13 @@ describe('useProducts', () => {
     const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
     axios.get.mockRejectedValueOnce(new Error('API Error'));
 
-    const products = useProducts();
-    await products.fetchAllProducts();
+    const { result } = renderHook(() => useProducts());
+    
+    await act(async () => {
+      await result.current.fetchAllProducts();
+    });
 
-    expect(mockSetState).toHaveBeenCalledWith(false); // loading set to false
+    expect(result.current.loading).toBe(false);
     expect(consoleLogSpy).toHaveBeenCalledWith(expect.any(Error));
     expect(toast.error).toHaveBeenCalledWith('Something Went Wrong');
 

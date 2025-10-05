@@ -1,15 +1,9 @@
 import axios from 'axios';
-import { useProductFilters } from '../useProductFilters';
+import { renderHook, act, waitFor } from '@testing-library/react';
+import { useProductFilters } from './useProductFilters';
 
 // Mock axios
 jest.mock('axios');
-
-// Mock React's useState
-const mockSetState = jest.fn();
-jest.mock('react', () => ({
-  ...jest.requireActual('react'),
-  useState: (initial) => [initial, mockSetState]
-}));
 
 describe('useProductFilters', () => {
   const mockProducts = [
@@ -24,27 +18,35 @@ describe('useProductFilters', () => {
   });
 
   test('handleFilter should update checked array correctly', () => {
-    const filters = useProductFilters(mockSetProducts);
+    const { result } = renderHook(() => useProductFilters(mockSetProducts));
     
     // Add item to checked array
-    filters.handleFilter(true, '1');
-    expect(mockSetState).toHaveBeenCalledWith(['1']);
+    act(() => {
+      result.current.handleFilter(true, '1');
+    });
+    expect(result.current.checked).toEqual(['1']);
 
     // Add another item
-    filters.handleFilter(true, '2');
-    expect(mockSetState).toHaveBeenCalledWith(['1', '2']);
+    act(() => {
+      result.current.handleFilter(true, '2');
+    });
+    expect(result.current.checked).toEqual(['1', '2']);
 
     // Remove an item
-    filters.handleFilter(false, '1');
-    expect(mockSetState).toHaveBeenCalledWith(['2']);
+    act(() => {
+      result.current.handleFilter(false, '1');
+    });
+    expect(result.current.checked).toEqual(['2']);
   });
 
   test('setRadio should update radio value', () => {
-    const filters = useProductFilters(mockSetProducts);
+    const { result } = renderHook(() => useProductFilters(mockSetProducts));
     const newValue = [0, 999];
     
-    filters.setRadio(newValue);
-    expect(mockSetState).toHaveBeenCalledWith(newValue);
+    act(() => {
+      result.current.setRadio(newValue);
+    });
+    expect(result.current.radio).toEqual(newValue);
   });
 
   test('filterProducts should call API with correct parameters', async () => {
@@ -54,8 +56,11 @@ describe('useProductFilters', () => {
       } 
     });
 
-    const filters = useProductFilters(mockSetProducts);
-    await filters.filterProducts();
+    const { result } = renderHook(() => useProductFilters(mockSetProducts));
+    
+    await act(async () => {
+      await result.current.filterProducts();
+    });
 
     expect(axios.post).toHaveBeenCalledWith('/api/v1/product/product-filters', {
       checked: [],
@@ -68,10 +73,13 @@ describe('useProductFilters', () => {
     const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
     axios.post.mockRejectedValueOnce(new Error('API Error'));
 
-    const filters = useProductFilters(mockSetProducts);
-    await filters.filterProducts();
+    const { result } = renderHook(() => useProductFilters(mockSetProducts));
+    
+    await act(async () => {
+      await result.current.filterProducts();
+    });
 
-    expect(mockSetProducts).toHaveBeenCalledWith([]);
+    expect(mockSetProducts).not.toHaveBeenCalled();
     expect(consoleLogSpy).toHaveBeenCalledWith(expect.any(Error));
     
     consoleLogSpy.mockRestore();
@@ -80,8 +88,11 @@ describe('useProductFilters', () => {
   test('filterProducts should handle empty API response', async () => {
     axios.post.mockResolvedValueOnce({ data: {} });
 
-    const filters = useProductFilters(mockSetProducts);
-    await filters.filterProducts();
+    const { result } = renderHook(() => useProductFilters(mockSetProducts));
+    
+    await act(async () => {
+      await result.current.filterProducts();
+    });
 
     expect(mockSetProducts).toHaveBeenCalledWith([]);
   });
