@@ -69,7 +69,7 @@ describe('CreateCategory Component:', () => {
         });
 
         it('should display error message on unexpected error', async () => {
-            axios.get.mockRejectedValueOnce( new Error('Intentional Error') );
+            axios.get.mockRejectedValueOnce( new Error('Intentional Test Error') );
 
             render(<CreateCategory />);
             await waitFor(() => {
@@ -204,7 +204,7 @@ describe('CreateCategory Component:', () => {
 
         it('should display error message on unexpected error', async () => {
             axios.get.mockResolvedValueOnce({ data: { success: true, category: testCategories } });
-            axios.put.mockRejectedValueOnce(new Error('Network Error'));
+            axios.put.mockRejectedValueOnce(new Error('Intentional Test Error'));
 
             await testEditCategory({
                 updatedName: 'FailUpdate',
@@ -253,7 +253,7 @@ describe('CreateCategory Component:', () => {
 
         it('should display error message on unexpected error', async () => {
             axios.get.mockResolvedValueOnce({ data: { success: true, category: testCategories } });
-            axios.delete.mockRejectedValueOnce(new Error('Network Error'));
+            axios.delete.mockRejectedValueOnce(new Error('Intentional Test Error'));
 
             await testDeleteCategory({ 
                 toastFn: toast.error, 

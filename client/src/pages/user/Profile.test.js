@@ -36,7 +36,7 @@ describe("Profile Component (unit tests)", () => {
         jest.clearAllMocks();
     });
 
-    it("renders form with initial profile correctly", () => {
+    it("should render form with initial profile correctly", () => {
         render(
             <MemoryRouter>
                 <Profile />
@@ -49,7 +49,7 @@ describe("Profile Component (unit tests)", () => {
         expect(screen.getByPlaceholderText("Enter Your Address")).toHaveValue(testProfile.address);
     });
 
-    it("updates input values on change", () => {
+    it("should update input values on change", () => {
         render(
             <MemoryRouter>
                 <Profile />
@@ -78,7 +78,7 @@ describe("Profile Component (unit tests)", () => {
     });
 
 
-    it("submits updated profile successfully", async () => {
+    it("should submit updated profile successfully", async () => {
         const updatedUser = { name: "Jane", email: "john@example.com", phone: "12345", address: "Somewhere" };
 
         axios.put.mockResolvedValue({
@@ -102,7 +102,7 @@ describe("Profile Component (unit tests)", () => {
         });
     });
 
-    it("displays error when API returns failure", async () => {
+    it("should display error when API returns failure", async () => {
         axios.put.mockResolvedValue({
             data: { error: "Something bad happened" }
         });
@@ -122,7 +122,7 @@ describe("Profile Component (unit tests)", () => {
         });
     });
 
-    it("handles unexpected API errors", async () => {
+    it("should handle unexpected API errors", async () => {
         axios.put.mockRejectedValue(new Error("Intentional Test Error"));
 
         render(
