@@ -26,7 +26,7 @@ jest.mock("../context/search", () => ({
       results: [],
     },
     jest.fn(),
-  ]), // Mock for useSearch to return a state and setValue
+  ]),
 }));
 
 jest.mock(
