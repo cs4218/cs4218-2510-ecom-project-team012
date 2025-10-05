@@ -14,7 +14,7 @@ describe("Order Model Schema", () => {
         it("is an array of ObjectId referencing 'Products'", () => {
         const productsPath = Order.schema.path("products");
         expect(productsPath?.instance).toBe("Array");
-        expect(productsPath?.caster?.instance).toBe("ObjectID");
+        expect(productsPath?.caster?.instance).toBe("ObjectId");
         expect(productsPath?.caster?.options?.ref).toBe("Products");
         });
     });
@@ -29,7 +29,7 @@ describe("Order Model Schema", () => {
     describe("buyer field", () => {
         it("is an ObjectId referencing 'users'", () => {
         const buyerPath = Order.schema.path("buyer");
-        expect(buyerPath?.instance).toBe("ObjectID");
+        expect(buyerPath?.instance).toBe("ObjectId");
         expect(buyerPath?.options?.ref).toBe("users");
         });
     });
