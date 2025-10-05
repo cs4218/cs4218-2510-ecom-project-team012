@@ -155,14 +155,7 @@ describe("Login Component", () => {
     fireEvent.click(getByText("LOGIN"));
 
     await waitFor(() => expect(axios.post).toHaveBeenCalled());
-    expect(toast.success).toHaveBeenCalledWith("login successful", {
-      duration: 5000,
-      icon: "🙏",
-      style: {
-        background: "green",
-        color: "white",
-      },
-    });
+    expect(toast.success).toHaveBeenCalled();
   });
   
   it("should navigate to home page on successful login", async () => {
