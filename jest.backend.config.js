@@ -6,7 +6,7 @@ export default {
   testEnvironment: "node",
 
   // which test to run
-  testMatch: ["<rootDir>/middlewares/*.test.js", "<rootDir>/helpers/*.test.js"],
+  testMatch: ["<rootDir>/middlewares/*.test.js", "<rootDir>/controllers/auth/*.test.js","<rootDir>/helpers/*.test.js"],
 
   // jest code coverage
   collectCoverage: true,
