@@ -4,6 +4,11 @@ import { useProducts } from '../useProducts';
 // Mock axios
 jest.mock('axios');
 
+// Mock react-hot-toast
+jest.mock('react-hot-toast', () => ({
+  error: jest.fn()
+}));
+
 // Mock React's useState
 const mockStates = {};
 const mockSetState = jest.fn((value) => {
@@ -91,5 +96,32 @@ describe('useProducts', () => {
     products.setPage(2);
 
     expect(mockSetState).toHaveBeenCalledWith(2);
+  });
+
+  test('fetchAllProducts should update products state', async () => {
+    axios.get.mockResolvedValueOnce({ data: { products: mockProducts } });
+    
+    const products = useProducts();
+    await products.fetchAllProducts();
+
+    expect(mockSetState).toHaveBeenCalledWith(mockProducts);
+    expect(axios.get).toHaveBeenCalledWith('/api/v1/product/get-product');
+    expect(mockSetState).toHaveBeenCalledWith(true); // loading set to true
+    expect(mockSetState).toHaveBeenCalledWith(false); // loading set to false
+  });
+
+  test('fetchAllProducts should handle errors', async () => {
+    const toast = require('react-hot-toast');
+    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+    axios.get.mockRejectedValueOnce(new Error('API Error'));
+
+    const products = useProducts();
+    await products.fetchAllProducts();
+
+    expect(mockSetState).toHaveBeenCalledWith(false); // loading set to false
+    expect(consoleLogSpy).toHaveBeenCalledWith(expect.any(Error));
+    expect(toast.error).toHaveBeenCalledWith('Something Went Wrong');
+
+    consoleLogSpy.mockRestore();
   });
 });
