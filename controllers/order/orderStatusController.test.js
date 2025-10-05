@@ -1,60 +1,60 @@
-import { jest } from "@jest/globals";
+import { orderStatusController } from "./orderStatusController";
+import orderModel from "../../models/orderModel";
 
-jest.unstable_mockModule("../../models/orderModel.js", () => ({
-    __esModule: true,
-    default: { findByIdAndUpdate: jest.fn() },
-    }));
+jest.mock("../../models/orderModel", () => ({
+    findByIdAndUpdate: jest.fn(),
+}));
 
-    const { default: orderModel } = await import("../../models/orderModel.js");
-    const { orderStatusController } = await import("./orderStatusController.js");
-
-    const makeRes = () => {
-    const res = {};
-    res.status = jest.fn(() => res);
-    res.json = jest.fn(() => res);
-    res.send = jest.fn(() => res);
-    return res;
+describe("orderStatusController", () => {
+    const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+        send: jest.fn(),
     };
 
-    beforeEach(() => jest.clearAllMocks());
+    beforeEach(() => {
+        jest.clearAllMocks();
+        res.status.mockClear();
+        res.json.mockClear();
+        res.send.mockClear();
+    });
 
-    test("updates status and returns order", async () => {
-    orderModel.findByIdAndUpdate.mockResolvedValueOnce({ _id: "o3", status: "Shipped" });
+    it("updates status and returns 200 with updated order", async () => {
+        orderModel.findByIdAndUpdate.mockResolvedValue({ _id: "o3", status: "Shipped" });
 
-    const req = { params: { orderId: "o3" }, body: { status: "Shipped" } };
-    const res = makeRes();
+        const req = { params: { orderId: "o3" }, body: { status: "Shipped" } };
+        await orderStatusController(req, res);
 
-    await orderStatusController(req, res);
-
-    expect(orderModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        expect(orderModel.findByIdAndUpdate).toHaveBeenCalledWith(
         "o3",
         { status: "Shipped" },
         { new: true }
-    );
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({ _id: "o3", status: "Shipped" });
+        );
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith({ _id: "o3", status: "Shipped" });
     });
 
-    test("404 when order not found", async () => {
-    orderModel.findByIdAndUpdate.mockResolvedValueOnce(null);
+    it("returns 404 when order not found", async () => {
+        orderModel.findByIdAndUpdate.mockResolvedValue(null);
 
-    const req = { params: { orderId: "missing" }, body: { status: "X" } };
-    const res = makeRes();
+        const req = { params: { orderId: "missing" }, body: { status: "X" } };
+        await orderStatusController(req, res);
 
-    await orderStatusController(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.send).toHaveBeenCalledWith(expect.objectContaining({ success: false }));
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.send).toHaveBeenCalledWith(
+        expect.objectContaining({ success: false })
+        );
     });
 
-    test("500 on exception", async () => {
-    orderModel.findByIdAndUpdate.mockRejectedValueOnce(new Error("db down"));
+    it("returns 500 on exception", async () => {
+        orderModel.findByIdAndUpdate.mockRejectedValue(new Error("db down"));
 
-    const req = { params: { orderId: "o4" }, body: { status: "Y" } };
-    const res = makeRes();
+        const req = { params: { orderId: "o4" }, body: { status: "Y" } };
+        await orderStatusController(req, res);
 
-    await orderStatusController(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.send).toHaveBeenCalledWith(expect.objectContaining({ success: false }));
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.send).toHaveBeenCalledWith(
+        expect.objectContaining({ success: false })
+        );
+    });
 });
