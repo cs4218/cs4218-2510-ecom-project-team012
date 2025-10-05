@@ -92,8 +92,9 @@ describe("PrivateRoute", () => {
 
   it("should render Spinner if auth check API call fails", async () => {
     // Arrange
+    const spyConsole = jest.spyOn(console, "log").mockImplementation();
     useAuth.mockReturnValue([{ token: "valid-token" }, jest.fn()]);
-    axios.get.mockRejectedValue(new Error("Network Error"));
+    axios.get.mockRejectedValueOnce(new Error("Network Error"));
 
     // Act
     render(<PrivateRoute />);
@@ -102,6 +103,7 @@ describe("PrivateRoute", () => {
     await waitFor(() => {
       expect(screen.getByTestId("spinner")).toBeInTheDocument();
     });
+    expect(spyConsole).toHaveBeenCalledWith(new Error("Network Error"));
     expect(screen.queryByTestId("outlet")).not.toBeInTheDocument();
     expect(axios.get).toHaveBeenCalledTimes(1);
   });

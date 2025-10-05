@@ -3,7 +3,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/auth";
 import { Outlet } from "react-router-dom";
-import axios from 'axios';
+import axios from "axios";
 // Removed unused import
 // import { set } from "mongoose";
 import Spinner from "../Spinner";
@@ -21,7 +21,13 @@ export default function PrivateRoute() {
         setOk(false);
       }
     };
-    if (auth?.token) authCheck();
+    if (auth?.token)
+      (async () => {try {
+        await authCheck();
+      } catch (error) {
+        console.log(error);
+        setOk(false);
+      }})();
   }, [auth?.token]);
 
   return ok ? <Outlet /> : <Spinner path="" />;
