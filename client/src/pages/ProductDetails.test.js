@@ -21,10 +21,10 @@ jest.mock("../context/auth", () => ({
 }));
 
 const mockSetCart = jest.fn();
-const initialCart = [];
+const mockInitialCart = [];
 jest.mock("../context/cart", () => {
   return {
-    useCart: jest.fn(() => [initialCart, mockSetCart]), // Mock useCart hook to return initialCart and a mock function
+    useCart: jest.fn(() => [mockInitialCart, mockSetCart]), // Mock useCart hook to return initialCart and a mock function
   };
 });
 
@@ -435,7 +435,7 @@ describe("ProductDetails Component", () => {
   });
 
   it("should add product to cart when 'ADD TO CART' button is clicked and mantain items in cart", async () => {
-    initialCart.push(mockProduct2);
+    mockInitialCart.push(mockProduct2);
     axios.get
       .mockResolvedValueOnce({ data: { product: mockProduct1 } })
       .mockResolvedValueOnce({ data: { products: [] } });
