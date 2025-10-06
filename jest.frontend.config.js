@@ -38,8 +38,8 @@ export default {
 
   coverageThreshold: {
     global: {
-      lines: 50,
-      functions: 50,
+      lines: 80,
+      functions: 80,
     },
   },
   setupFilesAfterEnv: ["<rootDir>/client/src/setupTests.js"],
