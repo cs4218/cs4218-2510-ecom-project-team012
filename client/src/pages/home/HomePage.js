@@ -40,31 +40,31 @@ const HomePage = () => {
   useEffect(() => {
     fetchCategories();
     getProductsCount();
-  }, []);
+  }, [fetchCategories, getProductsCount]);
 
   useEffect(() => {
     if (page === 1) return;
     loadMore();
-  }, [page]);
+  }, [loadMore, page]);
 
   useEffect(() => {
     if (!checked.length || !radio.length) fetchProducts();
-  }, [checked.length, radio.length]);
+  }, [checked.length, fetchProducts, radio.length]);
 
   useEffect(() => {
     if (checked.length || radio.length) filterProducts();
-  }, [checked, radio]);  useEffect(() => {
+  }, [checked, filterProducts, radio]);  useEffect(() => {
     if (page === 1) return;
     loadMore();
-  }, [page]);
+  }, [loadMore, page]);
 
   useEffect(() => {
     if (!checked.length || !radio.length) fetchProducts();
-  }, [checked.length, radio.length]);
+  }, [checked.length, fetchProducts, radio.length]);
 
   useEffect(() => {
     if (checked.length || radio.length) filterProducts();
-  }, [checked, radio]);
+  }, [checked, filterProducts, radio]);
   return (
     <Layout title={"ALL Products - Best offers "}>
       {/* banner image */}
