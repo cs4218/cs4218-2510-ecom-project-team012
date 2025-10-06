@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 export const useProducts = () => {
   const [products, setProducts] = useState([]);
@@ -40,6 +41,19 @@ export const useProducts = () => {
     }
   };
 
+  const fetchAllProducts = async () => {
+    try {
+      setLoading(true);
+      const { data } = await axios.get("/api/v1/product/get-product");
+      setProducts(data.products);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      toast.error("Something Went Wrong");
+      setLoading(false);
+    }
+  };
+
   return {
     products,
     setProducts,
@@ -49,6 +63,7 @@ export const useProducts = () => {
     setPage,
     fetchProducts,
     loadMore,
-    getProductsCount
+    getProductsCount,
+    fetchAllProducts
   };
 };

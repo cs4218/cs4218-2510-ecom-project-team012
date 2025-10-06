@@ -1,25 +1,35 @@
-import { useState,useEffect } from "react";
+// Add missing React import
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/auth";
 import { Outlet } from "react-router-dom";
-import axios from 'axios';
-import { set } from "mongoose";
+import axios from "axios";
+// Removed unused import
+// import { set } from "mongoose";
 import Spinner from "../Spinner";
 
-export default function PrivateRoute(){
-    const [ok,setOk] = useState(false)
-    const [auth,setAuth] = useAuth()
+export default function PrivateRoute() {
+  const [ok, setOk] = useState(false);
+  const [auth,] = useAuth();
 
-    useEffect(()=> {
-        const authCheck = async() => {
-            const res = await axios.get("/api/v1/auth/user-auth");
-            if(res.data.ok){
-                setOk(true);
-            } else {
-                setOk(false);
-            }
-        };
-        if (auth?.token) authCheck();
-    }, [auth?.token]);
+  useEffect(() => {
+    const authCheck = async () => {
+      const res = await axios.get("/api/v1/auth/user-auth");
+      if (res.data.ok) {
+        setOk(true);
+      } else {
+        setOk(false);
+      }
+    };
+    if (auth?.token)
+      (async () => {
+        try {
+          await authCheck();
+        } catch (error) {
+          console.log(error);
+          setOk(false);
+        }
+      })();
+  }, [auth?.token]);
 
-    return ok ? <Outlet /> : <Spinner path=""/>;
+  return ok ? <Outlet /> : <Spinner path="" />;
 }

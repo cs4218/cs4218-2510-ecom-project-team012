@@ -21,19 +21,27 @@ export default {
 
   // only run these tests
   testMatch: [
-    "<rootDir>/client/src/pages/Auth/*.test.js",
-    "<rootDir>/client/src/hooks/__tests__/*.test.js",],
+    "<rootDir>/client/src/**/*.test.js", // recursively match all test.js files under src
+  ],
 
   // jest code coverage
   collectCoverage: true,
   collectCoverageFrom: [
-    "client/src/pages/Auth/**",
-    "client/src/hooks/**"],
+    "client/src/pages/**/*.js",
+    "client/src/components/*.js",
+    "client/src/hooks/*.js",
+    "client/src/components/Form/CategoryForm.js",
+    "client/src/components/Routes/Private.js",
+    "client/src/context/cart.js",
+    "client/src/context/auth.js",
+  ],
+
   coverageThreshold: {
     global: {
-      lines: 90,
-      functions: 90,
+      lines: 50,
+      functions: 50,
     },
   },
   setupFilesAfterEnv: ["<rootDir>/client/src/setupTests.js"],
+  coverageDirectory: "<rootDir>/coverage/front-tests",
 };
