@@ -12,7 +12,6 @@ import {
 import productModel from "../models/productModel.js";
 import categoryModel from "../models/categoryModel.js";
 
-// General structure generated with the help of AI
 jest.mock("../models/productModel.js");
 jest.mock("../models/categoryModel.js");
 
@@ -96,7 +95,6 @@ describe("getProductController", () => {
 
     // Assert
     expect(res.status).toHaveBeenCalledWith(500);
-    // Good practice will be to make the error message a constant and import it here
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: false,
@@ -210,7 +208,6 @@ describe("getSingleProductController", () => {
     // Assert
     expect(productModel.findOne).toHaveBeenCalledWith(req.params);
     expect(res.status).toHaveBeenCalledWith(500);
-    // Good practice will be to make the error message a constant and import it here
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: false,
@@ -312,7 +309,6 @@ describe("productPhotoController", () => {
     // Assert
     expect(productModel.findById).toHaveBeenCalledWith(req.params.pid);
     expect(res.status).toHaveBeenCalledWith(500);
-    // Good practice will be to make the error message a constant and import it here
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: false,
@@ -335,7 +331,6 @@ describe("productPhotoController", () => {
     // Assert
     expect(productModel.findById).toHaveBeenCalledWith(req.params.pid);
     expect(res.status).toHaveBeenCalledWith(404);
-    // Good practice will be to make the error message a constant and import it here
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: false,
@@ -599,7 +594,6 @@ describe("productFiltersController", () => {
 
     // Assert
     expect(res.status).toHaveBeenCalledWith(400);
-    // Good practice will be to make the error message a constant and import it here
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: false,
@@ -683,7 +677,6 @@ describe("productCountController", () => {
 
     // Assert
     expect(res.status).toHaveBeenCalledWith(400);
-    // Good practice will be to make the error message a constant and import it here
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: false,
@@ -818,7 +811,6 @@ describe("productListController", () => {
 
     // Assert
     expect(res.status).toHaveBeenCalledWith(400);
-    // Good practice will be to make the error message a constant and import it here
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: false,
@@ -919,7 +911,6 @@ describe("searchProductController", () => {
 
     // Assert
     expect(res.status).toHaveBeenCalledWith(400);
-    // Good practice will be to make the error message a constant and import it here
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: false,
@@ -1110,7 +1101,6 @@ describe("realtedProductController", () => {
 
     // Assert
     expect(res.status).toHaveBeenCalledWith(400);
-    // Good practice will be to make the error message a constant and import it here
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: false,
