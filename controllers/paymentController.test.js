@@ -1,4 +1,4 @@
-import { jest } from "@jest/globals";
+// General structure generated with the help of AI
 
 // Create mocks before imports
 const mockGateway = {
@@ -14,36 +14,30 @@ const mockBraintreeGateway = jest.fn(() => mockGateway);
 const mockEnvironment = { Sandbox: "sandbox" };
 
 // Mock braintree module
-jest.unstable_mockModule("braintree", () => ({
-  default: {
-    BraintreeGateway: mockBraintreeGateway,
-    Environment: mockEnvironment,
-  },
+jest.mock("braintree", () => ({
   BraintreeGateway: mockBraintreeGateway,
   Environment: mockEnvironment,
 }));
 
 // Mock orderModel
-const mockOrderModel = jest.fn();
-mockOrderModel.mockImplementation((data) => ({ 
+const mockSave = jest.fn();
+const mockOrderModel = jest.fn((data) => ({ 
   ...data,
-  save: jest.fn().mockResolvedValue({ _id: "order123", ...data }),
+  save: mockSave,
 }));
 
-jest.unstable_mockModule("../../models/orderModel.js", () => ({
-  default: mockOrderModel,
-}));
+jest.mock("../models/orderModel.js", () => mockOrderModel);
 
 // Mock dotenv
-jest.unstable_mockModule("dotenv", () => ({
-  default: { config: jest.fn() },
+jest.mock("dotenv", () => ({
   config: jest.fn(),
 }));
 
 // Import controllers after mocks are set up
-const { braintreeTokenController, brainTreePaymentController } = await import(
-  "../paymentController.js"
-);
+const {
+  braintreeTokenController,
+  brainTreePaymentController,
+} = require("./paymentController.js");
 
 describe("Payment Controller Tests", () => {
   let mockReq;
@@ -52,6 +46,7 @@ describe("Payment Controller Tests", () => {
   beforeEach(() => {
     // Reset all mocks before each test
     jest.clearAllMocks();
+    mockSave.mockResolvedValue({ _id: "order123" });
 
     // Setup mock request and response
     mockReq = {
@@ -123,6 +118,8 @@ describe("Payment Controller Tests", () => {
     beforeEach(() => {
       // Reset orderModel mock
       mockOrderModel.mockClear();
+      mockSave.mockClear();
+      mockSave.mockResolvedValue({ _id: "order123" });
     });
 
     it("should process payment successfully and create order", async () => {
