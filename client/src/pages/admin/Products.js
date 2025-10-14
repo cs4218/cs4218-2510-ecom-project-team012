@@ -1,15 +1,27 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import AdminMenu from "../../components/AdminMenu";
 import Layout from "./../../components/Layout";
-import { useProducts } from "../../hooks/useProducts";
+import axios from "axios";
+import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 const Products = () => {
-  const { products, fetchAllProducts, loading } = useProducts();
+  const [products, setProducts] = useState([]);
+
+  //getall products
+  const getAllProducts = async () => {
+    try {
+      const { data } = await axios.get("/api/v1/product/get-product");
+      setProducts(data.products);
+    } catch (error) {
+      console.log(error);
+      toast.error("Someething Went Wrong");
+    }
+  };
 
   //lifecycle method
   useEffect(() => {
-    fetchAllProducts();
-  }, [fetchAllProducts]);
+    getAllProducts();
+  }, []);
   return (
     <Layout>
       <div className="row">
