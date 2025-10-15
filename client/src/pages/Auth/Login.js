@@ -23,8 +23,9 @@ const Login = () => {
         password,
       });
       if (res && res.data.success) {
+        // FIXED BUG: Duration of toast too short
         toast.success(res.data && res.data.message, {
-            duration: 5000,
+            duration: 30000,
             icon: "🙏",
             style: {
               background: "green",
