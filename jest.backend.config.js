@@ -12,13 +12,14 @@ export default {
 
   // which test to run
   testMatch: [
-  "<rootDir>/controllers/*.test.js",
-  "<rootDir>/controllers/auth/*.test.js",
-  "<rootDir>/controllers/order/*.test.js",
-  "<rootDir>/models/*.test.js",
-  "<rootDir>/middlewares/*.test.js",
-  "<rootDir>/helpers/*.test.js",
-  "<rootDir>/config/*.test.js"
+    "<rootDir>/controllers/*.test.js",
+    "<rootDir>/controllers/auth/*.test.js",
+    "<rootDir>/controllers/order/*.test.js",
+    "<rootDir>/models/*.test.js",
+    "<rootDir>/middlewares/*.test.js",
+    "<rootDir>/helpers/*.test.js",
+    "<rootDir>/config/*.test.js",
+    "<rootDir>/models/*.integration.test.js",
   ],
 
   // jest code coverage
@@ -28,9 +29,9 @@ export default {
     "models/**",
     "middlewares/**",
     "helpers/**",
-    "config/**"
+    "config/**",
   ],
-    
+
   coverageThreshold: {
     global: {
       lines: 80,
@@ -38,6 +39,9 @@ export default {
     },
   },
 
-  "setupFilesAfterEnv": ["<rootDir>/jest.backend.setup.js"],
+  setupFilesAfterEnv: [
+    "<rootDir>/jest.backend.setup.js",
+    "<rootDir>/tests/setupTestDB.js",
+  ],
   coverageDirectory: "<rootDir>/coverage/back-tests",
 };
