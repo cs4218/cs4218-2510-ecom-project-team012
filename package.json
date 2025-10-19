@@ -16,7 +16,8 @@
     "test:frontend-int": "NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.frontend.integration.config.js",
     "test:backend-int": "NODE_ENV=test-backend-integration node node_modules/jest/bin/jest.js --runInBand --config jest.backend.integration.config.js",
     "test:integration": "npm run test:backend-int && npm run test:frontend-int",
-    "test:ui": "npx playwright test --ui"
+    "convert:json": "node tests/convertJsonToJs.js",
+    "test:ui": "npm run convert:json && npx playwright test --ui"
   },
   "keywords": [],
   "author": "RP",

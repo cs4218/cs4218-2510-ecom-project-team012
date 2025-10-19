@@ -8,6 +8,8 @@ import productRoutes from "./routes/productRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import cors from "cors";
 import { createTestDB, connectTestDB } from "./tests/setupTestDB.js";
+import { seedTestData } from "./tests/seedTestData.js";
+import seedDataRoutes from "./tests/seedDataRoutes.js";
 
 // configure env
 dotenv.config();
@@ -19,9 +21,9 @@ if (["test-frontend-integration", "test-ui"].includes(process.env.NODE_ENV)) {
 } else if (process.env.NODE_ENV !== "test-backend-integration") {
   connectDB();
 }
-// if (process.env.NODE_ENV === "test-ui") {
-//   seedData();
-// }
+if (process.env.NODE_ENV === "test-ui") {
+  seedTestData();
+}
 
 const app = express();
 
@@ -36,9 +38,9 @@ app.use("/api/v1/category", categoryRoutes);
 app.use("/api/v1/product", productRoutes);
 app.use("/api/v1/payment", paymentRoutes);
 
-// if (process.env.NODE_ENV === "test-frontend-integration") {
-//   app.use("/api/v1/seed", seedRoutes);
-// }
+if (process.env.NODE_ENV === "test-frontend-integration") {
+  app.use("/api/v1/seed", seedDataRoutes);
+}
 
 // rest api
 
