@@ -45,4 +45,5 @@ export default {
   coveragePathIgnorePatterns: ["/node_modules/", ".test.js"],
   coverageDirectory: "<rootDir>/coverage/frontend-integration-tests",
   passWithNoTests: true,
+  setupFilesAfterEnv: ["<rootDir>/client/src/setupIntegrationTests.js"],
 };
