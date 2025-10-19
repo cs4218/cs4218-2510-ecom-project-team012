@@ -18,7 +18,7 @@ const unregisteredLogin = {
   password: '1234',
 }
 
-test('User should see toast with success message if they log in to a registered account', async ({ page }) => {
+test('User should be logged in and see toast with success message if they log in to a registered account', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Enter Your Email' }).click();
   await page.getByRole('textbox', { name: 'Enter Your Email' }).fill(validLogin.email);
   await page.getByRole('textbox', { name: 'Enter Your Password' }).click();
@@ -36,7 +36,7 @@ test('User should be redirected to Home page on successful login', async ({ page
   await expect(page).toHaveURL(/\/$/);
 });
 
-test('User should see toast with failure message if they log in with the wrong email', async ({ page }) => {
+test('User should not be logged in and see toast with failure message instead if they log in with the wrong email', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Enter Your Email' }).click();
   await page.getByRole('textbox', { name: 'Enter Your Email' }).fill(validLogin.wrongEmail);
   await page.getByRole('textbox', { name: 'Enter Your Password' }).click();
@@ -45,7 +45,7 @@ test('User should see toast with failure message if they log in with the wrong e
   await expect(page.locator('div').filter({ hasText: /^Something went wrong$/ }).nth(2)).toBeVisible();
 });
 
-test('User should see toast with failure message if they log in with the wrong password', async ({ page }) => {
+test('User should not be logged in and see toast with failure message instead if they log in with the wrong password', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Enter Your Email' }).click();
   await page.getByRole('textbox', { name: 'Enter Your Email' }).fill(validLogin.email);
   await page.getByRole('textbox', { name: 'Enter Your Password' }).click();
@@ -54,7 +54,7 @@ test('User should see toast with failure message if they log in with the wrong p
   await expect(page.locator('div').filter({ hasText: /^Something went wrong$/ }).nth(2)).toBeVisible();
 });
 
-test('User should see toast with failure message if they log in with unregistered account', async ({ page }) => {
+test('User should not be logged in and see toast with failure message instead if they log in with unregistered account', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Enter Your Email' }).click();
   await page.getByRole('textbox', { name: 'Enter Your Email' }).fill(unregisteredLogin.email);
   await page.getByRole('textbox', { name: 'Enter Your Password' }).click();
