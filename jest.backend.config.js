@@ -19,7 +19,6 @@ export default {
     "<rootDir>/middlewares/*.test.js",
     "<rootDir>/helpers/*.test.js",
     "<rootDir>/config/*.test.js",
-    "<rootDir>/models/*.integration.test.js",
   ],
 
   // jest code coverage
@@ -41,7 +40,6 @@ export default {
 
   setupFilesAfterEnv: [
     "<rootDir>/jest.backend.setup.js",
-    "<rootDir>/tests/setupTestDB.js",
   ],
   coverageDirectory: "<rootDir>/coverage/back-tests",
 };

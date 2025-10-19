@@ -14,10 +14,7 @@ export const createTestDB = async () => {
 
 // Connect to the in-memory MongoDB instance
 export const connectTestDB = async (uri) => {
-  await mongoose.connect(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+  await mongoose.connect(uri);
 };
 
 // Close the connection and stop the in-memory MongoDB instance

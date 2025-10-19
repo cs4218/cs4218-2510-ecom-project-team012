@@ -62,7 +62,7 @@ Github Actions CI Link: <https://github.com/cs4218/cs4218-2510-ecom-project-team
 | **Integration Test**             | **File**                         | **Person**         |
 | -------------------------------- | -------------------------------- | ------------------ |
 | productModel.integration.test.js | models/productModel.js, mongoose | Megan Loo Jia Vern |
-| productModel.integration.test.js | mongoose,<br>controllers/productController.js<br>1. getProductController<br>2. getSingleProductController<br>3. productPhotoController<br>4. productFiltersController<br>5. productCountController<br>6. productListController<br>7. searchProductController<br>8. realtedProductController<br>9. productCategoryController | Megan Loo Jia Vern |
+| productController.integration.test.js | mongoose,<br>models/productModel.js,<br>routes/productRoutes.js(obtaining the API endpoints for the controller functions below)<br>controllers/productController.js<br>1. getProductController<br>2. getSingleProductController<br>3. productPhotoController<br>4. productFiltersController<br>5. productCountController<br>6. productListController<br>7. searchProductController<br>8. realtedProductController<br>9. productCategoryController | Megan Loo Jia Vern |
 | productDetails.integration.test.js | pages/ProductDetails.js, context/cart.js, Backend, Toaster, React Router,  | Megan Loo Jia Vern |
 
 ## 4. Setting Up The Project

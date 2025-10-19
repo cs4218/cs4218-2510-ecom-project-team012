@@ -10,7 +10,7 @@ import {
 
 // General structure generated with the help of AI
 
-// Test DB operations used of product model
+// Tested DB operations used of product model
 // populate, findById, findByIdAndUpdate, findByIdAndDelete, estimatedDocumentCount
 
 const testCategory1 = {
