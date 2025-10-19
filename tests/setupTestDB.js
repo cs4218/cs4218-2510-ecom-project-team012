@@ -6,21 +6,31 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 
 let mongoServer;
 
-beforeAll(async () => {
+// Create an in-memory MongoDB instance
+export const createTestDB = async () => {
   mongoServer = await MongoMemoryServer.create();
-  const uri = mongoServer.getUri();
-  await mongoose.connect(uri);
-});
+  return mongoServer.getUri();
+};
 
-afterEach(async () => {
-  // Clean all collections after each test
+// Connect to the in-memory MongoDB instance
+export const connectTestDB = async (uri) => {
+  await mongoose.connect(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+};
+
+// Close the connection and stop the in-memory MongoDB instance
+export const closeTestDB = async () => {
+  await mongoose.connection.dropDatabase();
+  await mongoose.connection.close();
+  if (mongoServer) await mongoServer.stop();
+};
+
+// Clear all data from the in-memory MongoDB instance
+export const clearTestDB = async () => {
   const collections = mongoose.connection.collections;
   for (const key in collections) {
-    await collections[key].deleteMany({});
+    await collections[key].deleteMany();
   }
-});
-
-afterAll(async () => {
-  await mongoose.disconnect();
-  await mongoServer.stop();
-});
+};
