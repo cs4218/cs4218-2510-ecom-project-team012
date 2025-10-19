@@ -14,6 +14,10 @@ import seedDataRoutes from "./tests/seedDataRoutes.js";
 // configure env
 dotenv.config();
 
+// sanity check
+// print current environment
+console.log("Current NODE_ENV:", process.env.NODE_ENV);
+
 //database config
 if (["test-frontend-integration", "test-ui"].includes(process.env.NODE_ENV)) {
   createTestDB();

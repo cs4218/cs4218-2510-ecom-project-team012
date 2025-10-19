@@ -13,11 +13,11 @@
     "test": "npm run test:backend && npm run test:frontend && npm run test:integration",
     "test:frontend": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.frontend.config.js",
     "test:backend": "node node_modules/jest/bin/jest.js --config jest.backend.config.js",
-    "test:frontend-int": "NODE_ENV=test-frontend-integration node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.frontend.integration.config.js",
-    "test:backend-int": "NODE_ENV=test-backend-integration node node_modules/jest/bin/jest.js --runInBand --config jest.backend.integration.config.js",
+    "test:frontend-int": "cross-env NODE_ENV=test-frontend-integration node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.frontend.integration.config.js",
+    "test:backend-int": "cross-env NODE_ENV=test-backend-integration node node_modules/jest/bin/jest.js --runInBand --config jest.backend.integration.config.js",
     "test:integration": "npm run test:backend-int && npm run test:frontend-int",
     "convert:json": "node tests/convertJsonToJs.js",
-    "test:ui": "npm run convert:json && NODE_ENV=test-ui npx playwright test --ui"
+    "test:ui": "npm run convert:json && cross-env NODE_ENV=test-ui npx playwright test --ui"
   },
   "keywords": [],
   "author": "RP",
@@ -50,6 +50,7 @@
     "@testing-library/react": "^16.3.0",
     "@types/node": "^20.12.12",
     "babel-jest": "^29.7.0",
+    "cross-env": "^10.1.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
