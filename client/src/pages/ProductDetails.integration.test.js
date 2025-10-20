@@ -167,4 +167,21 @@ describe("Product Details Page Integration", () => {
       ).toBeInTheDocument();
     });
   });
+
+  it("should show 'No Similar Products found' when there are no related products", async () => {
+    const categoryData = await seedCategoryData([testCategory1]);
+    const productData = await seedProductData([
+      { ...testProduct1, category: categoryData.categories[0]._id },
+    ]);
+
+    renderProductDetailsPage(testProduct1.slug);
+
+    // Assert
+    await waitFor(() => {
+      const noSimilarProductsMessage = screen.getByText(
+        /No Similar Products found/i
+      );
+      expect(noSimilarProductsMessage).toBeInTheDocument();
+    });
+  });
 });
