@@ -184,4 +184,31 @@ describe("Product Details Page Integration", () => {
       expect(noSimilarProductsMessage).toBeInTheDocument();
     });
   });
+
+  it("should navigate to similar product's details page when 'More Details' button is clicked", async () => {
+    const categoryData = await seedCategoryData([testCategory1]);
+    const productData = await seedProductData([
+      { ...testProduct1, category: categoryData.categories[0]._id },
+      {...testProduct1, name: "Product 2", slug: "product-2-slug", category: categoryData.categories[0]._id },
+    ]);
+
+    renderProductDetailsPage(testProduct1.slug);
+
+    // Act
+    const moreDetailsButton = await screen.findByRole("button", {
+      name: /More Details/i,
+    });
+
+    await act(async () => {
+      moreDetailsButton.click();
+    });
+
+    // Assert
+    await waitFor(() => {
+      expect(
+        screen.getByRole("heading", { name: /Product Details/i })
+      ).toBeInTheDocument();
+      screen.getByText((content) => content.includes("Product 2"));
+    });
+  });
 });
