@@ -19,12 +19,12 @@ dotenv.config();
 console.log("Current NODE_ENV:", process.env.NODE_ENV);
 
 //database config
-if (["test-frontend-integration", "test-ui"].includes(process.env.NODE_ENV)) {
+if (["frontend-int", "test-ui"].includes(process.env.NODE_ENV)) {
   (async () => {
     const uri = await createTestDB();
     await connectTestDB(uri);
   })();
-} else if (process.env.NODE_ENV !== "test-backend-integration") {
+} else if (process.env.NODE_ENV !== "backend-int") {
   connectDB();
 }
 if (process.env.NODE_ENV === "test-ui") {
@@ -44,7 +44,7 @@ app.use("/api/v1/category", categoryRoutes);
 app.use("/api/v1/product", productRoutes);
 app.use("/api/v1/payment", paymentRoutes);
 
-if (process.env.NODE_ENV === "test-frontend-integration") {
+if (process.env.NODE_ENV === "frontend-int") {
   app.use("/api/v1/seed", seedDataRoutes);
 }
 
@@ -57,8 +57,8 @@ app.get("/", (req, res) => {
 const PORT = process.env.PORT || 6060;
 
 if (
-  process.env.NODE_ENV !== "test-frontend-integration" &&
-  process.env.NODE_ENV !== "test-backend-integration"
+  process.env.NODE_ENV !== "frontend-int" &&
+  process.env.NODE_ENV !== "backend-int"
 ) {
   app.listen(PORT, () => {
     console.log(
