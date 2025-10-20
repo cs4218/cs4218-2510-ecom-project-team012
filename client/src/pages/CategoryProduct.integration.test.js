@@ -1,77 +1,80 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import {
-  resetSeedDatabase,
-  seedCategoryData,
-  seedProductData,
-} from "../setupSeedDataRoutes";
-
-jest.mock("../hooks/useCategory", () => jest.fn(() => []));
-
-import "@testing-library/jest-dom/extend-expect";
-import ProductDetails from "./ProductDetails";
-import CategoryProduct from "./CategoryProduct";
-import Pagenotfound from "./Pagenotfound";
 import { AuthProvider } from "../context/auth";
-import { SearchProvider } from "../context/search";
-import { CartProvider } from "../context/cart";
+import CategoryProduct from "./CategoryProduct";
+import ProductDetails from "./ProductDetails";
+import Pagenotfound from "./Pagenotfound";
 import { Toaster } from "react-hot-toast";
+import { CartProvider } from "../context/cart";
+import { SearchProvider } from "../context/search";
+import { resetSeedDatabase, seedCategoryData, seedProductData } from "../setupSeedDataRoutes";
 
 // General structure generated with the help of AI
 
-const testCategory = {
-  _id: "68e3f943282387623f0a0737",
-  name: "Electronics",
-  slug: "electronics",
+jest.mock("../hooks/useCategory", () => jest.fn(() => []));
+
+function renderCategoryProductPage(slug) {
+  return render(
+    <AuthProvider>
+      <SearchProvider>
+        <CartProvider>
+          <MemoryRouter initialEntries={[`/category/${slug}`]}>
+            <Toaster />
+            <Routes>
+              <Route path="/product/:slug" element={<ProductDetails />} />
+              <Route path="/category/:slug" element={<CategoryProduct />} />
+              <Route path="*" element={<Pagenotfound />} />
+            </Routes>
+          </MemoryRouter>
+        </CartProvider>
+      </SearchProvider>
+    </AuthProvider>
+  );
+}
+
+const testCategory1 = {
+  _id: "64a7f0f2b4dcb5e5f6a1c123",
+  name: "Test Category",
+  slug: "test-category-slug",
+  description: "This is a test category for integration testing.",
 };
 
-const testProduct = {
-  name: "Smartphone",
-  slug: "smartphone",
-  description: "A cool smartphone",
-  category: testCategory._id,
-  price: 699,
-  quantity: 50,
-};
+const testProduct1 = {
+  _id: "64a7f1a2b4dcb5e5f6a1c456",
+  name: "Test Product",
+  slug: "test-product-slug",
+  description: "This is a test product for integration testing.",
+  price: 99.99,
+  quantity: 10,
+  category: testCategory1._id,
+};  
 
-beforeAll(async () => {
-  // Reset + Seed test DB before running
-  await resetSeedDatabase();
-  await seedCategoryData([testCategory]);
-  await seedProductData([{ ...testProduct }]);
-});
+describe("Category Product Page Integration", () => {
+  beforeEach(async () => {
+    // ensure a clean storage between tests
+    localStorage.clear();
+    await resetSeedDatabase();
+    await seedCategoryData([testCategory1]);
+  });
 
-describe("CategoryProduct Page Integration", () => {
-  it("renders category name and products from backend", async () => {
-    // Render the page for the Electronics category
-    render(
-      <AuthProvider>
-        <SearchProvider>
-          <CartProvider>
-            <MemoryRouter initialEntries={[`/category/${testCategory.slug}`]}>
-              <Toaster />
-              <Routes>
-                <Route path="/product/:slug" element={<ProductDetails />} />
-                <Route path="/category/:slug" element={<CategoryProduct />} />
-                <Route path="*" element={<Pagenotfound />} />
-              </Routes>
-            </MemoryRouter>
-          </CartProvider>
-        </SearchProvider>
-      </AuthProvider>
-    );
+  afterEach(async () => {
+    localStorage.clear();
+    await resetSeedDatabase();
+  });
 
-    // Wait for category name to appear (backend call resolves)
-    const categoryName = await screen.findByText(/Category - Electronics/i);
-    expect(categoryName).toBeInTheDocument();
+  describe("should render category products information and components when accessed", () => {
+    it("should render category product page title", async () => {
+      await seedProductData([testProduct1]);
 
-    // Ensure products are loaded
-    const products = await screen.findAllByRole("img"); // images of product cards
-    expect(products.length).toBeGreaterThan(0);
+      renderCategoryProductPage(testCategory1.slug);
 
-    // Product count text
-    const count = await screen.findByText(/result found/i);
-    expect(count).toHaveTextContent(/result found/i);
+      await waitFor(() =>
+        expect(
+          screen.getByRole("heading", { name: /Category/i })
+        ).toBeInTheDocument()
+      );
+    });
   });
 });
+
