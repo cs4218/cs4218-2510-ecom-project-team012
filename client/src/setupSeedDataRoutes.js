@@ -3,24 +3,24 @@
 
 import axios from "axios";
 
-const resetDatabase = async () => {
+const resetSeedDatabase = async () => {
   await axios.get("/api/v1/seed/reset");
 };
 
-const seedCategories = async (categories) => {
-  await axios.post("/api/v1/seed/categories", categories);
+const seedCategoryData = async (categories) => {
+  await axios.post("/api/v1/seed/category-data", categories);
 };
 
-const seedProducts = async (products) => {
-  await axios.post("/api/v1/seed/products", products);
+const seedProductData = async (products) => {
+  await axios.post("/api/v1/seed/product-data", products);
 };
 
-const seedOrders = async (orders) => {
-  await axios.post("/api/v1/seed/orders", orders);
+const seedOrderData = async (orders) => {
+  await axios.post("/api/v1/seed/order-data", orders);
 };
 
-const seedUsers = async (users) => {
-  await axios.post("/api/v1/seed/users", users);
+const seedUserData = async (users) => {
+  await axios.post("/api/v1/seed/user-data", users);
 };
 
-export { resetDatabase, seedCategories, seedProducts, seedOrders, seedUsers };
+export { resetSeedDatabase, seedCategoryData, seedProductData, seedOrderData, seedUserData };

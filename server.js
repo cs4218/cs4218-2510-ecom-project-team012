@@ -20,8 +20,10 @@ console.log("Current NODE_ENV:", process.env.NODE_ENV);
 
 //database config
 if (["test-frontend-integration", "test-ui"].includes(process.env.NODE_ENV)) {
-  createTestDB();
-  connectTestDB();
+  (async () => {
+    const uri = await createTestDB();
+    await connectTestDB(uri);
+  })();
 } else if (process.env.NODE_ENV !== "test-backend-integration") {
   connectDB();
 }
@@ -54,7 +56,10 @@ app.get("/", (req, res) => {
 
 const PORT = process.env.PORT || 6060;
 
-if (process.env.NODE_ENV !== "test-backend-integration") {
+if (
+  process.env.NODE_ENV !== "test-frontend-integration" &&
+  process.env.NODE_ENV !== "test-backend-integration"
+) {
   app.listen(PORT, () => {
     console.log(
       `Server running on ${process.env.DEV_MODE} mode on ${PORT}`.bgCyan.white

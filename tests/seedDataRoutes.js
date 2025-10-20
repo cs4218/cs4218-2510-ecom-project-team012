@@ -15,15 +15,15 @@ const router = express.Router();
 router.get("/reset", resetSeedDataController);
 
 // SEED PRODUCT DATA || METHOD POST
-router.post("/products", seedProductDataController);
+router.post("/product-data", seedProductDataController);
 
 // SEED USER DATA || METHOD POST
-router.post("/users", seedUserDataController);
+router.post("/user-data", seedUserDataController);
 
 // SEED CATEGORY DATA || METHOD POST
-router.post("/categories", seedCategoryDataController);
+router.post("/category-data", seedCategoryDataController);
 
 // SEED ORDER DATA || METHOD POST
-router.post("/orders", seedOrderDataController);
+router.post("/order-data", seedOrderDataController);
 
 export default router;

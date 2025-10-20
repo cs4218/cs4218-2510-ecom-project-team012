@@ -13,6 +13,7 @@ export const resetSeedDataController = async (req, res) => {
       .status(200)
       .send({ success: true, message: "Test database cleared successfully" });
   } catch (error) {
+    console.error("Error clearing test database:", error);
     res
       .status(500)
       .send({ success: false, message: "Error clearing test database", error });
@@ -43,6 +44,7 @@ export const seedProductDataController = async (req, res) => {
       products,
     });
   } catch (error) {
+    console.error("Error seeding products:", error);
     res
       .status(500)
       .send({ success: false, message: "Error seeding products", error });

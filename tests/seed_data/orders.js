@@ -12,3 +12,5 @@ export const ORDERS = [
   __v: 0
 }
 ];
+
+export default ORDERS;

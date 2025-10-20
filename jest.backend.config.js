@@ -38,8 +38,10 @@ export default {
     },
   },
 
-  setupFilesAfterEnv: [
-    "<rootDir>/jest.backend.setup.js",
-  ],
+  setupFilesAfterEnv: ["<rootDir>/jest.backend.setup.js"],
   coverageDirectory: "<rootDir>/coverage/back-tests",
+
+  // ignore integration tests
+  coveragePathIgnorePatterns: ["/node_modules/", ".integration.test.js"],
+  testPathIgnorePatterns: ["/node_modules/", "\\.integration\\.test\\.js$"],
 };

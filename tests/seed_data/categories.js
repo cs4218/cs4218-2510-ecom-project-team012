@@ -22,3 +22,5 @@ export const CATEGORIES = [
   __v: 0
 }
 ];
+
+export default CATEGORIES;

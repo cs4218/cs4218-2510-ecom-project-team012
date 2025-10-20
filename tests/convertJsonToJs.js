@@ -54,7 +54,7 @@ function buildExport(varName, data) {
     )
     .join(",\n\n");
 
-  return `import mongoose from "mongoose";\n\nexport const ${varName} = [\n${arrayString}\n];\n`;
+  return `import mongoose from "mongoose";\n\nexport const ${varName} = [\n${arrayString}\n];\n\nexport default ${varName};\n`;
 }
 
 for (const file of fs.readdirSync(inputDir)) {
