@@ -12,6 +12,8 @@ const ProductDetails = () => {
   const [product, setProduct] = useState({});
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [cart, setCart] = useCart();
+  const cartCount = cart.filter((item) => item._id === product._id).length;
+  const remainingStock = product.quantity - cartCount;
 
   //initalp details
   useEffect(() => {
@@ -72,8 +74,12 @@ const ProductDetails = () => {
               localStorage.setItem("cart", JSON.stringify([...cart, product]));
               toast.success("Item Added to cart");
             }}
+            disabled={
+              // Fixed bug where adding out-of-stock items to cart was possible
+              remainingStock < 1
+            }
           >
-            ADD TO CART
+            {remainingStock < 1 ? "SOLD OUT" : "ADD TO CART"}
           </button>
         </div>
       </div>
