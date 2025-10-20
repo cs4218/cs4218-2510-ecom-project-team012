@@ -23,10 +23,7 @@ describe("User Model", () => {
     expect(validUser.email).toBe("testuser@gmail.com");
     expect(validUser.password).toBe("password123");
     expect(validUser.phone).toBe("1234567890");
-    expect(validUser.address).toEqual({
-      street: "123 Test St",
-      city: "Testville",
-    });
+    expect(validUser.address).toEqual("123 Main Street, Singapore");
     expect(validUser.dob).toEqual(new Date("2002-01-01"));
     expect(validUser.answer).toBe("Test Answer");
     expect(validUser.role).toBe(0); // Ensure that it goes to default value when omitted from input
