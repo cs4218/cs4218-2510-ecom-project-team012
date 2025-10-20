@@ -5,10 +5,13 @@ const productSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
+      //FIXED BUG: different products with same name caused slug conflicts, resulting in wrong product retrieval
+      unique: true, // Ensure product names are unique so that slugs can be generated reliably
     },
     slug: {
       type: String,
       required: true,
+      unique: true, // Ensure slugs are unique
     },
     description: {
       type: String,
