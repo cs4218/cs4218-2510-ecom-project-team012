@@ -11,6 +11,7 @@ import {
   seedCategoryData,
   seedProductData,
 } from "../setupSeedDataRoutes";
+import Pagenotfound from "./Pagenotfound";
 
 // General structure generated with the help of AI
 
@@ -25,6 +26,7 @@ function renderProductDetailsPage(slug) {
             <Toaster />
             <Routes>
               <Route path="/product/:slug" element={<ProductDetails />} />
+              <Route path="/page-not-found" element={<Pagenotfound />} />
             </Routes>
           </MemoryRouter>
         </CartProvider>
@@ -151,7 +153,12 @@ describe("Product Details Page Integration", () => {
     const categoryData = await seedCategoryData([testCategory1]);
     const productData = await seedProductData([
       { ...testProduct1, category: categoryData.categories[0]._id },
-      {...testProduct1, name: "Product 2", slug: "product-2-slug", category: categoryData.categories[0]._id },
+      {
+        ...testProduct1,
+        name: "Product 2",
+        slug: "product-2-slug",
+        category: categoryData.categories[0]._id,
+      },
     ]);
 
     renderProductDetailsPage(testProduct1.slug);
@@ -189,7 +196,12 @@ describe("Product Details Page Integration", () => {
     const categoryData = await seedCategoryData([testCategory1]);
     const productData = await seedProductData([
       { ...testProduct1, category: categoryData.categories[0]._id },
-      {...testProduct1, name: "Product 2", slug: "product-2-slug", category: categoryData.categories[0]._id },
+      {
+        ...testProduct1,
+        name: "Product 2",
+        slug: "product-2-slug",
+        category: categoryData.categories[0]._id,
+      },
     ]);
 
     renderProductDetailsPage(testProduct1.slug);
@@ -209,6 +221,17 @@ describe("Product Details Page Integration", () => {
         screen.getByRole("heading", { name: /Product Details/i })
       ).toBeInTheDocument();
       screen.getByText((content) => content.includes("Product 2"));
+    });
+  });
+
+  it("should handle non-existent product slug gracefully", async () => {
+    renderProductDetailsPage("non-existent-slug");
+
+    // Assert
+    await waitFor(() => {
+      expect(
+        screen.getByRole("heading", { name: /Page Not Found/i })
+      ).toBeInTheDocument();
     });
   });
 });

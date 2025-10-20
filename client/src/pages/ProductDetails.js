@@ -25,10 +25,16 @@ const ProductDetails = () => {
       const { data } = await axios.get(
         `/api/v1/product/get-product/${params.slug}`
       );
+      // Fix for navigating to non-existent product slugs
+      if(!data?.product){
+        navigate("/page-not-found");
+        return;
+      }
       setProduct(data?.product);
       getSimilarProduct(data?.product._id, data?.product.category._id);
     } catch (error) {
       console.log(error);
+      navigate("/page-not-found");
     }
   };
   //get similar product
