@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 
+// test generated with playwright codegen and formatted with AI assistance
+
 const originalProduct = {
     name: 'Test Bot',
     description: 'A bot that is really good at writing tests',

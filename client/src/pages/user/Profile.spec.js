@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 
+// test generated with playwright codegen and formatted with AI assistance
+
 const originalProfile = {
     name: 'Bob',
     password: 'alicealice',
@@ -10,7 +12,7 @@ const originalProfile = {
 
 const updatedProfile = {
     name: 'Alice',
-    password: 'bobbob',
+    password: 'bobbobbob',
     phone: '43214321',
     address: '1 Avenue',
 };
