@@ -59,13 +59,14 @@ Github Actions CI Link: <https://github.com/cs4218/cs4218-2510-ecom-project-team
 
 #### Milestone 2
 
-| **Integration Test**             | **File**                         | **Person**         |
+| **Integration File Name**             | **Files / Modules Tested**                         | **Person**         |
 | -------------------------------- | -------------------------------- | ------------------ |
-| productModel.integration.test.js | models/productModel.js, mongoose | Megan Loo Jia Vern |
-| userModel.integration.test.js | models/userModel.js, mongoose | Megan Loo Jia Vern |
-| productController.integration.test.js | mongoose,<br>models/productModel.js,<br>models/categoryModel.js,<br>routes/productRoutes.js(obtaining the API endpoints for the controller functions below)<br>controllers/productController.js<br>1. getProductController<br>2. getSingleProductController<br>3. productPhotoController<br>4. productFiltersController<br>5. productCountController<br>6. productListController<br>7. searchProductController<br>8. realtedProductController<br>9. productCategoryController | Megan Loo Jia Vern |
-| Dashboard.integration.test.js | pages/user/Dashboard.js, context/cart.js, context/auth.js, components/UserMenu.js, Header.js, Layout.js, Footer.js  | Megan Loo Jia Vern |
-| productDetails.integration.test.js | pages/ProductDetails.js, context/cart.js, Backend, Toaster, React Router,  | Megan Loo Jia Vern |
+| **productModel.integration.test.js** | models/productModel.js, mongoose | Megan Loo Jia Vern |
+| **userModel.integration.test.js** | models/userModel.js, mongoose | Megan Loo Jia Vern |
+| **productController.integration.test.js** | mongoose,<br>models/productModel.js,<br>models/categoryModel.js,<br>routes/productRoutes.js(obtaining the API endpoints for the controller functions below)<br>controllers/productController.js<br>1. getProductController<br>2. getSingleProductController<br>3. productPhotoController<br>4. productFiltersController<br>5. productCountController<br>6. productListController<br>7. searchProductController<br>8. realtedProductController<br>9. productCategoryController | Megan Loo Jia Vern |
+| **Dashboard.integration.test.js** | pages/user/Dashboard.js, context/cart.js, context/auth.js, components/UserMenu.js, Header.js, Layout.js, Footer.js  | Megan Loo Jia Vern |
+| **PrivateRoute.integration.test.js** | components/Routes/Private.js, <br>pages/user/Dashboard.js, <br>context/auth.js, <br>context/cart.js, <br>context/search.js, <br>axios (mocked for `/api/v1/auth/user-auth` endpoint), <br>react-router-dom (for route protection via `<MemoryRouter>` and `<Routes>`) | Megan Loo Jia Vern |
+
 
 ## 4. Setting Up The Project
 
