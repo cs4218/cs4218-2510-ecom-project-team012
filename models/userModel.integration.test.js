@@ -17,7 +17,7 @@ const testUser1 = {
   email: "testuser@gmail.com",
   password: "password123",
   phone: "1234567890",
-  address: { street: "123 Test St", city: "Testville" },
+  address: "123 Main Street, Singapore",
   answer: "Test Answer",
   dob: new Date("2000-01-01"),
 };
