@@ -31,6 +31,12 @@ const testCategory1 = {
   description: "This is a test category",
 };
 
+const testCategory2 = {
+  name: "AnotherCategory",
+  slug: "another-category",
+  description: "This is another test category",
+};
+
 const testProduct1 = {
   name: "Test Product 1",
   slug: "test-product-1",
@@ -194,6 +200,81 @@ describe("Product Controller Integration", () => {
         "message",
         expect.stringMatching(/not found/i)
       );
+    });
+  });
+
+  describe("POST /api/v1/product/product-filters", () => {
+    it("should filter products based on category and price range", async () => {
+      // Arrange
+      const category1 = await categoryModel.create(testCategory1);
+      const category2 = await categoryModel.create(testCategory2);
+      await productModel.create({
+        ...testProduct1,
+        category: category1._id,
+        price: 150,
+      });
+      await productModel.create({
+        ...testProduct2,
+        category: category2._id,
+        price: 150,
+      });
+      await productModel.create({
+        ...testProduct2,
+        name: "Test Product 3",
+        slug: "test-product-3",
+        category: category1._id,
+        price: 250,
+      });
+
+      // Act
+      const filterCriteria = {
+        checked: [category1._id],
+        radio: [100, 200],
+      };
+      const res = await request(app)
+        .post("/api/v1/product/product-filters")
+        .send(filterCriteria);
+
+      // Assert
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty("products");
+      expect(res.body.products.length).toBe(1);
+      const products = res.body.products;
+      expect(products).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            name: testProduct1.name,
+            category: category1._id.toString(),
+          }),
+        ])
+      );
+    });
+
+    it("should return all products when no filters are applied", async () => {
+      // Arrange
+      const category = await categoryModel.create(testCategory1);
+      await productModel.create({
+        ...testProduct1,
+        category: category._id,
+      });
+      await productModel.create({
+        ...testProduct2,
+        category: category._id,
+      });
+
+      // Act
+      const filterCriteria = {
+        checked: [],
+        radio: [],
+      };
+      const res = await request(app)
+        .post("/api/v1/product/product-filters")
+        .send(filterCriteria);
+
+      // Assert
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty("products");
+      expect(res.body.products.length).toBe(2);
     });
   });
 });
