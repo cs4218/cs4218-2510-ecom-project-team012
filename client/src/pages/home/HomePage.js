@@ -210,10 +210,7 @@ const HomePage = () => {
                 {loading ? (
                   "Loading ..."
                 ) : (
-                  <>
-                    {" "}
-                    Loadmore <AiOutlineReload />
-                  </>
+                  "Load More" // removed icon for now as it was causing issues
                 )}
               </button>
             )}
