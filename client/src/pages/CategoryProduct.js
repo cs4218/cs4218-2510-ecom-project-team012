@@ -17,10 +17,15 @@ const CategoryProduct = () => {
       const { data } = await axios.get(
         `/api/v1/product/product-category/${params.slug}`
       );
+      if(data?.category === null){
+        navigate("/page-not-found");
+        return;
+      }
       setProducts(data?.products);
       setCategory(data?.category);
     } catch (error) {
       console.log(error);
+      navigate("/page-not-found");
     }
   };
 
