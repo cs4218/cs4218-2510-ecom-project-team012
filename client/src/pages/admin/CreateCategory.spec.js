@@ -24,18 +24,19 @@ test('Admin can create, edit, and delete category', async ({ page }) => {
 
   // CREATE
   const input = page.getByRole('textbox', { name: 'Enter new category' });
-  await input.click();
   await input.fill(originalName);
   await page.getByRole('button', { name: 'Submit' }).click();
 
   // Assert creation via toast
   await expect(page.getByText(`${originalName} is created`)).toBeVisible({ timeout: 5000 });
 
+  // Find the row containing our category
+  const categoryRow = page.locator('tr', { hasText: originalName });
+
   // EDIT
-  await page.getByRole('button', { name: 'Edit' }).nth(3).click();
+  const editButton = categoryRow.getByRole('button', { name: 'Edit' });
+  await editButton.click();
   const modalInput = page.getByRole('dialog').getByRole('textbox', { name: 'Enter new category' });
-  await modalInput.click();
-  await modalInput.press('ControlOrMeta+a');
   await modalInput.fill(updatedName);
   await page.getByRole('dialog').getByRole('button', { name: 'Submit' }).click();
 
@@ -43,9 +44,9 @@ test('Admin can create, edit, and delete category', async ({ page }) => {
   await expect(page.getByText(`${updatedName} is updated`)).toBeVisible({ timeout: 5000 });
 
   // DELETE
-  await page.getByRole('button', { name: 'Delete' }).nth(3).click();
+  const deleteButton = page.locator('tr', { hasText: updatedName }).getByRole('button', { name: 'Delete' });
+  await deleteButton.click();
 
   // Assert deletion via toast
   await expect(page.getByText(`Category is deleted`)).toBeVisible({ timeout: 5000 });
-
 });
