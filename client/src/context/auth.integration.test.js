@@ -1,6 +1,7 @@
+import React from "react";
 import axios from "axios";
 import "@testing-library/jest-dom/extend-expect";
-import { renderHook } from "@testing-library/react";
+import { renderHook, act } from "@testing-library/react";
 import { useAuth, AuthProvider } from "./auth";
 import JWT from "jsonwebtoken";
 
@@ -16,20 +17,23 @@ const testUser = {
 
 const testToken = JWT.sign({ _id: testUser._id }, process.env.JWT_SECRET);
 
-const [setAuth] = useAuth();
-
 describe("Auth Context", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     localStorage.clear();
     axios.defaults.headers.common = {};
-    setAuth({ user: null, token: "" });
   });
 
-  it("should update when mounted", () => {
-    setAuth({ user: testUser, token: testToken });
+  it("should update when mounted", async () => {
+    const wrapper = ({ children }) => <AuthProvider>{children}</AuthProvider>;
+    const { result } = renderHook(() => useAuth(), { wrapper });
 
-    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+    const [auth, setAuth] = result.current;
+    
+    await act(async () => {
+      setAuth({ user: testUser, token: testToken });
+    });
+
     expect(result.current[0]).toEqual({ user: testUser, token: testToken });
   });
 });
