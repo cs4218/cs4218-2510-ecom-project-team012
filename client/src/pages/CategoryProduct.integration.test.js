@@ -125,6 +125,27 @@ describe("Category Product Page Integration", () => {
       });
     });
 
+    it("should render layout, footer and header correctly", async () => {
+      const categoryData = await seedCategoryData([testCategory1]);
+      const productData = await seedProductData([
+        { ...testProduct1, category: categoryData.categories[0]._id },
+      ]);
+
+      renderCategoryProductPage(testCategory1.slug);
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole("heading", { name: /Category/i })
+        ).toBeInTheDocument();
+
+        // Check that the layout header is present
+        expect(
+          screen.getByText((content) => content.includes("Virtual Vault"))
+        ).toBeInTheDocument();
+        // Check that the layout footer is present
+        expect(screen.getByText(/Privacy Policy/)).toBeInTheDocument();
+      });
+    });
 
   });
 });
