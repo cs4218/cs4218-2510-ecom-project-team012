@@ -13,12 +13,12 @@ import {
 // findOne, findByIdAndUpdate
 
 const testUser1 = {
-  name: "John Doe",
-  email: "john@example.com",
-  password: "securePass123",
-  phone: "91234567",
-  address: { street: "123 Street", city: "Singapore" },
-  answer: "Blue",
+  name: "Test User",
+  email: "testuser@gmail.com",
+  password: "password123",
+  phone: "1234567890",
+  address: { street: "123 Test St", city: "Testville" },
+  answer: "Test Answer",
   dob: new Date("2000-01-01"),
 };
 
