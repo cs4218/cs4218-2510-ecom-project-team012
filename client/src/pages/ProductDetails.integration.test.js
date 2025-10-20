@@ -40,7 +40,6 @@ const testCategory1 = {
 };
 
 const testProduct1 = {
-  _id: "64a7f1a2b4dcb5e5f6a1c456",
   name: "Test Product",
   slug: "test-product-slug",
   description: "This is a test product for integration testing.",
@@ -145,6 +144,27 @@ describe("Product Details Page Integration", () => {
       // Check that cart badge is updated
       const cartBadge = screen.getByText("1");
       expect(cartBadge).toBeInTheDocument();
+    });
+  });
+
+  it("should show similar products section on product details page", async () => {
+    const categoryData = await seedCategoryData([testCategory1]);
+    const productData = await seedProductData([
+      { ...testProduct1, category: categoryData.categories[0]._id },
+      {...testProduct1, name: "Product 2", slug: "product-2-slug", category: categoryData.categories[0]._id },
+    ]);
+
+    renderProductDetailsPage(testProduct1.slug);
+
+    // Assert
+    await waitFor(() => {
+      const similarProductsHeading = screen.getByRole("heading", {
+        name: /Similar Products/i,
+      });
+      expect(similarProductsHeading).toBeInTheDocument();
+      expect(
+        screen.getByText((content) => content.includes("Product 2"))
+      ).toBeInTheDocument();
     });
   });
 });
