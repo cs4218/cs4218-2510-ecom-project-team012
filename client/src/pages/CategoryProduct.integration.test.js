@@ -1,10 +1,9 @@
 import React from "react";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "../context/auth";
 import CategoryProduct from "./CategoryProduct";
 import ProductDetails from "./ProductDetails";
-import Pagenotfound from "./Pagenotfound";
 import { Toaster } from "react-hot-toast";
 import { CartProvider } from "../context/cart";
 import { SearchProvider } from "../context/search";
@@ -28,7 +27,6 @@ function renderCategoryProductPage(slug) {
             <Routes>
               <Route path="/product/:slug" element={<ProductDetails />} />
               <Route path="/category/:slug" element={<CategoryProduct />} />
-              <Route path="*" element={<Pagenotfound />} />
             </Routes>
           </MemoryRouter>
         </CartProvider>
@@ -95,5 +93,38 @@ describe("Category Product Page Integration", () => {
         expect(screen.getByText(/0 result found/i)).toBeInTheDocument();
       });
     });
+
+    it("should navigate to product details page when 'More Details' button is clicked", async () => {
+      const categoryData = await seedCategoryData([testCategory1]);
+      const productData = await seedProductData([
+        { ...testProduct1, category: categoryData.categories[0]._id },
+      ]);
+
+      renderCategoryProductPage(testCategory1.slug);
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole("heading", { name: /Category/i })
+        ).toBeInTheDocument();
+
+        expect(screen.getByText(testProduct1.name)).toBeInTheDocument();
+      });
+
+      const moreDetailsButton = screen.getByRole("button", {
+        name: /More Details/i,
+      });
+      moreDetailsButton.click();
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole("heading", { name: /Product Details/i })
+        ).toBeInTheDocument();
+
+        const productElements = screen.getAllByText(/Test Product/i);
+        expect(productElements[0]).toBeInTheDocument();
+      });
+    });
+
+
   });
 });
