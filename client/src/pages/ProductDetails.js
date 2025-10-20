@@ -34,6 +34,7 @@ const ProductDetails = () => {
       getSimilarProduct(data?.product._id, data?.product.category._id);
     } catch (error) {
       console.log(error);
+      // Fix for navigating to non-existent product slugs
       navigate("/page-not-found");
     }
   };

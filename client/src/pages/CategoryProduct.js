@@ -17,6 +17,7 @@ const CategoryProduct = () => {
       const { data } = await axios.get(
         `/api/v1/product/product-category/${params.slug}`
       );
+      // Fix for navigating to non-existent category slugs
       if(data?.category === null){
         navigate("/page-not-found");
         return;
@@ -25,6 +26,7 @@ const CategoryProduct = () => {
       setCategory(data?.category);
     } catch (error) {
       console.log(error);
+      // Fix for navigating to non-existent category slugs
       navigate("/page-not-found");
     }
   };
