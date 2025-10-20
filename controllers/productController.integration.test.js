@@ -47,6 +47,8 @@ const testProduct2 = {
   quantity: 5,
 };
 
+// Integration of Backend Controllers to API Endpoints
+
 describe("Product Controller Integration", () => {
   // Setup for in-memory MongoDB
   beforeAll(async () => await connectTestDB(await createTestDB()));
@@ -79,16 +81,98 @@ describe("Product Controller Integration", () => {
       // expect products to contain both testProduct1 and testProduct2 with populated category field
       expect(products).toEqual(
         expect.arrayContaining([
-          expect.objectContaining({ name: testProduct1.name, category: expect.objectContaining({ _id: category._id.toString() }) }),
-          expect.objectContaining({ name: testProduct2.name, category: expect.objectContaining({ _id: category._id.toString() }) }),
+          expect.objectContaining({
+            name: testProduct1.name,
+            category: expect.objectContaining({ _id: category._id.toString() }),
+          }),
+          expect.objectContaining({
+            name: testProduct2.name,
+            category: expect.objectContaining({ _id: category._id.toString() }),
+          }),
         ])
       );
       // expect product photo to be undefined
-        expect(products[0].photo).toBeUndefined();
-        expect(products[1].photo).toBeUndefined();
+      expect(products[0].photo).toBeUndefined();
+      expect(products[1].photo).toBeUndefined();
       // expect sorting of products where product2 comes before product1 (based on createdAt descending)
       expect(products[0].name).toBe(testProduct2.name);
       expect(products[1].name).toBe(testProduct1.name);
+    });
+  });
+
+  describe("GET /api/v1/product/get-product/:slug", () => {
+    it("should retrieve a single product by slug", async () => {
+      // Arrange
+      const category = await categoryModel.create(testCategory1);
+      await productModel.create({
+        ...testProduct1,
+        category: category._id,
+      });
+
+      // Act
+      const res = await request(app).get(
+        `/api/v1/product/get-product/${testProduct1.slug}`
+      );
+
+      // Assert
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty("product");
+      expect(res.body.product.name).toBe(testProduct1.name);
+      // expect populated category field
+      expect(res.body.product.category).toHaveProperty(
+        "_id",
+        category._id.toString()
+      );
+      // expect product photo to be undefined
+      expect(res.body.product.photo).toBeUndefined();
+    });
+
+    it("should return 404 for non-existent product slug", async () => {
+      // Act
+      const res = await request(app).get(
+        `/api/v1/product/get-product/non-existent-slug`
+      );
+
+      // Assert
+      expect(res.statusCode).toBe(404);
+      expect(res.body).toHaveProperty("message", expect.stringMatching(/not found/i));
+    });
+  });
+
+  describe("GET /api/v1/product/product-photo/:productId", () => {
+    it("should retrieve product photo", async () => {
+      // Arrange
+      const category = await categoryModel.create(testCategory1);
+      const photoData = Buffer.from("TestPhotoData");
+      const product = await productModel.create({
+        ...testProduct1,
+        category: category._id,
+        photo: {
+          data: photoData,
+          contentType: "image/png",
+        },
+      });
+
+      // Act
+      const res = await request(app).get(
+        `/api/v1/product/product-photo/${product._id}`
+      );
+
+      // Assert
+      expect(res.statusCode).toBe(200);
+      expect(res.headers["content-type"]).toBe("image/png");
+      expect(res.body).toEqual(photoData);
+    });
+    
+    it("should return 404 for non-existent product ID", async () => {
+      // Act
+      const res = await request(app).get(
+        `/api/v1/product/product-photo/610c5f4f4f1a25630c8b4567` // some random ObjectId
+      );
+
+      // Assert
+      expect(res.statusCode).toBe(404);
+      expect(res.body).toHaveProperty("message", expect.stringMatching(/not found/i));
     });
   });
 });
