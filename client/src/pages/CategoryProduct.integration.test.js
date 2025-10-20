@@ -65,7 +65,7 @@ describe("Category Product Page Integration", () => {
   });
 
   describe("should render category products information and components when accessed", () => {
-    it("should render category product page title", async () => {
+    it("should render products under the specific category", async () => {
       const categoryData = await seedCategoryData([testCategory1]);
       const productData = await seedProductData([
         { ...testProduct1, category: categoryData.categories[0]._id },
@@ -79,6 +79,20 @@ describe("Category Product Page Integration", () => {
         ).toBeInTheDocument();
 
         expect(screen.getByText(testProduct1.name)).toBeInTheDocument();
+      });
+    });
+
+    it("should render 'No Products Found' when category has no products", async () => {
+      await seedCategoryData([testCategory1]);
+
+      renderCategoryProductPage(testCategory1.slug);
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole("heading", { name: /Category/i })
+        ).toBeInTheDocument();
+
+        expect(screen.getByText(/0 result found/i)).toBeInTheDocument();
       });
     });
   });
