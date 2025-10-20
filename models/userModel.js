@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
     address: {
-      type: {},
+      type: String, // Fixed Bug - changed from Object to String (else the dashboard would not render address properly)
       required: true,
     },
     answer: {
