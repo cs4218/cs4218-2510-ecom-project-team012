@@ -1,10 +1,46 @@
 import { test, expect } from '@playwright/test';
+import {
+  createTestDB,
+  connectTestDB,
+  closeTestDB,
+  clearTestDB,
+} from "../../../../tests/setupTestDB.js";
+import { seedTestData } from "../../../../tests/seedTestData.js";
+import {
+  resetSeedDatabase,
+  seedUserData,
+} from "../../setupSeedDataRoutes.js";
+
+const testUser = {
+  _id: "68cbb3c2c3b189d7acade305",
+  name: "abc",
+  email: "abc@gmail.com",
+  password: "$2b$10$4JhdLvUZNDVpXjJ0n7RhmeEfLl6IEAEk/n.Ua6TsEhYXGhkB4D/P6",
+  phone: "1234",
+  address: "1234",
+  answer: "football",
+  dob: new Date("2000-01-01T00:00:00.000Z"),
+  role: 0,
+  createdAt: new Date("2025-09-18T07:24:50.465Z"),
+  updatedAt: new Date("2025-09-18T07:24:50.465Z"),
+  __v: 0
+};
 
 test.describe.configure({ mode: 'parallel' });
 
+// Test DB setup
+test.beforeAll(async () => {
+  await connectTestDB(await createTestDB());
+});
+
 test.beforeEach(async ({ page }) => {
+  await seedUserData(testUser);
   await page.goto('http://localhost:3000/forgot-password');
 });
+
+// Test DB teardown
+test.afterEach(async () => await clearTestDB());
+test.afterAll(async () => await closeTestDB());
 
 const validUser = {
   email: 'abc@gmail.com',
