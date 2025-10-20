@@ -8,7 +8,11 @@ import Pagenotfound from "./Pagenotfound";
 import { Toaster } from "react-hot-toast";
 import { CartProvider } from "../context/cart";
 import { SearchProvider } from "../context/search";
-import { resetSeedDatabase, seedCategoryData, seedProductData } from "../setupSeedDataRoutes";
+import {
+  resetSeedDatabase,
+  seedCategoryData,
+  seedProductData,
+} from "../setupSeedDataRoutes";
 
 // General structure generated with the help of AI
 
@@ -34,7 +38,6 @@ function renderCategoryProductPage(slug) {
 }
 
 const testCategory1 = {
-  _id: "64a7f0f2b4dcb5e5f6a1c123",
   name: "Test Category",
   slug: "test-category-slug",
   description: "This is a test category for integration testing.",
@@ -47,15 +50,13 @@ const testProduct1 = {
   description: "This is a test product for integration testing.",
   price: 99.99,
   quantity: 10,
-  category: testCategory1._id,
-};  
+};
 
 describe("Category Product Page Integration", () => {
   beforeEach(async () => {
     // ensure a clean storage between tests
     localStorage.clear();
     await resetSeedDatabase();
-    await seedCategoryData([testCategory1]);
   });
 
   afterEach(async () => {
@@ -65,16 +66,20 @@ describe("Category Product Page Integration", () => {
 
   describe("should render category products information and components when accessed", () => {
     it("should render category product page title", async () => {
-      await seedProductData([testProduct1]);
+      const categoryData = await seedCategoryData([testCategory1]);
+      const productData = await seedProductData([
+        { ...testProduct1, category: categoryData.categories[0]._id },
+      ]);
 
       renderCategoryProductPage(testCategory1.slug);
 
-      await waitFor(() =>
+      await waitFor(() => {
         expect(
           screen.getByRole("heading", { name: /Category/i })
-        ).toBeInTheDocument()
-      );
+        ).toBeInTheDocument();
+
+        expect(screen.getByText(testProduct1.name)).toBeInTheDocument();
+      });
     });
   });
 });
-
