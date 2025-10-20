@@ -8,7 +8,6 @@ import {
 } from "../tests/setupTestDB.js";
 import categoryModel from "../models/categoryModel.js";
 import productModel from "../models/productModel.js";
-import { ca } from "date-fns/locale";
 
 // ---------------------------------------------
 
@@ -205,6 +204,20 @@ describe("Product Controller Integration", () => {
       expect(res.body).toHaveProperty(
         "message",
         expect.stringMatching(/not found/i)
+      );
+    });
+
+    it("should handle invalid product ID", async () => {
+      // Act
+      const res = await request(app).get(
+        `/api/v1/product/product-photo/invalid-product-id`
+      );
+
+      // Assert
+      expect(res.statusCode).toBe(500);
+      expect(res.body).toHaveProperty(
+        "message",
+        expect.stringMatching(/error/i)
       );
     });
   });
@@ -475,6 +488,36 @@ describe("Product Controller Integration", () => {
       );
     });
 
+    it("should return more than one product if multiple match the keyword", async () => {
+      // Arrange
+      const category = await categoryModel.create(testCategory1);
+      await productModel.create({
+        ...testProduct1,
+        category: category._id,
+      });
+      await productModel.create({
+        ...testProduct2,
+        name: "Test Product 12",
+        slug: "test-product-12",
+        category: category._id,
+      });
+      const keyword = "Test Product 1";
+
+      // Act
+      const res = await request(app).get(`/api/v1/product/search/${keyword}`);
+
+      // Assert
+      expect(res.statusCode).toBe(200);
+      expect(res.body.length).toBe(2);
+      const products = res.body;
+      expect(products).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ name: testProduct1.name }),
+          expect.objectContaining({ name: "Test Product 12" }),
+        ])
+      );
+    });
+
     it("should return products with description matching the search keyword", async () => {
       // Arrange
       const category = await categoryModel.create(testCategory1);
@@ -502,6 +545,27 @@ describe("Product Controller Integration", () => {
       );
     });
 
+    it("should return empty array when no products match the keyword", async () => {
+      // Arrange
+      const category = await categoryModel.create(testCategory1);
+      await productModel.create({
+        ...testProduct1,
+        category: category._id,
+      });
+      await productModel.create({
+        ...testProduct2,
+        category: category._id,
+      });
+      const keyword = "NonExistentKeyword";
+
+      // Act
+      const res = await request(app).get(`/api/v1/product/search/${keyword}`);
+
+      // Assert
+      expect(res.statusCode).toBe(200);
+      expect(res.body.length).toBe(0);
+    });
+
     it("should handle error when white space keyword is provided", async () => {
       // Act
       const res = await request(app).get(`/api/v1/product/search/%20`);
@@ -526,6 +590,12 @@ describe("Product Controller Integration", () => {
           ...testProduct2,
           category: category._id,
         });
+        const product3 = await productModel.create({
+          ...testProduct2,
+          name: "Unrelated Product",
+          slug: "unrelated-product",
+          category: (await categoryModel.create(testCategory2))._id,
+        });
 
         // Act
         const res = await request(app).get(
@@ -545,6 +615,61 @@ describe("Product Controller Integration", () => {
         products.forEach((prod) => {
           expect(prod._id.toString()).not.toBe(product1._id.toString());
         });
+        // should not return unrelated products
+        products.forEach((prod) => {
+          expect(prod.name).not.toBe(product3.name);
+        });
+      });
+
+      it("should return related products with limit of 3", async () => {
+        // Arrange
+        const category = await categoryModel.create(testCategory1);
+        const mainProduct = await productModel.create({
+          ...testProduct1,
+          category: category._id,
+        });
+        // create 5 related products
+        for (let i = 1; i <= 5; i++) {
+          await productModel.create({
+            ...testProduct2,
+            name: `Related Product ${i}`,
+            slug: `related-product-${i}`,
+            category: category._id,
+          });
+        }
+
+        // Act
+        const res = await request(app).get(
+          `/api/v1/product/related-product/${mainProduct._id}/${category._id}`
+        );
+
+        // Assert
+        expect(res.statusCode).toBe(200);
+        expect(res.body.products.length).toBe(3); // limit of 3
+      });
+
+      it("should return empty array when no related products found", async () => {
+        // Arrange
+        const category1 = await categoryModel.create(testCategory1);
+        const category2 = await categoryModel.create(testCategory2);
+        const mainProduct = await productModel.create({
+          ...testProduct1,
+          category: category1._id,
+        });
+        // create a product in a different category
+        await productModel.create({
+          ...testProduct2,
+          category: category2._id,
+        });
+
+        // Act
+        const res = await request(app).get(
+          `/api/v1/product/related-product/${mainProduct._id}/${category1._id}`
+        );
+
+        // Assert
+        expect(res.statusCode).toBe(200);
+        expect(res.body.products.length).toBe(0);
       });
 
       it("should handle error for non-existent product ID", async () => {
@@ -610,6 +735,23 @@ describe("Product Controller Integration", () => {
       expect(res.body).toHaveProperty("products");
       expect(res.body.category).toHaveProperty("slug", category.slug);
       expect(res.body.products.length).toBe(2);
+    });
+
+    it("should return empty products array for category with no products", async () => {
+      // Arrange
+      const category = await categoryModel.create(testCategory1);
+
+      // Act
+      const res = await request(app).get(
+        `/api/v1/product/product-category/${category.slug}`
+      );
+
+      // Assert
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty("category");
+      expect(res.body).toHaveProperty("products");
+      expect(res.body.category).toHaveProperty("slug", category.slug);
+      expect(res.body.products.length).toBe(0);
     });
 
     it("should return 404 for non-existent category slug", async () => {
