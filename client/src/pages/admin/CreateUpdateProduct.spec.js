@@ -1,18 +1,24 @@
 import { test, expect } from '@playwright/test';
 
-// test generated with playwright codegen and formatted with AI assistance
+const originalProduct = {
+    name: 'Test Bot',
+    description: 'A bot that is really good at writing tests',
+    price: '300', 
+    quantity: '20',
+    category: 'Electronics',
+    shipping: 'Yes',
+    photo: 'tests/data/robot.jpg'
+};
 
-const ORIGINAL_NAME = 'Test Bot';
-const ORIGINAL_DESCRIPTION = 'A bot that is really good at writing tests';
-const UPDATED_NAME = 'Test Bot Updated';
-const UPDATED_DESCRIPTION = 'Updated description for the bot';
-const PRICE_ORIGINAL = '300';
-const PRICE_UPDATED = '350';
-const QUANTITY_ORIGINAL = '20';
-const QUANTITY_UPDATED = '25';
-const SHIPPING_ORIGINAL = 'Yes';
-const SHIPPING_UPDATED = 'No';
-const PRODUCT_IMAGE = 'tests/data/robot.jpg';
+const updatedProduct = {
+    name: 'Test Bot Updated',
+    description: 'Updated description for the bot',
+    price: '350', 
+    quantity: '25',
+    category: 'Electronics',
+    shipping: 'No',
+    photo: 'tests/data/robot.jpg'
+};
 
 async function loginAndGoToCreateProduct(page) {
   await page.goto('/');
@@ -42,44 +48,44 @@ test('Valid product creation, edit, and teardown', async ({ page }) => {
   await loginAndGoToCreateProduct(page);
 
   // CREATE PRODUCT
-  await page.locator('input[type="file"]').setInputFiles(PRODUCT_IMAGE);
+  await page.locator('input[type="file"]').setInputFiles(originalProduct.photo);
   await page.locator('#rc_select_0').click();
-  await page.getByTitle('Electronics').locator('div').click();
-  await page.getByRole('textbox', { name: 'Input name' }).fill(ORIGINAL_NAME);
-  await page.getByRole('textbox', { name: 'Input description' }).fill(ORIGINAL_DESCRIPTION);
-  await page.getByPlaceholder('Input Price').fill(PRICE_ORIGINAL);
-  await page.getByPlaceholder('Input quantity').fill(QUANTITY_ORIGINAL);
+  await page.getByTitle(originalProduct.category).locator('div').click();
+  await page.getByRole('textbox', { name: 'Input name' }).fill(originalProduct.name);
+  await page.getByRole('textbox', { name: 'Input description' }).fill(originalProduct.description);
+  await page.getByPlaceholder('Input Price').fill(originalProduct.price);
+  await page.getByPlaceholder('Input quantity').fill(originalProduct.quantity);
   await page.getByTestId('shipping-select').click();
-  await page.getByText(SHIPPING_ORIGINAL).click();
+  await page.getByText(originalProduct.shipping).click();
   await page.getByRole('button', { name: 'CREATE PRODUCT' }).click();
 
   // ASSERT CREATION
   await expect(page.getByText('Product created successfully')).toBeVisible({ timeout: 5000 });
   await page.getByRole('heading', { name: 'All Products List' }).waitFor({ state: 'visible', timeout: 5000 });
-  await expect(page.getByRole('link', { name: new RegExp(ORIGINAL_NAME, 'i') })).toBeVisible();
+  await expect(page.getByRole('link', { name: new RegExp(originalProduct.name, 'i') })).toBeVisible();
 
   // NAVIGATE TO PRODUCT PAGE
-  await page.getByRole('link', { name: new RegExp(ORIGINAL_NAME, 'i') }).click();
+  await page.getByRole('link', { name: new RegExp(originalProduct.name, 'i') }).click();
   await page.getByRole('textbox', { name: 'Input description' }).waitFor({ state: 'visible', timeout: 5000 });
-  await expect(page.getByRole('textbox', { name: 'Input description' })).toHaveValue(ORIGINAL_DESCRIPTION, { timeout: 5000 });
+  await expect(page.getByRole('textbox', { name: 'Input description' })).toHaveValue(originalProduct.description, { timeout: 5000 });
 
   // EDIT PRODUCT
-  await page.getByRole('textbox', { name: 'Input name' }).fill(UPDATED_NAME);
-  await page.getByRole('textbox', { name: 'Input description' }).fill(UPDATED_DESCRIPTION);
-  await page.getByPlaceholder('Input Price').fill(PRICE_UPDATED);
-  await page.getByPlaceholder('Input quantity').fill(QUANTITY_UPDATED);
+  await page.getByRole('textbox', { name: 'Input name' }).fill(updatedProduct.name);
+  await page.getByRole('textbox', { name: 'Input description' }).fill(updatedProduct.description);
+  await page.getByPlaceholder('Input Price').fill(updatedProduct.price);
+  await page.getByPlaceholder('Input quantity').fill(updatedProduct.quantity);
   await page.getByTestId('shipping-select').click();
-  await page.getByText(SHIPPING_UPDATED).click();
-  await page.getByRole('button', { name: 'UPDATE PRODUCT' }).click(); 
+  await page.getByText(updatedProduct.shipping).click();
+  await page.getByRole('button', { name: 'UPDATE PRODUCT' }).click();
 
   // ASSERT EDIT via toast
   await expect(page.getByText('Product updated successfully')).toBeVisible({ timeout: 5000 });
-  await expect(page.getByRole('link', { name: new RegExp(UPDATED_NAME, 'i') })).toBeVisible();
+  await expect(page.getByRole('link', { name: new RegExp(updatedProduct.name, 'i') })).toBeVisible();
 
   // NAVIGATE TO PRODUCT PAGE AFTER EDIT
-  await page.getByRole('link', { name: new RegExp(UPDATED_NAME, 'i') }).click();
+  await page.getByRole('link', { name: new RegExp(updatedProduct.name, 'i') }).click();
   await page.getByRole('textbox', { name: 'Input description' }).waitFor({ state: 'visible', timeout: 5000 });
-  await expect(page.getByRole('textbox', { name: 'Input description' })).toHaveValue(UPDATED_DESCRIPTION, { timeout: 5000 });
+  await expect(page.getByRole('textbox', { name: 'Input description' })).toHaveValue(updatedProduct.description, { timeout: 5000 });
 
   // TEARDOWN: DELETE PRODUCT
   page.once('dialog', async dialog => {
