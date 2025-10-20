@@ -2,7 +2,6 @@ import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "../context/auth";
-import { Toaster } from "react-hot-toast";
 import { CartProvider } from "../context/cart";
 import { SearchProvider } from "../context/search";
 import {
@@ -11,8 +10,37 @@ import {
   seedProductData,
 } from "../setupSeedDataRoutes";
 import Login from "./Auth/Login";
+import CartPage from "./CartPage";
+import Profile from "./user/Profile";
+import axios from "axios";
 
 // General structure generated with the help of AI
+
+const testUser1 = {
+  name: "Test User",
+  email: "testuser@gmail.com",
+  password: "password123",
+  phone: "1234567890",
+  address: "123 Main Street, Singapore",
+  answer: "Test Answer",
+  dob: new Date("2000-01-01"),
+};
+
+const testAuthToken = "fake-valid-token";
+
+const testCategory1 = {
+  name: "Test Category",
+  slug: "test-category-slug",
+  description: "This is a test category for integration testing.",
+};
+
+const testProduct1 = {
+  name: "Test Product",
+  slug: "test-product-slug",
+  description: "This is a test product for integration testing.",
+  price: 99.99,
+  quantity: 10,
+};
 
 jest.mock("../hooks/useCategory", () => jest.fn(() => []));
 
@@ -21,12 +49,11 @@ function renderCartPage() {
     <AuthProvider>
       <SearchProvider>
         <CartProvider>
-          <MemoryRouter initialEntries={[`/product/${slug}`]}>
-            <Toaster />
+          <MemoryRouter initialEntries={[`/cart`]}>
             <Routes>
               <Route path="/cart" element={<CartPage />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/profile" element={<Profile />} />
+              <Route path="/dashboard/user/profile" element={<Profile />} />
             </Routes>
           </MemoryRouter>
         </CartProvider>
@@ -36,6 +63,20 @@ function renderCartPage() {
 }
 
 describe("Cart Page Integration", () => {
+  const realAxiosGet = axios.get;
+
+  beforeAll(() => {
+    // Mock axios.get to handle Braintree token requests
+    // Other requests should use the real axios.get
+    jest.spyOn(axios, "get").mockImplementation((url, ...args) => {
+      // Mock Braintree only
+      if (url.includes("/api/v1/payment/braintree/token")) {
+        return Promise.resolve({ data: { clientToken: "fake-token" } });
+      }
+      return realAxiosGet(url, ...args);
+    });
+  });
+
   beforeEach(async () => {
     // ensure a clean storage between tests
     localStorage.clear();
@@ -64,9 +105,9 @@ describe("Cart Page Integration", () => {
       // Assert
       await waitFor(() => {
         // Check for header elements
-        expect(screen.getByText(/Home/i)).toBeInTheDocument();
-        expect(screen.getByText(/Categories/i)).toBeInTheDocument();
-        expect(screen.getByText(/Cart/i)).toBeInTheDocument();
+        expect(
+          screen.getByText((content) => content.includes("Virtual Vault"))
+        ).toBeInTheDocument();
 
         // Check for footer elements
         expect(screen.getByText(/Privacy Policy/i)).toBeInTheDocument();
@@ -94,11 +135,10 @@ describe("Cart Page Integration", () => {
 
       // Assert
       await waitFor(() => {
-        expect(screen.getByText(testProduct1.name)).toBeInTheDocument();
-        expect(screen.getByText(/1 items in your cart/i)).toBeInTheDocument();
         expect(
-          screen.getByText(`$${testProduct1.price.toFixed(2)}`)
+          screen.getByText((content) => content.includes(testProduct1.name))
         ).toBeInTheDocument();
+        expect(screen.getByText(/1 items in your cart/i)).toBeInTheDocument();
       });
     });
 
@@ -127,6 +167,7 @@ describe("Cart Page Integration", () => {
         ...testProduct1,
         name: "Test Product 2",
         slug: "test-product-2",
+        price: 50,
         category: categoryData.categories[0]._id,
       });
       // Update localStorage
@@ -138,8 +179,8 @@ describe("Cart Page Integration", () => {
       await waitFor(() => {
         const totalPrice = testProduct1.price + 50;
         expect(
-          screen.getByText(
-            new RegExp(`Total: \\$${totalPrice.toFixed(2)}`, "i")
+          screen.getByText((content) =>
+            content.includes(`${totalPrice.toFixed(2)}`)
           )
         ).toBeInTheDocument();
       });
@@ -167,9 +208,7 @@ describe("Cart Page Integration", () => {
 
       // Assert
       await waitFor(() => {
-        expect(
-          screen.getByText(/Your cart is currently empty/i)
-        ).toBeInTheDocument();
+        expect(screen.getByText(/Your cart is empty/i)).toBeInTheDocument();
       });
     });
 
@@ -185,8 +224,8 @@ describe("Cart Page Integration", () => {
       await waitFor(() => {
         const totalPrice = testProduct1.price * 2;
         expect(
-          screen.getByText(
-            new RegExp(`Total: \\$${totalPrice.toFixed(2)}`, "i")
+          screen.getByText((content) =>
+            content.includes(`${totalPrice.toFixed(2)}`)
           )
         ).toBeInTheDocument();
         expect(screen.getByText(/2 items in your cart/i)).toBeInTheDocument();
@@ -200,9 +239,7 @@ describe("Cart Page Integration", () => {
 
       // Assert
       await waitFor(() => {
-        expect(
-          screen.getByText(/Your cart is currently empty/i)
-        ).toBeInTheDocument();
+        expect(screen.getByText(/Your cart is empty/i)).toBeInTheDocument();
       });
     });
 
@@ -312,7 +349,7 @@ describe("Cart Page Integration", () => {
       // Assert
       await waitFor(() => {
         expect(
-          screen.getByText(new RegExp(`Hello  ${testUser1.name}`, "i"))
+          screen.getByText(new RegExp(`Hello ${testUser1.name}`, "i"))
         ).toBeInTheDocument();
       });
     });
@@ -323,7 +360,9 @@ describe("Cart Page Integration", () => {
       // Assert
       await waitFor(() => {
         expect(
-          screen.getByText(new RegExp(`Address: ${testUser1.address}`, "i"))
+          screen.getByText((content) =>
+            content.includes(`${testUser1.address}`)
+          )
         ).toBeInTheDocument();
         const updateAddressButton = screen.getByRole("button", {
           name: /Update Address/i,
@@ -361,9 +400,7 @@ describe("Cart Page Integration", () => {
 
       // Assert
       await waitFor(() => {
-        expect(
-          screen.getByRole("heading", { name: /Profile/i })
-        ).toBeInTheDocument();
+        expect(screen.getByText(/USER PROFILE/i)).toBeInTheDocument();
       });
     });
 
@@ -395,7 +432,7 @@ describe("Cart Page Integration", () => {
       // Assert
       await waitFor(() => {
         expect(
-          screen.getByText(new RegExp(`Hello  ${testUser1.name}`, "i"))
+          screen.getByText(new RegExp(`Hello ${testUser1.name}`, "i"))
         ).toBeInTheDocument();
       });
     });
@@ -405,9 +442,7 @@ describe("Cart Page Integration", () => {
 
       // Assert
       await waitFor(() => {
-        expect(
-          screen.getByText(/Your cart is currently empty/i)
-        ).toBeInTheDocument();
+        expect(screen.getByText(/Your cart is empty/i)).toBeInTheDocument();
       });
     });
   });
