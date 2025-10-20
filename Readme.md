@@ -57,7 +57,7 @@ Github Actions CI Link: <https://github.com/cs4218/cs4218-2510-ecom-project-team
 | **Admin View Products (Controller)** | controllers/productController.js<br>1. createProductController<br>2. deleteProductController<br>3. updateProductController                                                                                                                                                                                                               | M4                 |
 | **Payment**                          | controllers/productController.js<br>1. braintreeTokenController<br>2. brainTreePaymentController                                                                                                                                                                                                                                         | M4                 |
 
-#### Milestone 2
+#### Milestone 2 - Integration Testing
 
 | **Integration File Name**                 | **Files / Modules Tested**                                                                                                                                                                                                                                                                                                                                                                                                                                                    | **Person**         |
 | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
@@ -69,6 +69,12 @@ Github Actions CI Link: <https://github.com/cs4218/cs4218-2510-ecom-project-team
 | **CategoryProduct.integration.test.js**   | pages/CategoryProduct.js, <br>pages/ProductDetails.js, Backend (for `/api/v1/product/product-category/:slug` endpoint), <br>react-router-dom (for route protection via `<MemoryRouter>` and `<Routes>`), Header.js, Layout.js, Footer.js, Pagenotfound.js                                                                                                                                                                                                                     | Megan Loo Jia Vern |
 | **ProductDetails.integration.test.js**    | pages/ProductDetails.js, Backend (for `/api/v1/product/get-product/:slug`, `/api/v1/product/related-product/:pid/:cid` endpoint), <br>react-router-dom (for route protection via `<MemoryRouter>` and `<Routes>`), Header.js, Layout.js, Footer.js, Pagenotfound.js, context/cart.js                                                                                                                                                                                          | Megan Loo Jia Vern |
 | **CartPage.integration.test.js**          | pages/CartPage.js, <br>react-router-dom (for route protection via `<MemoryRouter>` and `<Routes>`), Header.js, Layout.js, Footer.js, Login.js, Profile.js, context/cart.js, context/auth.js,                                                                                                                                                                                                                                                                                  | Megan Loo Jia Vern |
+
+#### Milestone 2 - UI Testing
+
+| **UI Test**                | **Files / Modules Tested**                                                  | **Person**         |
+| -------------------------- | --------------------------------------------------------------------------- | ------------------ |
+| **Dashboard.spec.test.js** | Homepage -> Dashboard.js + components/UserMenu.js -> Profile.js + Orders.js | Megan Loo Jia Vern |
 
 ## 4. Setting Up The Project
 
