@@ -1,9 +1,10 @@
 export default {
   // name displayed during tests
-  displayName: "frontend",
+  displayName: "frontend-integration",
 
   // simulates browser environment in jest
   // e.g., using document.querySelector in your tests
+  // testEnvironment: "node",
   testEnvironment: "jest-environment-jsdom",
 
   // jest does not recognise jsx files by default, so we use babel to transform any jsx files
@@ -21,7 +22,7 @@ export default {
 
   // only run these tests
   testMatch: [
-    "<rootDir>/client/src/**/*.test.js", // recursively match all test.js files under src
+    "<rootDir>/client/src/**/*.integration.test.js", // recursively match all test.js files under src
   ],
 
   // jest code coverage
@@ -38,14 +39,12 @@ export default {
 
   coverageThreshold: {
     global: {
-      lines: 80,
-      functions: 80,
+      lines: 0,
+      functions: 0,
     },
   },
-  setupFilesAfterEnv: ["<rootDir>/client/src/setupTests.js"],
-  coverageDirectory: "<rootDir>/coverage/front-tests",
-
-  // ignore integration tests
-  coveragePathIgnorePatterns: ["/node_modules/", ".integration.test.js"],
-  testPathIgnorePatterns: ["/node_modules/", "\\.integration\\.test\\.js$"],
+  coveragePathIgnorePatterns: ["/node_modules/", ".test.js"],
+  coverageDirectory: "<rootDir>/coverage/frontend-integration-tests",
+  passWithNoTests: true,
+  setupFilesAfterEnv: ["<rootDir>/client/src/setupIntegrationTests.js"],
 };

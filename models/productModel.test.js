@@ -1,8 +1,5 @@
-// TODO: For integration tests, should use in-memory MongoDB server like mongodb-memory-server to validate schema behavior with actual DB operations
-
 import mongoose from "mongoose";
 import productModel from "./productModel.js";
-import path from "path";
 
 // General structure generated with the help of AI
 describe("Product Model", () => {
