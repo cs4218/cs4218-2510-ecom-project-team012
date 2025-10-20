@@ -10,6 +10,7 @@ import {
   seedCategoryData,
   seedProductData,
 } from "../setupSeedDataRoutes";
+import Login from "./Auth/Login";
 
 // General structure generated with the help of AI
 
@@ -24,6 +25,8 @@ function renderCartPage() {
             <Toaster />
             <Routes>
               <Route path="/cart" element={<CartPage />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/profile" element={<Profile />} />
             </Routes>
           </MemoryRouter>
         </CartProvider>
@@ -186,9 +189,7 @@ describe("Cart Page Integration", () => {
             new RegExp(`Total: \\$${totalPrice.toFixed(2)}`, "i")
           )
         ).toBeInTheDocument();
-        expect(
-          screen.getByText(/2 items in your cart/i)
-        ).toBeInTheDocument();
+        expect(screen.getByText(/2 items in your cart/i)).toBeInTheDocument();
       });
     });
   });
@@ -233,7 +234,9 @@ describe("Cart Page Integration", () => {
 
       // Assert
       await waitFor(() => {
-        expect(window.location.pathname).toBe("/login");
+        expect(
+          screen.getByRole("heading", { name: /Login/i })
+        ).toBeInTheDocument();
       });
     });
   });
@@ -331,7 +334,10 @@ describe("Cart Page Integration", () => {
 
     it("should not render current address if user address is empty", async () => {
       // Update user address to empty
-      const authData = { user: { ...testUser1, address: "" }, token: testAuthToken };
+      const authData = {
+        user: { ...testUser1, address: "" },
+        token: testAuthToken,
+      };
       localStorage.setItem("auth", JSON.stringify(authData));
 
       renderCartPage();
@@ -355,7 +361,9 @@ describe("Cart Page Integration", () => {
 
       // Assert
       await waitFor(() => {
-        expect(window.location.pathname).toBe("/dashboard/user/profile");
+        expect(
+          screen.getByRole("heading", { name: /Profile/i })
+        ).toBeInTheDocument();
       });
     });
 
@@ -364,7 +372,9 @@ describe("Cart Page Integration", () => {
 
       // Assert
       await waitFor(() => {
-        const paymentButton = screen.getByRole("button", { name: /Make Payment/i });
+        const paymentButton = screen.getByRole("button", {
+          name: /Make Payment/i,
+        });
         expect(paymentButton).toBeInTheDocument();
       });
     });
