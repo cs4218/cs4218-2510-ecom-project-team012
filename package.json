@@ -17,7 +17,8 @@
     "test:backend-int": "cross-env NODE_ENV=backend-int node node_modules/jest/bin/jest.js --runInBand --config jest.backend.integration.config.js",
     "test:integration": "npm run test:backend-int && npm run test:frontend-int",
     "convert:json": "node tests/convertJsonToJs.js",
-    "test:ui": "npm run convert:json && cross-env NODE_ENV=test-ui npx playwright test --ui"
+    "test:ui": "npm run convert:json && cross-env NODE_ENV=test-ui npx playwright test --ui",
+    "dev:ui": "npm run convert:json && concurrently cross-env NODE_ENV=test-ui \"npm run server\" \"npm run client\""
   },
   "keywords": [],
   "author": "RP",
