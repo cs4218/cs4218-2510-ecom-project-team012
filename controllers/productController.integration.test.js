@@ -174,5 +174,26 @@ describe("Product Controller Integration", () => {
       expect(res.statusCode).toBe(404);
       expect(res.body).toHaveProperty("message", expect.stringMatching(/not found/i));
     });
+
+    it("should return 404 for products with no photo", async () => {
+      // Arrange
+      const category = await categoryModel.create(testCategory1);
+      const product = await productModel.create({
+        ...testProduct1,
+        category: category._id,
+      });
+
+      // Act
+      const res = await request(app).get(
+        `/api/v1/product/product-photo/${product._id}`
+      );
+
+      // Assert
+      expect(res.statusCode).toBe(404);
+      expect(res.body).toHaveProperty(
+        "message",
+        expect.stringMatching(/not found/i)
+      );
+    });
   });
 });
