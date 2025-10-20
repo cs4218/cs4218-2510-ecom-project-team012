@@ -14,6 +14,8 @@ import seedDataRoutes from "./tests/seedDataRoutes.js";
 // configure env
 dotenv.config();
 
+// Credits to team cs4218-2510-ecom-project-team003 for the setup idea for the integration tests config of seeding the test database and seeding controller + route
+
 // sanity check
 // print current environment
 console.log("Current NODE_ENV:", process.env.NODE_ENV);
