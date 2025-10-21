@@ -35,6 +35,7 @@ export default {
     "client/src/components/Routes/Private.js",
     "client/src/context/cart.js",
     "client/src/context/auth.js",
+    "!**/*.spec.js"
   ],
 
   coverageThreshold: {
