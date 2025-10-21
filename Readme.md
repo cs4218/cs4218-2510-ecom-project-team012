@@ -97,6 +97,7 @@ Github Actions CI Link: <https://github.com/cs4218/cs4218-2510-ecom-project-team
 | **ProductDetails.spec.js**   | ProductDetailsPage.js, RelatedProductsSection, AddToCartButton, Integration with Cart Context                                | Megan Loo Jia Vern |
 | **CartPage.spec.js**         | CartPage.js, Login.js, CartContext, Profile.js — covering all cart states (guest, authenticated, cart empty, cart populated) | Megan Loo Jia Vern |
 | **AdminDashboard.spec.js** | AdminDashboard.js | Lim YingXuan |
+| **AdminMenu.spec.js** | AdminMenu.js | Lim YingXuan |
 | **Login.spec.js** | Login.js | Lim YingXuan |
 | **Register.spec.js** | Register.js | Lim YingXuan |
 | **ForgotPassword.spec.js** | ForgotPassword.js | Lim YingXuan |
