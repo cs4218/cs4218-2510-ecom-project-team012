@@ -32,14 +32,11 @@ axios.defaults.baseURL = "http://localhost:6061"; // backend test server
 beforeAll(async () => {
   // start the backend before tests
   await startTestServer(6061);
-});
+}, 15000);
 
 afterAll(async () => {
   // stop the backend after all tests finish
   // jest.setTimeout(10000); // increase timeout
   // try {
   await stopTestServer();
-  // } catch (err) {
-  //   console.warn("Server already closed");
-  // }
-});
+}, 15000);
