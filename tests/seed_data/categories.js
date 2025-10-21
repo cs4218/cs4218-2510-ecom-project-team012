@@ -20,6 +20,13 @@ export const CATEGORIES = [
   name: "Clothing",
   slug: "clothing",
   __v: 0
+},
+
+{
+  _id: new mongoose.Types.ObjectId("66db427fdb0119d9234b27ea"),
+  name: "Furniture",
+  slug: "furniture",
+  __v: 0
 }
 ];
 
