@@ -12,6 +12,7 @@ import {
   seedCategoryData,
   seedProductData,
 } from "../setupSeedDataRoutes";
+import Pagenotfound from "./Pagenotfound";
 
 // General structure generated with the help of AI
 
@@ -27,6 +28,7 @@ function renderCategoryProductPage(slug) {
             <Routes>
               <Route path="/product/:slug" element={<ProductDetails />} />
               <Route path="/category/:slug" element={<CategoryProduct />} />
+              <Route path="/page-not-found" element={<Pagenotfound />} />
             </Routes>
           </MemoryRouter>
         </CartProvider>
@@ -147,5 +149,13 @@ describe("Category Product Page Integration", () => {
       });
     });
 
+    it("should handle non-existent category slug gracefully", async () => {
+      renderCategoryProductPage("non-existent-category-slug");
+
+      // Assert
+      await waitFor(() => {
+        expect(screen.getByText(/Page Not Found/i)).toBeInTheDocument();
+      });
+    });
   });
 });
