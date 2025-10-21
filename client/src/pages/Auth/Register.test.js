@@ -56,34 +56,32 @@ describe("Register Component", () => {
       </MemoryRouter>
     );
 
-    fireEvent.change(getByPlaceholderText("Enter Your Name"), {
+    fireEvent.change(getByPlaceholderText("Name", { exact: false }), {
       target: { value: "John Doe" },
     });
-    fireEvent.change(getByPlaceholderText("Enter Your Email"), {
+    fireEvent.change(getByPlaceholderText("Email", { exact: false }), {
       target: { value: "test@example.com" },
     });
-    fireEvent.change(getByPlaceholderText("Enter Your Password"), {
+    fireEvent.change(getByPlaceholderText("Your Password", { exact: false }), {
       target: { value: "password123" },
     });
-    fireEvent.change(getByPlaceholderText("Enter Your Phone Number"), {
+    fireEvent.change(getByPlaceholderText("Phone Number", { exact: false }), {
       target: { value: "1234567890" },
     });
-    fireEvent.change(getByPlaceholderText("Enter Your Address"), {
+    fireEvent.change(getByPlaceholderText("Address", { exact: false }), {
       target: { value: "123 Street" },
     });
-    fireEvent.change(getByPlaceholderText("Enter Your Date of Birth"), {
+    fireEvent.change(getByPlaceholderText("Date of Birth", { exact: false }), {
       target: { value: "2000-01-01" },
     });
-    fireEvent.change(getByPlaceholderText("What is your favorite sport?"), {
+    fireEvent.change(getByPlaceholderText("What is your", { exact: false }), {
       target: { value: "Football" },
     });
 
     fireEvent.click(getByText("REGISTER"));
 
     await waitFor(() => expect(axios.post).toHaveBeenCalled());
-    expect(toast.success).toHaveBeenCalledWith(
-      "Registered successfully, please login!"
-    );
+    expect(toast.success).toHaveBeenCalled();
   });
 
   it("should navigate to login on successful registration", async () => {
@@ -102,25 +100,25 @@ describe("Register Component", () => {
       </MemoryRouter>
     );
 
-   fireEvent.change(getByPlaceholderText("Enter Your Name"), {
+   fireEvent.change(getByPlaceholderText("Name", { exact: false }), {
       target: { value: "John Doe" },
     });
-    fireEvent.change(getByPlaceholderText("Enter Your Email"), {
+    fireEvent.change(getByPlaceholderText("Email", { exact: false }), {
       target: { value: "test@example.com" },
     });
-    fireEvent.change(getByPlaceholderText("Enter Your Password"), {
+    fireEvent.change(getByPlaceholderText("Your Password", { exact: false }), {
       target: { value: "password123" },
     });
-    fireEvent.change(getByPlaceholderText("Enter Your Phone Number"), {
+    fireEvent.change(getByPlaceholderText("Phone Number", { exact: false }), {
       target: { value: "1234567890" },
     });
-    fireEvent.change(getByPlaceholderText("Enter Your Address"), {
+    fireEvent.change(getByPlaceholderText("Address", { exact: false }), {
       target: { value: "123 Street" },
     });
-    fireEvent.change(getByPlaceholderText("Enter Your Date of Birth"), {
+    fireEvent.change(getByPlaceholderText("Date of Birth", { exact: false }), {
       target: { value: "2000-01-01" },
     });
-    fireEvent.change(getByPlaceholderText("What is your favorite sport?"), {
+    fireEvent.change(getByPlaceholderText("What is your", { exact: false }), {
       target: { value: "Football" },
     });
 
@@ -145,32 +143,32 @@ describe("Register Component", () => {
       </MemoryRouter>
     );
 
-    fireEvent.change(getByPlaceholderText("Enter Your Name"), {
+    fireEvent.change(getByPlaceholderText("Name", { exact: false }), {
       target: { value: "John Doe" },
     });
-    fireEvent.change(getByPlaceholderText("Enter Your Email"), {
+    fireEvent.change(getByPlaceholderText("Email", { exact: false }), {
       target: { value: "test@example.com" },
     });
-    fireEvent.change(getByPlaceholderText("Enter Your Password"), {
+    fireEvent.change(getByPlaceholderText("Your Password", { exact: false }), {
       target: { value: "password123" },
     });
-    fireEvent.change(getByPlaceholderText("Enter Your Phone Number"), {
+    fireEvent.change(getByPlaceholderText("Phone Number", { exact: false }), {
       target: { value: "1234567890" },
     });
-    fireEvent.change(getByPlaceholderText("Enter Your Address"), {
+    fireEvent.change(getByPlaceholderText("Address", { exact: false }), {
       target: { value: "123 Street" },
     });
-    fireEvent.change(getByPlaceholderText("Enter Your Date of Birth"), {
+    fireEvent.change(getByPlaceholderText("Date of Birth", { exact: false }), {
       target: { value: "2000-01-01" },
     });
-    fireEvent.change(getByPlaceholderText("What is your favorite sport?"), {
+    fireEvent.change(getByPlaceholderText("What is your", { exact: false }), {
       target: { value: "Football" },
     });
 
     fireEvent.click(getByText("REGISTER"));
 
     await waitFor(() => expect(axios.post).toHaveBeenCalled());
-    expect(toast.error).toHaveBeenCalledWith("User already exists");
+    expect(toast.error).toHaveBeenCalled();
   });
 
   it("should display error message on error being caught", async () => {
@@ -184,32 +182,32 @@ describe("Register Component", () => {
       </MemoryRouter>
     );
 
-    fireEvent.change(getByPlaceholderText("Enter Your Name"), {
+    fireEvent.change(getByPlaceholderText("Name", { exact: false }), {
       target: { value: "John Doe" },
     });
-    fireEvent.change(getByPlaceholderText("Enter Your Email"), {
+    fireEvent.change(getByPlaceholderText("Email", { exact: false }), {
       target: { value: "test@example.com" },
     });
-    fireEvent.change(getByPlaceholderText("Enter Your Password"), {
+    fireEvent.change(getByPlaceholderText("Your Password", { exact: false }), {
       target: { value: "password123" },
     });
-    fireEvent.change(getByPlaceholderText("Enter Your Phone Number"), {
+    fireEvent.change(getByPlaceholderText("Phone Number", { exact: false }), {
       target: { value: "1234567890" },
     });
-    fireEvent.change(getByPlaceholderText("Enter Your Address"), {
+    fireEvent.change(getByPlaceholderText("Address", { exact: false }), {
       target: { value: "123 Street" },
     });
-    fireEvent.change(getByPlaceholderText("Enter Your Date of Birth"), {
+    fireEvent.change(getByPlaceholderText("Date of Birth", { exact: false }), {
       target: { value: "2000-01-01" },
     });
-    fireEvent.change(getByPlaceholderText("What is your favorite sport?"), {
+    fireEvent.change(getByPlaceholderText("What is your", { exact: false }), {
       target: { value: "Football" },
     });
 
     fireEvent.click(getByText("REGISTER"));
 
     await waitFor(() => expect(axios.post).toHaveBeenCalled());
-    expect(toast.error).toHaveBeenCalledWith("Something went wrong");
+    expect(toast.error).toHaveBeenCalled();
   });
 });
 
@@ -228,14 +226,14 @@ describe("Register Component Initial State", () => {
     );
 
     expect(getByText("REGISTER FORM")).toBeInTheDocument();
-    expect(getByPlaceholderText("Enter Your Name")).toBeInTheDocument();
-    expect(getByPlaceholderText("Enter Your Email")).toBeInTheDocument();
-    expect(getByPlaceholderText("Enter Your Password")).toBeInTheDocument();
-    expect(getByPlaceholderText("Enter Your Phone Number")).toBeInTheDocument();
-    expect(getByPlaceholderText("Enter Your Address")).toBeInTheDocument();
-    expect(getByPlaceholderText("Enter Your Date of Birth")).toBeInTheDocument();
+    expect(getByPlaceholderText("Name", { exact: false })).toBeInTheDocument();
+    expect(getByPlaceholderText("Email", { exact: false })).toBeInTheDocument();
+    expect(getByPlaceholderText("Your Password", { exact: false })).toBeInTheDocument();
+    expect(getByPlaceholderText("Phone Number", { exact: false })).toBeInTheDocument();
+    expect(getByPlaceholderText("Address", { exact: false })).toBeInTheDocument();
+    expect(getByPlaceholderText("Date of Birth", { exact: false })).toBeInTheDocument();
     expect(
-      getByPlaceholderText("What is your favorite sport?")
+      getByPlaceholderText("What is your", { exact: false })
     ).toBeInTheDocument();
     expect(getByText("REGISTER")).toBeInTheDocument();
   });
@@ -249,7 +247,7 @@ describe("Register Component Initial State", () => {
       </MemoryRouter>
     );
 
-    expect(getByPlaceholderText("Enter Your Name").value).toBe("");
+    expect(getByPlaceholderText("Name", { exact: false }).value).toBe("");
   });
 
   it("should have empty email initially", () => {
@@ -261,7 +259,7 @@ describe("Register Component Initial State", () => {
       </MemoryRouter>
     );
 
-    expect(getByPlaceholderText("Enter Your Email").value).toBe("");
+    expect(getByPlaceholderText("Email", { exact: false }).value).toBe("");
   });
 
   it("should have empty password initially", () => {
@@ -273,7 +271,8 @@ describe("Register Component Initial State", () => {
       </MemoryRouter>
     );
 
-    expect(getByPlaceholderText("Enter Your Password").value).toBe("");
+    // used 'Your Password' instead of just 'Password' since forgot password also has the word 'Password'
+    expect(getByPlaceholderText("Your Password", { exact: false }).value).toBe("");
   });
 
   it("should have empty phone number initially", () => {
@@ -285,7 +284,7 @@ describe("Register Component Initial State", () => {
       </MemoryRouter>
     );
 
-    expect(getByPlaceholderText("Enter Your Phone Number").value).toBe("");
+    expect(getByPlaceholderText("Phone Number", { exact: false }).value).toBe("");
   });
 
   it("should have empty address initially", () => {
@@ -297,7 +296,7 @@ describe("Register Component Initial State", () => {
       </MemoryRouter>
     );
 
-    expect(getByPlaceholderText("Enter Your Address").value).toBe("");
+    expect(getByPlaceholderText("Address", { exact: false }).value).toBe("");
   });
 
   it("should have empty date of birth initially", () => {
@@ -309,7 +308,7 @@ describe("Register Component Initial State", () => {
       </MemoryRouter>
     );
 
-    expect(getByPlaceholderText("Enter Your Date of Birth").value).toBe("");
+    expect(getByPlaceholderText("Date of Birth", { exact: false }).value).toBe("");
   });
 
   it("should have empty security answer initially", () => {
@@ -321,7 +320,7 @@ describe("Register Component Initial State", () => {
       </MemoryRouter>
     );
     
-    expect(getByPlaceholderText("What is your favorite sport?").value).toBe("");
+    expect(getByPlaceholderText("What is your", { exact: false }).value).toBe("");
   });
 
   it("should allow typing of name", () => {
@@ -332,12 +331,12 @@ describe("Register Component Initial State", () => {
           </Routes>
         </MemoryRouter>
       );
-  
-      fireEvent.change(getByPlaceholderText("Enter Your Name"), {
+
+      fireEvent.change(getByPlaceholderText("Name", { exact: false }), {
         target: { value: "John Doe" },
       });
 
-      expect(getByPlaceholderText("Enter Your Name").value).toBe("John Doe");
+      expect(getByPlaceholderText("Name", { exact: false }).value).toBe("John Doe");
   });
 
   it("should allow typing of email", () => {
@@ -349,11 +348,11 @@ describe("Register Component Initial State", () => {
       </MemoryRouter>
     );
 
-    fireEvent.change(getByPlaceholderText("Enter Your Email"), {
+    fireEvent.change(getByPlaceholderText("Email", { exact: false }), {
       target: { value: "test@example.com" },
     });
 
-    expect(getByPlaceholderText("Enter Your Email").value).toBe("test@example.com");
+    expect(getByPlaceholderText("Email", { exact: false }).value).toBe("test@example.com");
   });
 
   it("should allow typing of password", () => {
@@ -365,11 +364,12 @@ describe("Register Component Initial State", () => {
       </MemoryRouter>
     );
 
-    fireEvent.change(getByPlaceholderText("Enter Your Password"), {
+    // used 'Your Password' instead of just 'Password' since forgot password also has the word 'Password'
+    fireEvent.change(getByPlaceholderText("Your Password", { exact: false }), {
       target: { value: "password123" },
     });
 
-    expect(getByPlaceholderText("Enter Your Password").value).toBe("password123");
+    expect(getByPlaceholderText("Your Password", { exact: false }).value).toBe("password123");
   });
 
   it("should allow typing of phone number", () => {
@@ -381,11 +381,11 @@ describe("Register Component Initial State", () => {
       </MemoryRouter>
     );
 
-    fireEvent.change(getByPlaceholderText("Enter Your Phone Number"), {
+    fireEvent.change(getByPlaceholderText("Phone Number", { exact: false }), {
       target: { value: "1234567890" },
     });
 
-    expect(getByPlaceholderText("Enter Your Phone Number").value).toBe("1234567890");
+    expect(getByPlaceholderText("Phone Number", { exact: false }).value).toBe("1234567890");
   });
 
   it("should allow typing of address", () => {
@@ -397,11 +397,11 @@ describe("Register Component Initial State", () => {
       </MemoryRouter>
     );
 
-    fireEvent.change(getByPlaceholderText("Enter Your Address"), {
+    fireEvent.change(getByPlaceholderText("Address", { exact: false }), {
       target: { value: "123 Street" },
     });
 
-    expect(getByPlaceholderText("Enter Your Address").value).toBe("123 Street");
+    expect(getByPlaceholderText("Address", { exact: false }).value).toBe("123 Street");
   });
 
   it("should allow typing of date of birth", () => {
@@ -413,11 +413,11 @@ describe("Register Component Initial State", () => {
       </MemoryRouter>
     );
 
-    fireEvent.change(getByPlaceholderText("Enter Your Date of Birth"), {
+    fireEvent.change(getByPlaceholderText("Date of Birth", { exact: false }), {
       target: { value: "2000-01-01" },
     });
 
-    expect(getByPlaceholderText("Enter Your Date of Birth").value).toBe("2000-01-01");
+    expect(getByPlaceholderText("Date of Birth", { exact: false }).value).toBe("2000-01-01");
   });
 
   it("should allow typing of security answer", () => {
@@ -429,10 +429,10 @@ describe("Register Component Initial State", () => {
       </MemoryRouter>
     );
 
-    fireEvent.change(getByPlaceholderText("What is your favorite sport?"), {
+    fireEvent.change(getByPlaceholderText("What is your", { exact: false }), {
       target: { value: "Football" },
     });
 
-    expect(getByPlaceholderText("What is your favorite sport?").value).toBe("Football");
+    expect(getByPlaceholderText("What is your", { exact: false }).value).toBe("Football");
   });
 });

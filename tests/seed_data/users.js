@@ -167,6 +167,36 @@ export const USERS = [
 },
 
 {
+  _id: new mongoose.Types.ObjectId("68cbb3c2c3b189d7acade305"),
+  name: "abc",
+  email: "abc@gmail.com",
+  password: "$2b$10$4JhdLvUZNDVpXjJ0n7RhmeEfLl6IEAEk/n.Ua6TsEhYXGhkB4D/P6",
+  phone: "1234",
+  address: "1234",
+  answer: "football",
+  dob: "2000-01-01T00:00:00.000Z",
+  role: 0,
+  createdAt: new Date("2025-09-18T07:24:50.465Z"),
+  updatedAt: new Date("2025-09-18T07:24:50.465Z"),
+  __v: 0
+},
+
+{
+  _id: new mongoose.Types.ObjectId("68f5f55c9c3ee2c000e23e0a"),
+  name: "admin",
+  email: "admin@gmail.com",
+  password: "$2b$10$DO5mJ/I0YvLRnuFdRQO1M.v667Zl0/0i5YTJ3/IGEIKNRzirWwVjO",
+  phone: "1234",
+  address: "123",
+  answer: "basketball",
+  dob: "2025-10-20T00:00:00.000Z",
+  role: 1,
+  createdAt: new Date("2025-10-20T08:39:56.236Z"),
+  updatedAt: new Date("2025-10-20T08:39:56.236Z"),
+  __v: 0
+},
+  
+{
   _id: new mongoose.Types.ObjectId("68f64423cfc8b91a9d405b54"),
   name: "Bob",
   email: "bob@bob.com",

@@ -28,7 +28,10 @@ const Register = () => {
         answer,
       });
       if (res && res.data.success) {
-        toast.success("Registered successfully, please login!");
+        // FIXED BUG: Duration of toast too short
+        toast.success("Registered successfully, please login!", {
+          duration: 3000,
+        });
         navigate("/login");
       } else {
         toast.error(res.data.message);

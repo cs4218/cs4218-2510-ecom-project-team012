@@ -47,9 +47,9 @@ describe("AdminDashboard", () => {
     );
 
     expect(getByTestId("admin-menu")).toBeInTheDocument();
-    expect(getByText(/Admin Name : /)).toHaveTextContent("Admin User");
-    expect(getByText(/Admin Email : /)).toHaveTextContent("admin@example.com");
-    expect(getByText(/Admin Contact : /)).toHaveTextContent("123-456-7890");
+    expect(getByText(/Admin Name : /i)).toHaveTextContent("Admin User");
+    expect(getByText(/Admin Email : /i)).toHaveTextContent("admin@example.com");
+    expect(getByText(/Admin Contact : /i)).toHaveTextContent("123-456-7890");
   });
 
   it("should not render admin info if admin is not logged in", () => {
