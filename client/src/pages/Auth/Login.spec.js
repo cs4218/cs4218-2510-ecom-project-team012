@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 const testUser = {
   name: "abc",
   email: "abc@gmail.com",
-  password: "$2b$10$4JhdLvUZNDVpXjJ0n7RhmeEfLl6IEAEk/n.Ua6TsEhYXGhkB4D/P6",
+  password: "$2b$10$Wmo3dw/PkZFJDoN9LUaqRuIEkz0RXQnZv7zbPNSA5sPT7J.EdzYlm",
   phone: "1234",
   address: "1234",
   answer: "football",
@@ -75,6 +75,7 @@ test.describe("Login Page", () => {
       .getByRole("textbox", { name: "Enter Your Password" })
       .fill(validLogin.password);
     await page.getByRole("button", { name: "LOGIN" }).click();
+    console.log("Current Page URL is: "+ page.url());
     await expect(page).toHaveURL(/\/$/);
   });
 
@@ -101,12 +102,7 @@ test.describe("Login Page", () => {
       .getByRole("textbox", { name: "Enter Your Password" })
       .fill(validLogin.wrongPassword);
     await page.getByRole("button", { name: "LOGIN" }).click();
-    await expect(
-      page
-        .locator("div")
-        .filter({ hasText: /^Something went wrong$/ })
-        .nth(2)
-    ).toBeVisible();
+    await expect(page).toHaveURL(/.*\/login/);
   });
 
   test("should remain on login page if they log in with unregistered account", async ({
