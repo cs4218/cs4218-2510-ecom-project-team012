@@ -170,7 +170,7 @@ export const USERS = [
   _id: new mongoose.Types.ObjectId("68cbb3c2c3b189d7acade305"),
   name: "abc",
   email: "abc@gmail.com",
-  password: "$2b$10$4JhdLvUZNDVpXjJ0n7RhmeEfLl6IEAEk/n.Ua6TsEhYXGhkB4D/P6",
+  password: "$2b$10$47hJMD2EyCWr07RVOEWWXOuFUdTpwazMq.pHgBPnQifT14BxYwmKK",
   phone: "1234",
   address: "1234",
   answer: "football",
@@ -189,13 +189,13 @@ export const USERS = [
   phone: "1234",
   address: "123",
   answer: "basketball",
-  dob: "2025-10-20T00:00:00.000Z",
+  dob: "2000-01-01T00:00:00.000Z",
   role: 1,
   createdAt: new Date("2025-10-20T08:39:56.236Z"),
   updatedAt: new Date("2025-10-20T08:39:56.236Z"),
   __v: 0
 },
-  
+
 {
   _id: new mongoose.Types.ObjectId("68f64423cfc8b91a9d405b54"),
   name: "Bob",

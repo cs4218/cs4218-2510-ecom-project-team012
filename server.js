@@ -46,7 +46,7 @@ app.use("/api/v1/category", categoryRoutes);
 app.use("/api/v1/product", productRoutes);
 app.use("/api/v1/payment", paymentRoutes);
 
-if (process.env.NODE_ENV === "frontend-int") {
+if (["frontend-int", "test-ui"].includes(process.env.NODE_ENV)) {
   app.use("/api/v1/seed", seedDataRoutes);
 }
 
