@@ -218,5 +218,27 @@
       "$date": "2025-02-04T13:40:46.071Z"
     },
     "__v": 0
-  }
+  },
+  {
+  "_id": {
+    "$oid": "68f64423cfc8b91a9d405b54"
+  },
+  "name": "Bob",
+  "email": "bob@bob.com",
+  "password": "$2b$10$Zp8iGKxEAnsnLiwQsOP.w.tGUHHP2horHBo.3cJr4bHXgIrOIlWoq",
+  "phone": "12341234",
+  "address": "2 Street",
+  "answer": "Tennis",
+  "dob": {
+    "$date": "2003-02-01T00:00:00.000Z"
+  },
+  "role": 0,
+  "createdAt": {
+    "$date": "2025-10-20T14:16:03.866Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-20T15:28:09.671Z"
+  },
+  "__v": 0
+}
 ]
