@@ -31,8 +31,10 @@ const ForgotPassword = () => {
       });
 
       if (res && res.data.success) {
-        toast.success("Password reset successfully. Please log in again.");
-        
+        toast.success("Password reset successfully. Please log in again.", {
+            duration: 3000,
+        });
+
         setAuth({
             user: null,
             token: "",

@@ -8,6 +8,7 @@
   "phone": "Daniel",
   "address": "60 Daniel Road",
   "answer": "Singapore",
+  "dob": "2000-01-01T00:00:00.000Z",
   "role": 1,
   "createdAt": {
     "$date": "2024-10-18T08:14:43.300Z"
@@ -27,6 +28,7 @@
   "phone": "123",
   "address": "hell3@test.com",
   "answer": "hello@test.com",
+  "dob": "2000-01-01T00:00:00.000Z",
   "role": 0,
   "createdAt": {
     "$date": "2024-10-19T08:27:00.468Z"
@@ -46,6 +48,7 @@
   "phone": "test@test123.com",
   "address": "test@test123.com",
   "answer": "test@test123.com",
+  "dob": "2000-01-01T00:00:00.000Z",
   "role": 0,
   "createdAt": {
     "$date": "2024-10-20T08:43:15.745Z"
@@ -65,6 +68,7 @@
   "phone": "test@admin.com",
   "address": "test@admin.com",
   "answer": "test@admin.com",
+  "dob": "2000-01-01T00:00:00.000Z",
   "role": 1,
   "createdAt": {
     "$date": "2024-10-20T12:01:01.455Z"
@@ -84,6 +88,7 @@
   "phone": "12341234",
   "address": "asdf",
   "answer": "asdf",
+  "dob": "2000-01-01T00:00:00.000Z",
   "role": 0,
   "createdAt": {
     "$date": "2024-10-25T11:56:14.756Z"
@@ -103,6 +108,7 @@
   "phone": "admin@test.sg",
   "address": "admin@test.sg",
   "answer": "admin@test.sg",
+  "dob": "2000-01-01T00:00:00.000Z",
   "role": 1,
   "createdAt": {
     "$date": "2024-10-25T16:10:25.288Z"
@@ -122,6 +128,7 @@
   "phone": "81234567",
   "address": "admin's address",
   "answer": "Leetcoding",
+  "dob": "2000-01-01T00:00:00.000Z",
   "role": 1,
   "createdAt": {
     "$date": "2024-10-26T14:01:43.905Z"
@@ -141,6 +148,7 @@
   "phone": "user@test.comuser@test.com",
   "address": "user@test.comuser@test.com",
   "answer": "user@test.comuser@test.com",
+  "dob": "2000-01-01T00:00:00.000Z",
   "role": 0,
   "createdAt": {
     "$date": "2024-10-27T06:43:45.619Z"
@@ -160,6 +168,7 @@
   "phone": "test@gmail.com",
   "address": "test@gmail.com",
   "answer": "test@gmail.com",
+  "dob": "2000-01-01T00:00:00.000Z",
   "role": 0,
   "createdAt": {
     "$date": "2024-11-08T15:00:52.049Z"
@@ -179,6 +188,7 @@
   "phone": "user@test.com",
   "address": "user@test.com",
   "answer": "user@test.com",
+  "dob": "2000-01-01T00:00:00.000Z",
   "role": 0,
   "createdAt": {
     "$date": "2024-11-09T06:49:27.973Z"
@@ -198,6 +208,7 @@
   "phone": "81234567",
   "address": "1 Computing Drive",
   "answer": "password is cs4218@test.com",
+  "dob": "2000-01-01T00:00:00.000Z",
   "role": 0,
   "createdAt": {
     "$date": "2025-02-04T13:40:46.071Z"
@@ -206,4 +217,67 @@
     "$date": "2025-02-04T13:40:46.071Z"
   },
   "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68cbb3c2c3b189d7acade305"
+  },
+  "name": "abc",
+  "email": "abc@gmail.com",
+  "password": "$2b$10$47hJMD2EyCWr07RVOEWWXOuFUdTpwazMq.pHgBPnQifT14BxYwmKK",
+  "phone": "1234",
+  "address": "1234",
+  "answer": "football",
+  "dob": "2000-01-01T00:00:00.000Z",
+  "role": 0,
+  "createdAt": {
+    "$date": "2025-09-18T07:24:50.465Z"
+  },
+  "updatedAt": {
+    "$date": "2025-09-18T07:24:50.465Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68f5f55c9c3ee2c000e23e0a"
+  },
+  "name": "admin",
+  "email": "admin@gmail.com",
+  "password": "$2b$10$DO5mJ/I0YvLRnuFdRQO1M.v667Zl0/0i5YTJ3/IGEIKNRzirWwVjO",
+  "phone": "1234",
+  "address": "123",
+  "answer": "basketball",
+  "dob": "2000-01-01T00:00:00.000Z",
+  "role": 1,
+  "createdAt": {
+    "$date": "2025-10-20T08:39:56.236Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-20T08:39:56.236Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68f64423cfc8b91a9d405b54"
+  },
+  "name": "Bob",
+  "email": "bob@bob.com",
+  "password": "$2b$10$Zp8iGKxEAnsnLiwQsOP.w.tGUHHP2horHBo.3cJr4bHXgIrOIlWoq",
+  "phone": "12341234",
+  "address": "2 Street",
+  "answer": "Tennis",
+  "dob": {
+    "$date": "2003-02-01T00:00:00.000Z"
+  },
+  "role": 0,
+  "createdAt": {
+    "$date": "2025-10-20T14:16:03.866Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-20T15:28:09.671Z"
+  },
+  "__v": 0
 }]
+

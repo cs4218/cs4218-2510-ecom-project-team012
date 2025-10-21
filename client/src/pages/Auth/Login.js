@@ -23,6 +23,7 @@ const Login = () => {
         password,
       });
       if (res && res.data.success) {
+        // FIXED BUG: Duration of toast too short
         toast.success(res.data && res.data.message, {
             duration: 5000,
             icon: "🙏",
@@ -62,7 +63,7 @@ const Login = () => {
               onChange={(e) => setEmail(e.target.value)}
               className="form-control"
               id="exampleInputEmail1"
-              placeholder="Enter Your Email "
+              placeholder="Enter Your Email"
               required
             />
           </div>

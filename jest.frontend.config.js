@@ -34,6 +34,7 @@ export default {
     "client/src/components/Routes/Private.js",
     "client/src/context/cart.js",
     "client/src/context/auth.js",
+    "!**/*.spec.js"
   ],
 
   coverageThreshold: {
@@ -46,6 +47,14 @@ export default {
   coverageDirectory: "<rootDir>/coverage/front-tests",
 
   // ignore integration tests
-  coveragePathIgnorePatterns: ["/node_modules/", ".integration.test.js"],
-  testPathIgnorePatterns: ["/node_modules/", "\\.integration\\.test\\.js$"],
+  coveragePathIgnorePatterns: [
+    "/node_modules/",
+    ".integration.test.js",
+    "\\.spec\\.js$",
+  ],
+  testPathIgnorePatterns: [
+    "/node_modules/",
+    "\\.integration\\.test\\.js$",
+    "\\.spec\\.js$",
+  ],
 };
