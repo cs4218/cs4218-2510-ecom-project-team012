@@ -10,7 +10,7 @@ const testUser = {
   dob: "2000-01-01T00:00:00.000Z",
 };
 
-test.describe.configure({ mode: "parallel" });
+test.describe.configure({ mode: "serial" });
 
 const validUser = {
   email: "abc@gmail.com",
