@@ -194,6 +194,21 @@ export const USERS = [
   createdAt: new Date("2025-10-20T08:39:56.236Z"),
   updatedAt: new Date("2025-10-20T08:39:56.236Z"),
   __v: 0
+},
+  
+{
+  _id: new mongoose.Types.ObjectId("68f64423cfc8b91a9d405b54"),
+  name: "Bob",
+  email: "bob@bob.com",
+  password: "$2b$10$Zp8iGKxEAnsnLiwQsOP.w.tGUHHP2horHBo.3cJr4bHXgIrOIlWoq",
+  phone: "12341234",
+  address: "2 Street",
+  answer: "Tennis",
+  dob: new Date("2003-02-01T00:00:00.000Z"),
+  role: 0,
+  createdAt: new Date("2025-10-20T14:16:03.866Z"),
+  updatedAt: new Date("2025-10-20T15:28:09.671Z"),
+  __v: 0
 }
 ];
 

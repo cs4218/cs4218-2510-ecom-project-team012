@@ -12,6 +12,8 @@ const ProductDetails = () => {
   const [product, setProduct] = useState({});
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [cart, setCart] = useCart();
+  const cartCount = cart.filter((item) => item._id === product._id).length;
+  const remainingStock = product.quantity - cartCount;
 
   //initalp details
   useEffect(() => {
@@ -23,10 +25,17 @@ const ProductDetails = () => {
       const { data } = await axios.get(
         `/api/v1/product/get-product/${params.slug}`
       );
+      // Fix for navigating to non-existent product slugs
+      if (!data?.product) {
+        navigate("/page-not-found");
+        return;
+      }
       setProduct(data?.product);
       getSimilarProduct(data?.product._id, data?.product.category._id);
     } catch (error) {
       console.log(error);
+      // Fix for navigating to non-existent product slugs
+      navigate("/page-not-found");
     }
   };
   //get similar product
@@ -72,13 +81,20 @@ const ProductDetails = () => {
               localStorage.setItem("cart", JSON.stringify([...cart, product]));
               toast.success("Item Added to cart");
             }}
+            disabled={
+              // Fixed bug where adding out-of-stock items to cart was possible
+              remainingStock < 1
+            }
           >
-            ADD TO CART
+            {remainingStock < 1 ? "SOLD OUT" : "ADD TO CART"}
           </button>
         </div>
       </div>
       <hr />
-      <div className="row container similar-products">
+      <div
+        className="row container similar-products"
+        data-testid="related-products-section"
+      >
         <h4>Similar Products ➡️</h4>
         {relatedProducts.length < 1 && (
           <p className="text-center">No Similar Products found</p>

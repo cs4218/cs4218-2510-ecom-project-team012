@@ -4,6 +4,7 @@ import Layout from "./../../components/Layout";
 import { useAuth } from "../../context/auth";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { da } from "date-fns/locale";
 const Profile = () => {
   //context
   const [auth, setAuth] = useAuth();
@@ -35,8 +36,9 @@ const Profile = () => {
         phone,
         address,
       });
-      if (data?.error) {
-        toast.error(data?.error);
+      // fix to display error toast
+      if (!data.success) {
+        toast.error(data.message);
       } else {
         setAuth({ ...auth, user: data?.updatedUser });
         let ls = localStorage.getItem("auth");
@@ -77,12 +79,12 @@ const Profile = () => {
                   <input
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    // onChange={(e) => setEmail(e.target.value)} // technically not needed any more
                     className="form-control"
                     id="exampleInputEmail1"
                     placeholder="Enter Your Email"
-                    // disabled 
-                    // enabled this field
+                    disabled // re-disabled this field as updateProfileController does not expect this to change
+
                   />
                 </div>
                 <div className="mb-3">
