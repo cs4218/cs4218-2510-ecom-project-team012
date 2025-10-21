@@ -14,6 +14,7 @@ export default {
   testMatch: [
     "<rootDir>/models/*.integration.test.js",
     "<rootDir>/controllers/*.integration.test.js",
+    "<rootDir>/controllers/auth/*.integration.test.js",
     "<rootDir>/helpers/*.integration.test.js",
     "<rootDir>/middlewares/*.integration.test.js",
   ],
