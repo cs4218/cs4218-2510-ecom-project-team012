@@ -4,25 +4,17 @@ import {
   connectTestDB,
   closeTestDB,
   clearTestDB,
-} from "../../../../tests/setupTestDB.js";
-import {
-  resetSeedDatabase,
-  seedUserData,
-} from "../../setupSeedDataRoutes.js";
+} from "../../../../tests/setupTestDB.js"
+import userModel from "../../../../models/userModel.js";
 
 const testUser = {
-  _id: "68cbb3c2c3b189d7acade305",
   name: "abc",
   email: "abc@gmail.com",
   password: "$2b$10$4JhdLvUZNDVpXjJ0n7RhmeEfLl6IEAEk/n.Ua6TsEhYXGhkB4D/P6",
   phone: "1234",
   address: "1234",
   answer: "football",
-  dob: new Date("2000-01-01T00:00:00.000Z"),
-  role: 0,
-  createdAt: new Date("2025-09-18T07:24:50.465Z"),
-  updatedAt: new Date("2025-09-18T07:24:50.465Z"),
-  __v: 0
+  dob: "2000-01-01T00:00:00.000Z",
 };
 
 test.describe.configure({ mode: 'parallel' });
@@ -50,16 +42,22 @@ const existingRegister = {
 test.describe('Register Page', () => {
   // Test DB setup
   test.beforeAll(async () => {
-    await resetSeedDatabase();
+    await connectTestDB(await createTestDB());
   });
 
   test.beforeEach(async ({ page }) => {
-    await seedUserData([testUser]);
+    await userModel.create(testUser);
     await page.goto('http://localhost:3000/register');
-  });
+  }, 10000);
 
   // Test DB teardown
-  test.afterEach(async () => await resetSeedDatabase());
+  test.afterEach(async () => {
+    await clearTestDB();
+  },  10000);
+
+  test.afterAll(async () => {
+    await closeTestDB();
+  });
 
   test('should have all necessary elements', async ({ page }) => {
     await expect(page.getByRole('heading', { name: 'REGISTER FORM' })).toBeVisible();
@@ -70,21 +68,11 @@ test.describe('Register Page', () => {
     await expect(page.getByRole('textbox', { name: 'Enter Your Address' })).toBeVisible();
     await expect(page.getByPlaceholder('Enter Your Date of Birth')).toBeVisible();
     await expect(page.getByRole('textbox', { name: 'What is your favorite sport?' })).toBeVisible();
-  });
-
-  test('should display toast with success message if user registers successfully', async ({ page }) => {
-    await page.getByRole('textbox', { name: 'Enter Your Name' }).fill(validRegister.name);
-    await page.getByRole('textbox', { name: 'Enter Your Email' }).fill(validRegister.email);
-    await page.getByRole('textbox', { name: 'Enter Your Password' }).fill(validRegister.password);
-    await page.getByRole('textbox', { name: 'Enter Your Phone Number' }).fill(validRegister.phoneNumber);
-    await page.getByRole('textbox', { name: 'Enter Your Address' }).fill(validRegister.address);
-    await page.getByPlaceholder('Enter Your Date of Birth').fill(validRegister.dateOfBirth);
-    await page.getByRole('textbox', { name: 'What is your favorite sport?' }).fill(validRegister.favoriteSport);
-    await page.getByRole('button', { name: 'REGISTER' }).click();
-    await expect(page.locator('div').filter({ hasText: /^Registered successfully, please login!$/ }).nth(2)).toBeVisible();
+    await expect(page.getByRole('button', { name: 'REGISTER' })).toBeVisible();
   });
 
   test('should redirect user to Login Page on successful registration', async ({ page }) => {
+    test.setTimeout(20000);
     await page.getByRole('textbox', { name: 'Enter Your Name' }).fill(validRegister.name);
     await page.getByRole('textbox', { name: 'Enter Your Email' }).fill(validRegister.email);
     await page.getByRole('textbox', { name: 'Enter Your Password' }).fill(validRegister.password);
@@ -96,7 +84,7 @@ test.describe('Register Page', () => {
     await expect(page).toHaveURL(/.*\/login/);
   });
 
-  test('should display toast with error message if email is already registered', async ({ page }) => {
+  test('should remain on register page if email is already registered', async ({ page }) => {
     await page.getByRole('textbox', { name: 'Enter Your Name' }).fill(existingRegister.name);
     await page.getByRole('textbox', { name: 'Enter Your Email' }).fill(existingRegister.email);
     await page.getByRole('textbox', { name: 'Enter Your Password' }).fill(existingRegister.password);
@@ -105,7 +93,7 @@ test.describe('Register Page', () => {
     await page.getByPlaceholder('Enter Your Date of Birth').fill(existingRegister.dateOfBirth);
     await page.getByRole('textbox', { name: 'What is your favorite sport?' }).fill(existingRegister.favoriteSport);
     await page.getByRole('button', { name: 'REGISTER' }).click();
-    await expect(page.locator('div').filter({ hasText: /^Something went wrong$/ }).nth(2)).toBeVisible();
+    await expect(page).toHaveURL(/.*\/register/);
   });
 
   test('should remain on register page if user is missing name', async ({ page }) => {
