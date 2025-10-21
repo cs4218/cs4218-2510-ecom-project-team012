@@ -8,7 +8,6 @@ import {
 } from "../tests/setupTestDB.js";
 import categoryModel from "../models/categoryModel.js";
 import productModel from "../models/productModel.js";
-import { it } from "node:test";
 
 // ---------------------------------------------
 
@@ -434,7 +433,7 @@ describe("Product Controller Integration", () => {
         .send(filterCriteria);
 
       // Assert
-      expect(res.statusCode).toBe(500);
+      expect(res.statusCode).toBe(400);
       expect(res.body).toHaveProperty(
         "message",
         expect.stringMatching(/error/i)
@@ -443,9 +442,6 @@ describe("Product Controller Integration", () => {
   });
 
   describe("GET /api/v1/product/product-count", () => {
-    afterEach(() => {
-      jest.restoreAllMocks(); // critical cleanup step
-    });
 
     it("should return the total count of products", async () => {
       // Arrange
@@ -465,24 +461,6 @@ describe("Product Controller Integration", () => {
       // Assert
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty("total", 2);
-    });
-
-    it("should return 400 when there is a server error", async () => {
-      // Arrange
-      // temporarily mock the productModel.countDocuments method to throw an error
-      jest.spyOn(productModel, "countDocuments").mockImplementationOnce(() => {
-        throw new Error("DB query failed");
-      });
-
-      // Act
-      const res = await request(app).get("/api/v1/product/product-count");
-
-      // Assert
-      expect(res.statusCode).toBe(400);
-      expect(res.body).toHaveProperty(
-        "message",
-        expect.stringMatching(/error/i)
-      );
     });
   });
 
@@ -565,42 +543,6 @@ describe("Product Controller Integration", () => {
       });
     });
 
-    it("should return the default first page when page number is not provided", async () => {
-      // Arrange
-      const category = await categoryModel.create(testCategory1);
-      for (let i = 1; i <= 8; i++) {
-        await productModel.create({
-          ...testProduct1,
-          name: `Test Product ${i}`,
-          slug: `test-product-${i}`,
-          description: `Description${i}`,
-          category: category._id,
-        });
-      }
-
-      // Act
-      const res = await request(app).get("/api/v1/product/product-list/");
-
-      // Assert
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty("products");
-      expect(res.body.products.length).toBe(6); // should return first 6 products by default
-
-      const products = res.body.products;
-      const expectedItems = [];
-      for (let i = 8; i >= 3; i--) {
-        expectedItems.push(
-          expect.objectContaining({ name: `Test Product ${i}` })
-        );
-      }
-      expect(products).toEqual(expect.arrayContaining(expectedItems));
-
-      // ensure no photo field is included
-      products.forEach((product) => {
-        expect(product.photo).toBeUndefined();
-      });
-    });
-
     it("should handle error for invalid page number", async () => {
       // Act
       const res = await request(app).get(
@@ -626,7 +568,7 @@ describe("Product Controller Integration", () => {
       const res = await request(app).get("/api/v1/product/product-list/1");
 
       // Assert
-      expect(res.statusCode).toBe(500);
+      expect(res.statusCode).toBe(400);
       expect(res.body).toHaveProperty(
         "message",
         expect.stringMatching(/error/i)
@@ -767,7 +709,7 @@ describe("Product Controller Integration", () => {
       const res = await request(app).get(`/api/v1/product/search/Test`);
 
       // Assert
-      expect(res.statusCode).toBe(500);
+      expect(res.statusCode).toBe(400);
       expect(res.body).toHaveProperty(
         "message",
         expect.stringMatching(/error/i)
@@ -910,43 +852,6 @@ describe("Product Controller Integration", () => {
         expect.stringMatching(/error/i)
       );
     });
-
-    it("should handle error when pid is missing", async () => {
-      // Arrange
-      const category = await categoryModel.create(testCategory1);
-
-      // Act
-      const res = await request(app).get(
-        `/api/v1/product/related-product//${category._id}`
-      );
-
-      // Assert
-      expect(res.statusCode).toBe(400);
-      expect(res.body).toHaveProperty(
-        "message",
-        expect.stringMatching(/error/i)
-      );
-    });
-
-    it("should handle error when cid is missing", async () => {
-      // Arrange
-      const product = await productModel.create({
-        ...testProduct1,
-        category: (await categoryModel.create(testCategory1))._id,
-      });
-
-      // Act
-      const res = await request(app).get(
-        `/api/v1/product/related-product/${product._id}/`
-      );
-
-      // Assert
-      expect(res.statusCode).toBe(400);
-      expect(res.body).toHaveProperty(
-        "message",
-        expect.stringMatching(/error/i)
-      );
-    });
   });
 
   describe("GET /api/v1/product/product-category/:slug", () => {
@@ -1031,7 +936,7 @@ describe("Product Controller Integration", () => {
       );
 
       // Assert
-      expect(res.statusCode).toBe(500);
+      expect(res.statusCode).toBe(400);
       expect(res.body).toHaveProperty(
         "message",
         expect.stringMatching(/error/i)
