@@ -126,7 +126,7 @@ test("Able to Add Product to Cart from Product Details Page", async ({
   await expect(addToCartButton).not.toBeDisabled();
 });
 
-test("User unable to Add out-of-stock Product to Cart from Product Details Page", async ({
+test("Handle out-of-stock Product when adding to Cart from Product Details Page", async ({
   page,
 }) => {
   await page.goto("http://localhost:3000/product/out-of-stock-product");
@@ -142,7 +142,7 @@ test("User unable to Add out-of-stock Product to Cart from Product Details Page"
   await expect(addToCartButton).toBeDisabled();
 });
 
-test("User can only add one instance of a product to cart from Product Details Page if the product stock has 1", async ({
+test("Allow only adding one instance of a product to cart from Product Details Page if the product stock has 1", async ({
   page,
 }) => {
   await page.goto("http://localhost:3000/product/left-1-stock-product");
@@ -164,4 +164,61 @@ test("User can only add one instance of a product to cart from Product Details P
   await expect(addToCartButton).not.toBeVisible();
   const outOfStockButton = page.getByRole("button", { name: /sold out/i });
   await expect(outOfStockButton).toBeVisible();
+});
+
+test("Load alt text for product with no image on Product Details Page", async ({
+  page,
+}) => {
+  await page.goto("http://localhost:3000/product/out-of-stock-product");
+
+  // Assert navigation to product details page
+  await page.waitForURL("**/product/out-of-stock-product");
+  const main = page.getByRole("main");
+  await expect(main).toContainText(/Product Details/i);
+  await expect(main).toContainText(/out of stock product/i);
+
+  // Check for product image alt text
+  const productImage = main.getByRole("img", { name: /out of stock product/i });
+  await expect(productImage).toHaveAttribute("alt", /out of stock product/i);
+});
+
+test("Able to add multiple products to cart from Product Details Page", async ({
+  page,
+}) => {
+  await page.goto("http://localhost:3000/product/smartphone");
+
+  // Assert navigation to product details page
+  await page.waitForURL("**/product/smartphone");
+  const main = page.getByRole("main");
+  await expect(main).toContainText(/Product Details/i);
+  await expect(main).toContainText(/smartphone/i);
+
+  // Add first product to cart
+  const addToCartButton = page.getByRole("button", { name: /Add to Cart/i });
+  await addToCartButton.click();
+
+  // Check cart count
+  const cartCount = page.getByTestId("cart-count");
+  await expect(cartCount).toHaveText(/1/);
+
+  // Add another same product to cart
+  await addToCartButton.click();
+
+  // Check updated cart count
+  await expect(cartCount).toHaveText(/2/);
+
+  // Navigate to another product
+  await page.goto("http://localhost:3000/product/laptop");
+  await page.waitForURL("**/product/laptop");
+  const laptopMain = page.getByRole("main");
+  await expect(laptopMain).toContainText(/laptop/i);
+
+  // Add second product to cart
+  const laptopAddToCartButton = page.getByRole("button", {
+    name: /Add to Cart/i,
+  });
+  await laptopAddToCartButton.click();
+
+  // Check final cart count
+  await expect(cartCount).toHaveText(/3/);
 });
