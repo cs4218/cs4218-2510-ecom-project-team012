@@ -69,6 +69,14 @@ Github Actions CI Link: <https://github.com/cs4218/cs4218-2510-ecom-project-team
 | **CategoryProduct.integration.test.js**   | pages/CategoryProduct.js, <br>pages/ProductDetails.js, Backend (for `/api/v1/product/product-category/:slug` endpoint), <br>react-router-dom (for route protection via `<MemoryRouter>` and `<Routes>`), Header.js, Layout.js, Footer.js, Pagenotfound.js                                                                                                                                                                                                                       | Megan Loo Jia Vern |
 | **ProductDetails.integration.test.js**    | pages/ProductDetails.js, Backend (for `/api/v1/product/get-product/:slug`, `/api/v1/product/related-product/:pid/:cid` endpoint), <br>react-router-dom (for route protection via `<MemoryRouter>` and `<Routes>`), Header.js, Layout.js, Footer.js, Pagenotfound.js, context/cart.js                                                                                                                                                                                            | Megan Loo Jia Vern |
 | **CartPage.integration.test.js**          | pages/CartPage.js, <br>react-router-dom (for route protection via `<MemoryRouter>` and `<Routes>`), Header.js, Layout.js, Footer.js, Login.js, Profile.js, context/cart.js, context/auth.js (The payment functionality is mocked, as the purpose of this test is to validate cart-related behaviors and UI logic rather than backend payment processing. The payment controller is intentionally excluded from coverage to maintain a focused test scope on cart functionality) | Megan Loo Jia Vern |
+| **ForgotPassword.integration.test.js** | ForgotPassword.js, context/auth.js, | Lim YingXuan |
+| **Login.integration.test.js** | Login.js, context/auth.js | Lim YingXuan |
+| **forgotPasswordController.integration.js** | ForgotPasswordController.js, userModel.js, authHelper.js | Lim YingXuan |
+| **loginController.integration.js** | loginController.js, userModel.js, authHelper.js | Lim YingXuan |
+| **registerController.integration.js** | registerController.js, userModel.js | Lim YingXuan| 
+| **contexts/auth.integration.js** | context/auth.js, jsonwebtoken | Lim YingXuan |
+| **authHelper.integration.js** | authHelper.js, bcrypt | Lim YingXuan |
+| **authMiddleware.integration.js** | authMiddleware.js, userModel.js, jsonwebtoken | Lim YingXuan |
 
 #### Milestone 2 - UI Testing
 
@@ -78,6 +86,10 @@ Github Actions CI Link: <https://github.com/cs4218/cs4218-2510-ecom-project-team
 | **CategoryProducts.spec.js** | Homepage, Header Navigation, CategoryDropdown, CategoryProductsPage.js, ProductCard → ProductDetails.js                      | Megan Loo Jia Vern |
 | **ProductDetails.spec.js**   | ProductDetailsPage.js, RelatedProductsSection, AddToCartButton, Integration with Cart Context                                | Megan Loo Jia Vern |
 | **CartPage.spec.js**         | CartPage.js, Login.js, CartContext, Profile.js — covering all cart states (guest, authenticated, cart empty, cart populated) | Megan Loo Jia Vern |
+| **AdminDashboard.spec.js** | AdminDashboard.js | Lim YingXuan |
+| **Login.spec.ts** | Login.js | Lim YingXuan |
+| **Register.spec.ts** | Register.js | Lim YingXuan |
+| **ForgotPassword.spec.ts** | ForgotPassword.js | Lim YingXuan |
 
 ## 4. Setting Up The Project
 
