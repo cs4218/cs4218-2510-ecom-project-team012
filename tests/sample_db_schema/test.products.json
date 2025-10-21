@@ -1,5 +1,45 @@
 [{
   "_id": {
+    "$oid": "66db427fdb0119d9234b27e1"
+  },
+  "name": "Out of Stock Product",
+  "slug": "out-of-stock-product",
+  "description": "This product is out of stock.",
+  "price": 79.99,
+  "category": {
+    "$oid": "66db427fdb0119d9234b27eb"
+  },
+  "quantity": 0,
+  "shipping": false,
+  "createdAt": {
+    "$date": "2023-09-06T17:57:19.963Z"
+  },
+  "updatedAt": {
+    "$date": "2023-09-06T17:57:19.963Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "66db427fdb0119d9234b27e2"
+  },
+  "name": "Left 1 Stock Product",
+  "slug": "left-1-stock-product",
+  "description": "This product has 1 left in stock.",
+  "price": 79.99,
+  "category": {
+    "$oid": "66db427fdb0119d9234b27eb"
+  },
+  "quantity": 1,
+  "shipping": false,
+  "createdAt": {
+    "$date": "2023-09-06T18:57:19.963Z"
+  },
+  "updatedAt": {
+    "$date": "2023-09-06T18:57:19.963Z"
+  },
+  "__v": 0
+},{
+  "_id": {
     "$oid": "66db427fdb0119d9234b27f1"
   },
   "name": "Textbook",

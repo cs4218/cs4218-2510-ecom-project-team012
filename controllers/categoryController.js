@@ -8,17 +8,22 @@ export const createCategoryController = async (req, res) => {
     if (!name) {
       return res.status(401).send({ message: "Name is required" });
     }
-    const existingCategory = await categoryModel.findOne({ name });
+    const slug = slugify(name);
+
+    // change to check for slug duplicate here too
+    const existingCategory = await categoryModel.findOne({
+      $or: [{ name }, { slug }],
+    });
+
     if (existingCategory) {
       return res.status(200).send({
         success: true,
         message: "Category already exists",
       });
     }
-    const category = await new categoryModel({
-      name,
-      slug: slugify(name),
-    }).save();
+
+    const category = await new categoryModel({ name, slug }).save();
+
     res.status(201).send({
       success: true,
       message: "New Category created",

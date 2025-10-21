@@ -195,6 +195,7 @@ const UpdateProduct = () => {
               </div>
               <div className="mb-3">
                 <Select
+                  data-testid="shipping-select"
                   variant= "borderless"
                   placeholder="Select Shipping "
                   size="large"

@@ -29,7 +29,14 @@ jobs:
           cd client
           npm install
 
-      - name: Run Jest tests
-        run: |
-          npm run test
-          npm run test:integration
+      - name: Run frontend tests
+        run: npm run test:frontend
+
+      - name: Run backend tests
+        run: npm run test:backend
+
+      - name: Run backend integration tests
+        run: npm run test:backend-int
+
+      - name: Run frontend integration tests
+        run: npm run test:frontend-int
