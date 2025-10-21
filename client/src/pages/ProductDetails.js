@@ -26,7 +26,7 @@ const ProductDetails = () => {
         `/api/v1/product/get-product/${params.slug}`
       );
       // Fix for navigating to non-existent product slugs
-      if(!data?.product){
+      if (!data?.product) {
         navigate("/page-not-found");
         return;
       }
@@ -91,7 +91,10 @@ const ProductDetails = () => {
         </div>
       </div>
       <hr />
-      <div className="row container similar-products">
+      <div
+        className="row container similar-products"
+        data-testid="related-products-section"
+      >
         <h4>Similar Products ➡️</h4>
         {relatedProducts.length < 1 && (
           <p className="text-center">No Similar Products found</p>

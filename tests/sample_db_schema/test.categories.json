@@ -30,5 +30,13 @@
     "name": "Furniture",
     "slug": "furniture",
     "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "66db427fdb0119d9234b27eb"
+    },
+    "name": "Test",
+    "slug": "test",
+    "__v": 0
   }
 ]

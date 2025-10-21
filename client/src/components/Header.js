@@ -10,7 +10,7 @@ import "../styles/Header.css";
 const Header = () => {
   const [auth, setAuth] = useAuth();
   const [cart] = useCart();
-  const { categories }  = useCategory();
+  const { categories } = useCategory();
   const handleLogout = () => {
     setAuth({
       ...auth,
@@ -123,7 +123,7 @@ const Header = () => {
                 </>
               )}
               <li className="nav-item">
-                <Badge count={cart?.length} showZero>
+                <Badge data-testid="cart-count" count={cart?.length} showZero>
                   <NavLink to="/cart" className="nav-link">
                     Cart
                   </NavLink>
