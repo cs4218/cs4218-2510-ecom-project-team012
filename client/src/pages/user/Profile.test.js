@@ -59,10 +59,8 @@ describe("Profile Component (unit tests)", () => {
         const nameInput = screen.getByPlaceholderText("Enter Your Name");
         fireEvent.change(nameInput, { target: { value: "Jane" } });
         expect(nameInput.value).toBe("Jane");
-
-        const emailInput = screen.getByPlaceholderText("Enter Your Email");
-        fireEvent.change(emailInput, { target: { value: "email@email.com" } });
-        expect(emailInput.value).toBe("email@email.com");
+        
+        // removed email input change test as email field is disabled
 
         const passwordInput = screen.getByPlaceholderText("Enter Your Password");
         fireEvent.change(passwordInput, { target: { value: "secret" } });
@@ -104,7 +102,7 @@ describe("Profile Component (unit tests)", () => {
 
     it("should display error when API returns failure", async () => {
         axios.put.mockResolvedValue({
-            data: { error: "Something bad happened" }
+            data: { success: false, message: "Password must be at least 6 characters" }
         });
 
         render(
@@ -116,7 +114,7 @@ describe("Profile Component (unit tests)", () => {
         fireEvent.submit(screen.getByRole("button", { name: "UPDATE" }));
 
         await waitFor(() => {
-            expect(toast.error).toHaveBeenCalledWith("Something bad happened");
+            expect(toast.error).toHaveBeenCalledWith("Password must be at least 6 characters");
             expect(localStorageMock.setItem).not.toHaveBeenCalled();
             expect(setAuth).not.toHaveBeenCalled();
         });
