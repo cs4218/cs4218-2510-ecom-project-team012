@@ -14,9 +14,9 @@ axios.defaults.baseURL = "http://localhost:6061"; // backend test server
 beforeAll(async () => {
   // start the backend before tests
   await startTestServer(6061);
-});
+}, 15000);
 
 afterAll(async () => {
   // stop the backend after all tests finish
   await stopTestServer();
-});
+}, 15000);
