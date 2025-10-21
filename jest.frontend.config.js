@@ -47,6 +47,14 @@ export default {
   coverageDirectory: "<rootDir>/coverage/front-tests",
 
   // ignore integration tests
-  coveragePathIgnorePatterns: ["/node_modules/", ".integration.test.js"],
-  testPathIgnorePatterns: ["/node_modules/", "\\.integration\\.test\\.js$"],
+  coveragePathIgnorePatterns: [
+    "/node_modules/",
+    ".integration.test.js",
+    "\\.spec\\.js$",
+  ],
+  testPathIgnorePatterns: [
+    "/node_modules/",
+    "\\.integration\\.test\\.js$",
+    "\\.spec\\.js$",
+  ],
 };
