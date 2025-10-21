@@ -77,6 +77,16 @@ Github Actions CI Link: <https://github.com/cs4218/cs4218-2510-ecom-project-team
 | **contexts/auth.integration.js** | context/auth.js, jsonwebtoken | Lim YingXuan |
 | **authHelper.integration.js** | authHelper.js, bcrypt | Lim YingXuan |
 | **authMiddleware.integration.js** | authMiddleware.js, userModel.js, jsonwebtoken | Lim YingXuan |
+| **orderModel.integration.test.js** | models/orderModel.js, mongoose (with refs to Product and User submodels), validation (enum status), timestamps, population, default fields | Lim Heng Yi |
+| **order.integration.test.js** | controllers: getOrdersController, getAllOrdersController, orderStatusController,<br>models: orderModel.js, userModel.js, productModel.js,<br>routes: `/api/v1/auth/orders`, `/api/v1/auth/all-orders`, `/api/v1/auth/order-status/:orderId`,<br>middleware: fakeBuyerAuth, fakeAdminAuth,<br>database setup: setupTestDB.js (MongoMemoryServer) | Lim Heng Yi |
+| **updateProfileController.integration.test.js** | controllers: updateProfileController, getOrdersController, getAllOrdersController,<br>middleware: fakeAuth, fakeAdmin,<br>models: userModel.js, orderModel.js, productModel.js,<br>bcrypt password hashing validation, authorization propagation matrix | Lim Heng Yi |
+| **db.integration.test.js** | config/db.js (connectDB), setupTestDB.js (createTestDB, connectTestDB, closeTestDB), mongoose connection handling, environment variable edge cases| Lim Heng Yi |
+| **Footer.integration.test.js** | components/Footer.js, context/auth.js, context/cart.js, context/search.js, react-router-dom (MemoryRouter) | Lim Heng Yi |
+| **Header.integration.test.js** | components/Header.js, context/auth.js, context/cart.js, context/search.js,<br>axios (mocked `/api/v1/category/get-category`), react-router-dom (MemoryRouter), category dropdown rendering, login/logout/admin states | Lim Heng Yi |
+| **Layout.integration.test.js** | components/Layout.js, context/auth.js, context/cart.js, context/search.js, react-router-dom, Helmet meta tags validation, title rendering | Lim Heng Yi |
+| **Spinner.integration.test.js** | components/Spinner.js, react-router-dom (useNavigate/useLocation mocked), redirect flow testing for both default (`/login`) and custom (`/register`) path props | Lim Heng Yi |
+| **Orders.integration.test.js** | pages/user/Orders.js,<br>context/auth.js, context/cart.js, context/search.js,<br>axios (mocked `/api/v1/auth/orders` & `/api/v1/category/get-category`), Header.js, Layout.js,<br>buyer order table rendering, product mapping, payment success/failure, catch & empty-state coverage | Lim Heng Yi |
+| **AdminOrders.integration.test.js** | pages/admin/AdminOrders.js,<br>context/auth.js, context/cart.js, context/search.js,<br>axios (mocked `/api/v1/auth/all-orders`, `/api/v1/auth/order-status/:orderId`), Header.js, Layout.js,<br>antd Select mocked, status change PUT integration, buyer/product/payment display, error and auth guard paths | Lim Heng Yi |
 
 #### Milestone 2 - UI Testing
 
@@ -90,6 +100,12 @@ Github Actions CI Link: <https://github.com/cs4218/cs4218-2510-ecom-project-team
 | **Login.spec.js** | Login.js | Lim YingXuan |
 | **Register.spec.js** | Register.js | Lim YingXuan |
 | **ForgotPassword.spec.js** | ForgotPassword.js | Lim YingXuan |
+| **Header.spec.js** | Header.js - navigation all 5 routes, auth state conditional rendering, cart badge with context | Lim Heng Yi |
+| **Layout.spec.js** | Layout.js - metadata defaults (title, description, keywords, author), Hot Toast integration, children rendering and layout structure | Lim Heng Yi |
+| **Spinner.spec.js** | Spinner.js - navigation delay handling, redirect behavior on unauthenticated routes, loading animation rendering, and layout responsiveness | Lim Heng Yi |
+| **Footer.spec.js** | Footer.js - static footer links (About, Contact, Privacy Policy) and visibility across all routes | Lim Heng Yi |
+| **AdminOrders.spec.js** | AdminOrders.js - admin-only validation, order table rendering | Lim Heng Yi |
+| **Orders.spec.js** | Orders.js - user-auth guard handling, table and product card rendering, flexible route detection, product detail assertions, end-to-end mock integration | Lim Heng Yi |
 
 ## 4. Setting Up The Project
 
