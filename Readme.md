@@ -74,10 +74,10 @@ Github Actions CI Link: <https://github.com/cs4218/cs4218-2510-ecom-project-team
 
 | **UI Test**                | **Files / Modules Tested**                                                                  | **Person**         |
 | -------------------------- | ------------------------------------------------------------------------------------------- | ------------------ |
-| **Dashboard.spec.test.js** | Homepage.js, PrivateRoute, Dashboard.js + components/UserMenu.js, Profile.js + Orders.js | Megan Loo Jia Vern |
-| **CategoryProducts.spec.test.js** | Homepage, Header Navigation, CategoryDropdown, CategoryProductsPage.js, ProductCard → ProductDetails.js                         | Megan Loo Jia Vern |
-| **ProductDetails.spec.test.js**   | ProductDetailsPage.js, RelatedProductsSection, AddToCartButton, Integration with Cart Context                 | Megan Loo Jia Vern |
-| **CartPage.integration.test.js**  | CartPage.js, Login.js, CartContext, Profile.js — covering all cart states (guest, authenticated, cart empty, cart populated) | Megan Loo Jia Vern |
+| **Dashboard.spec.js** | Homepage.js, PrivateRoute, Dashboard.js + components/UserMenu.js, Profile.js + Orders.js | Megan Loo Jia Vern |
+| **CategoryProducts.spec.js** | Homepage, Header Navigation, CategoryDropdown, CategoryProductsPage.js, ProductCard → ProductDetails.js                         | Megan Loo Jia Vern |
+| **ProductDetails.spec.js**   | ProductDetailsPage.js, RelatedProductsSection, AddToCartButton, Integration with Cart Context                 | Megan Loo Jia Vern |
+| **CartPage.spec.js**  | CartPage.js, Login.js, CartContext, Profile.js — covering all cart states (guest, authenticated, cart empty, cart populated) | Megan Loo Jia Vern |
 
 
 ## 4. Setting Up The Project
