@@ -8,6 +8,7 @@ import {
 } from "../tests/setupTestDB.js";
 import categoryModel from "../models/categoryModel.js";
 import productModel from "../models/productModel.js";
+import { it } from "node:test";
 
 // ---------------------------------------------
 
@@ -63,6 +64,10 @@ describe("Product Controller Integration", () => {
   afterAll(async () => await closeTestDB());
 
   describe("GET /api/v1/product/get-product", () => {
+    afterEach(() => {
+      jest.restoreAllMocks(); // critical cleanup step
+    });
+
     it("should retrieve all products", async () => {
       // Arrange
       const category = await categoryModel.create(testCategory1);
@@ -103,9 +108,28 @@ describe("Product Controller Integration", () => {
       expect(products[0].name).toBe(testProduct2.name);
       expect(products[1].name).toBe(testProduct1.name);
     });
+
+    it("should return status 500 when there is a server error", async () => {
+      // Arrange
+      // temporarily mock the productModel.find method to throw an error
+      jest.spyOn(productModel, "find").mockImplementationOnce(() => {
+        throw new Error("DB connection failed");
+      });
+      // Act
+      const res = await request(app).get("/api/v1/product/get-product");
+
+      // Assert
+      expect(res.statusCode).toBe(500);
+      expect(res.body).toHaveProperty("success", false);
+      expect(res.body.message).toMatch(/error/i);
+    });
   });
 
   describe("GET /api/v1/product/get-product/:slug", () => {
+    afterEach(() => {
+      jest.restoreAllMocks(); // critical cleanup step
+    });
+
     it("should retrieve a single product by slug", async () => {
       // Arrange
       const category = await categoryModel.create(testCategory1);
@@ -143,6 +167,26 @@ describe("Product Controller Integration", () => {
       expect(res.body).toHaveProperty(
         "message",
         expect.stringMatching(/not found/i)
+      );
+    });
+
+    it("should return 500 when there is a server error", async () => {
+      // Arrange
+      // temporarily mock the productModel.findOne method to throw an error
+      jest.spyOn(productModel, "findOne").mockImplementationOnce(() => {
+        throw new Error("DB query failed");
+      });
+
+      // Act
+      const res = await request(app).get(
+        `/api/v1/product/get-product/${testProduct1.slug}`
+      );
+
+      // Assert
+      expect(res.statusCode).toBe(500);
+      expect(res.body).toHaveProperty(
+        "message",
+        expect.stringMatching(/error/i)
       );
     });
   });
@@ -223,6 +267,10 @@ describe("Product Controller Integration", () => {
   });
 
   describe("POST /api/v1/product/product-filters", () => {
+    afterEach(() => {
+      jest.restoreAllMocks(); // critical cleanup step
+    });
+
     it("should filter products based on category and price range", async () => {
       // Arrange
       const category1 = await categoryModel.create(testCategory1);
@@ -346,9 +394,59 @@ describe("Product Controller Integration", () => {
       expect(res.body).toHaveProperty("message");
       expect(res.statusCode).toBe(400);
     });
+
+    it("should handle invalid filter price limits", async () => {
+      // Arrange
+      const category = await categoryModel.create(testCategory1);
+      await productModel.create({
+        ...testProduct1,
+        category: category._id,
+      });
+
+      // Act
+      const filterCriteria = {
+        checked: [category._id],
+        radio: ["120", "100"], // min price greater than max price
+      };
+      const res = await request(app)
+        .post("/api/v1/product/product-filters")
+        .send(filterCriteria);
+
+      // Assert
+      expect(res.body).toHaveProperty("message");
+      expect(res.statusCode).toBe(400);
+    });
+
+    it("should handle server error gracefully", async () => {
+      // Arrange
+      // temporarily mock the productModel.find method to throw an error
+      jest.spyOn(productModel, "find").mockImplementationOnce(() => {
+        throw new Error("DB query failed");
+      });
+
+      // Act
+      const filterCriteria = {
+        checked: [],
+        radio: [],
+      };
+      const res = await request(app)
+        .post("/api/v1/product/product-filters")
+        .send(filterCriteria);
+
+      // Assert
+      expect(res.statusCode).toBe(500);
+      expect(res.body).toHaveProperty(
+        "message",
+        expect.stringMatching(/error/i)
+      );
+    });
   });
 
   describe("GET /api/v1/product/product-count", () => {
+    afterEach(() => {
+      jest.restoreAllMocks(); // critical cleanup step
+    });
+
     it("should return the total count of products", async () => {
       // Arrange
       const category = await categoryModel.create(testCategory1);
@@ -368,9 +466,31 @@ describe("Product Controller Integration", () => {
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty("total", 2);
     });
+
+    it("should return 400 when there is a server error", async () => {
+      // Arrange
+      // temporarily mock the productModel.countDocuments method to throw an error
+      jest.spyOn(productModel, "countDocuments").mockImplementationOnce(() => {
+        throw new Error("DB query failed");
+      });
+
+      // Act
+      const res = await request(app).get("/api/v1/product/product-count");
+
+      // Assert
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toHaveProperty(
+        "message",
+        expect.stringMatching(/error/i)
+      );
+    });
   });
 
   describe("GET /api/v1/product/product-list/:page", () => {
+    afterEach(() => {
+      jest.restoreAllMocks(); // critical cleanup step
+    });
+
     it("should return list of products limit of 6", async () => {
       // Arrange
       const category = await categoryModel.create(testCategory1);
@@ -445,6 +565,42 @@ describe("Product Controller Integration", () => {
       });
     });
 
+    it("should return the default first page when page number is not provided", async () => {
+      // Arrange
+      const category = await categoryModel.create(testCategory1);
+      for (let i = 1; i <= 8; i++) {
+        await productModel.create({
+          ...testProduct1,
+          name: `Test Product ${i}`,
+          slug: `test-product-${i}`,
+          description: `Description${i}`,
+          category: category._id,
+        });
+      }
+
+      // Act
+      const res = await request(app).get("/api/v1/product/product-list/");
+
+      // Assert
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty("products");
+      expect(res.body.products.length).toBe(6); // should return first 6 products by default
+
+      const products = res.body.products;
+      const expectedItems = [];
+      for (let i = 8; i >= 3; i--) {
+        expectedItems.push(
+          expect.objectContaining({ name: `Test Product ${i}` })
+        );
+      }
+      expect(products).toEqual(expect.arrayContaining(expectedItems));
+
+      // ensure no photo field is included
+      products.forEach((product) => {
+        expect(product.photo).toBeUndefined();
+      });
+    });
+
     it("should handle error for invalid page number", async () => {
       // Act
       const res = await request(app).get(
@@ -458,9 +614,31 @@ describe("Product Controller Integration", () => {
         expect.stringMatching(/invalid page number/i)
       );
     });
+
+    it("should handle server error gracefully", async () => {
+      // Arrange
+      // temporarily mock the productModel.find method to throw an error
+      jest.spyOn(productModel, "find").mockImplementationOnce(() => {
+        throw new Error("DB query failed");
+      });
+
+      // Act
+      const res = await request(app).get("/api/v1/product/product-list/1");
+
+      // Assert
+      expect(res.statusCode).toBe(500);
+      expect(res.body).toHaveProperty(
+        "message",
+        expect.stringMatching(/error/i)
+      );
+    });
   });
 
   describe("GET /api/v1/product/search/:keyword", () => {
+    afterEach(() => {
+      jest.restoreAllMocks(); // critical cleanup step
+    });
+
     it("should return products with name matching the search keyword", async () => {
       // Arrange
       const category = await categoryModel.create(testCategory1);
@@ -578,140 +756,204 @@ describe("Product Controller Integration", () => {
       );
     });
 
-    describe("GET /api/v1/product/related-product/:productId/:categoryId", () => {
-      it("should return related products based on category", async () => {
-        // Arrange
-        const category = await categoryModel.create(testCategory1);
-        const product1 = await productModel.create({
-          ...testProduct1,
-          category: category._id,
-        });
-        const product2 = await productModel.create({
-          ...testProduct2,
-          category: category._id,
-        });
-        const product3 = await productModel.create({
-          ...testProduct2,
-          name: "Unrelated Product",
-          slug: "unrelated-product",
-          category: (await categoryModel.create(testCategory2))._id,
-        });
-
-        // Act
-        const res = await request(app).get(
-          `/api/v1/product/related-product/${product1._id}/${category._id}`
-        );
-
-        // Assert
-        expect(res.statusCode).toBe(200);
-        expect(res.body.products.length).toBe(1);
-        const products = res.body.products;
-        expect(products).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({ name: product2.name, category:expect.objectContaining({ _id: category._id.toString() }) }),
-          ])
-        );
-        // should not return the original product
-        products.forEach((prod) => {
-          expect(prod._id.toString()).not.toBe(product1._id.toString());
-        });
-        // should not return unrelated products
-        products.forEach((prod) => {
-          expect(prod.name).not.toBe(product3.name);
-        });
+    it("should handle server error gracefully", async () => {
+      // Arrange
+      // temporarily mock the productModel.find method to throw an error
+      jest.spyOn(productModel, "find").mockImplementationOnce(() => {
+        throw new Error("DB query failed");
       });
 
-      it("should return related products with limit of 3", async () => {
-        // Arrange
-        const category = await categoryModel.create(testCategory1);
-        const mainProduct = await productModel.create({
-          ...testProduct1,
-          category: category._id,
-        });
-        // create 5 related products
-        for (let i = 1; i <= 5; i++) {
-          await productModel.create({
-            ...testProduct2,
-            name: `Related Product ${i}`,
-            slug: `related-product-${i}`,
-            category: category._id,
-          });
-        }
+      // Act
+      const res = await request(app).get(`/api/v1/product/search/Test`);
 
-        // Act
-        const res = await request(app).get(
-          `/api/v1/product/related-product/${mainProduct._id}/${category._id}`
-        );
+      // Assert
+      expect(res.statusCode).toBe(500);
+      expect(res.body).toHaveProperty(
+        "message",
+        expect.stringMatching(/error/i)
+      );
+    });
+  });
 
-        // Assert
-        expect(res.statusCode).toBe(200);
-        expect(res.body.products.length).toBe(3); // limit of 3
+  describe("GET /api/v1/product/related-product/:productId/:categoryId", () => {
+    it("should return related products based on category", async () => {
+      // Arrange
+      const category = await categoryModel.create(testCategory1);
+      const product1 = await productModel.create({
+        ...testProduct1,
+        category: category._id,
+      });
+      const product2 = await productModel.create({
+        ...testProduct2,
+        category: category._id,
+      });
+      const product3 = await productModel.create({
+        ...testProduct2,
+        name: "Unrelated Product",
+        slug: "unrelated-product",
+        category: (await categoryModel.create(testCategory2))._id,
       });
 
-      it("should return empty array when no related products found", async () => {
-        // Arrange
-        const category1 = await categoryModel.create(testCategory1);
-        const category2 = await categoryModel.create(testCategory2);
-        const mainProduct = await productModel.create({
-          ...testProduct1,
-          category: category1._id,
-        });
-        // create a product in a different category
+      // Act
+      const res = await request(app).get(
+        `/api/v1/product/related-product/${product1._id}/${category._id}`
+      );
+
+      // Assert
+      expect(res.statusCode).toBe(200);
+      expect(res.body.products.length).toBe(1);
+      const products = res.body.products;
+      expect(products).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            name: product2.name,
+            category: expect.objectContaining({
+              _id: category._id.toString(),
+            }),
+          }),
+        ])
+      );
+      // should not return the original product
+      products.forEach((prod) => {
+        expect(prod._id.toString()).not.toBe(product1._id.toString());
+      });
+      // should not return unrelated products
+      products.forEach((prod) => {
+        expect(prod.name).not.toBe(product3.name);
+      });
+    });
+
+    it("should return related products with limit of 3", async () => {
+      // Arrange
+      const category = await categoryModel.create(testCategory1);
+      const mainProduct = await productModel.create({
+        ...testProduct1,
+        category: category._id,
+      });
+      // create 5 related products
+      for (let i = 1; i <= 5; i++) {
         await productModel.create({
           ...testProduct2,
-          category: category2._id,
+          name: `Related Product ${i}`,
+          slug: `related-product-${i}`,
+          category: category._id,
         });
+      }
 
-        // Act
-        const res = await request(app).get(
-          `/api/v1/product/related-product/${mainProduct._id}/${category1._id}`
-        );
+      // Act
+      const res = await request(app).get(
+        `/api/v1/product/related-product/${mainProduct._id}/${category._id}`
+      );
 
-        // Assert
-        expect(res.statusCode).toBe(200);
-        expect(res.body.products.length).toBe(0);
+      // Assert
+      expect(res.statusCode).toBe(200);
+      expect(res.body.products.length).toBe(3); // limit of 3
+    });
+
+    it("should return empty array when no related products found", async () => {
+      // Arrange
+      const category1 = await categoryModel.create(testCategory1);
+      const category2 = await categoryModel.create(testCategory2);
+      const mainProduct = await productModel.create({
+        ...testProduct1,
+        category: category1._id,
+      });
+      // create a product in a different category
+      await productModel.create({
+        ...testProduct2,
+        category: category2._id,
       });
 
-      it("should handle error for non-existent product ID", async () => {
-        // Arrange
-        const category = await categoryModel.create(testCategory1);
+      // Act
+      const res = await request(app).get(
+        `/api/v1/product/related-product/${mainProduct._id}/${category1._id}`
+      );
 
-        // Act
-        const res = await request(app).get(
-          `/api/v1/product/related-product/invalid/${category._id}`
-        );
+      // Assert
+      expect(res.statusCode).toBe(200);
+      expect(res.body.products.length).toBe(0);
+    });
 
-        // Assert
-        expect(res.statusCode).toBe(400);
-        expect(res.body).toHaveProperty(
-          "message",
-          expect.stringMatching(/error/i)
-        );
+    it("should handle error for non-existent product ID", async () => {
+      // Arrange
+      const category = await categoryModel.create(testCategory1);
+
+      // Act
+      const res = await request(app).get(
+        `/api/v1/product/related-product/invalid/${category._id}`
+      );
+
+      // Assert
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toHaveProperty(
+        "message",
+        expect.stringMatching(/error/i)
+      );
+    });
+
+    it("should handle error for non-existent category ID", async () => {
+      // Arrange
+      const product = await productModel.create({
+        ...testProduct1,
+        category: (await categoryModel.create(testCategory1))._id,
       });
 
-      it("should handle error for non-existent category ID", async () => {
-        // Arrange
-        const product = await productModel.create({
-          ...testProduct1,
-          category: (await categoryModel.create(testCategory1))._id,
-        });
+      // Act
+      const res = await request(app).get(
+        `/api/v1/product/related-product/${product._id}/invalid`
+      );
 
-        // Act
-        const res = await request(app).get(
-          `/api/v1/product/related-product/${product._id}/invalid`
-        );
+      // Assert
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toHaveProperty(
+        "message",
+        expect.stringMatching(/error/i)
+      );
+    });
 
-        // Assert
-        expect(res.statusCode).toBe(400);
-        expect(res.body).toHaveProperty(
-          "message",
-          expect.stringMatching(/error/i)
-        );
+    it("should handle error when pid is missing", async () => {
+      // Arrange
+      const category = await categoryModel.create(testCategory1);
+
+      // Act
+      const res = await request(app).get(
+        `/api/v1/product/related-product//${category._id}`
+      );
+
+      // Assert
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toHaveProperty(
+        "message",
+        expect.stringMatching(/error/i)
+      );
+    });
+
+    it("should handle error when cid is missing", async () => {
+      // Arrange
+      const product = await productModel.create({
+        ...testProduct1,
+        category: (await categoryModel.create(testCategory1))._id,
       });
+
+      // Act
+      const res = await request(app).get(
+        `/api/v1/product/related-product/${product._id}/`
+      );
+
+      // Assert
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toHaveProperty(
+        "message",
+        expect.stringMatching(/error/i)
+      );
     });
   });
 
   describe("GET /api/v1/product/product-category/:slug", () => {
+    afterEach(() => {
+      jest.restoreAllMocks(); // critical cleanup step
+    });
+
     it("should return products for a given category slug", async () => {
       // Arrange
       const category = await categoryModel.create(testCategory1);
@@ -765,6 +1007,34 @@ describe("Product Controller Integration", () => {
       expect(res.body).toHaveProperty(
         "message",
         expect.stringMatching(/category not found/i)
+      );
+    });
+
+    it("should handle error when slug is missing", async () => {
+      // Act
+      const res = await request(app).get(`/api/v1/product/product-category/`);
+
+      // Assert
+      expect(res.statusCode).toBe(404); // Express returns 404 for unmatched routes
+    });
+
+    it("should handle server error gracefully", async () => {
+      // Arrange
+      // temporarily mock the categoryModel.findOne method to throw an error
+      jest.spyOn(categoryModel, "findOne").mockImplementationOnce(() => {
+        throw new Error("DB query failed");
+      });
+
+      // Act
+      const res = await request(app).get(
+        `/api/v1/product/product-category/${testCategory1.slug}`
+      );
+
+      // Assert
+      expect(res.statusCode).toBe(500);
+      expect(res.body).toHaveProperty(
+        "message",
+        expect.stringMatching(/error/i)
       );
     });
   });
