@@ -5,6 +5,10 @@
 import "@testing-library/jest-dom";
 import { startTestServer, stopTestServer } from "./setupBackendServer";
 import { TextEncoder, TextDecoder } from "util";
+import dotenv from "dotenv";
+
+// Load environment variables from .env file
+dotenv.config();
 
 Object.assign(global, { TextDecoder, TextEncoder });
 
