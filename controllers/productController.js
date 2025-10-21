@@ -310,7 +310,8 @@ export const productListController = async (req, res) => {
       .select("-photo")
       .skip((page - 1) * perPage)
       .limit(perPage)
-      .sort({ createdAt: -1 });
+      // FIXED BUG: To account for products with same createdAt timestamp (although rare, it keeps pagination consistent):
+      .sort({ createdAt: -1, _id: -1 });
     res.status(200).send({
       success: true,
       // FIXED BUG: Missing message key:
