@@ -36,7 +36,7 @@ jobs:
         run: npm run test:backend
 
       - name: Run backend integration tests
-        run: npm run test:backend-integration
+        run: npm run test:backend-int
 
       - name: Run frontend integration tests
-        run: npm run test:frontend-integration
+        run: npm run test:frontend-int
