@@ -53,3 +53,28 @@ test("Redirect unauthenticated user from dashboard to home page", async ({
   await page.waitForURL("**/");
   expect(page.url()).toBe("http://localhost:3000/");
 });
+
+test("User stays logged in after page refresh on dashboard", async ({
+  browser,
+}) => {
+  const page = await browser.newPage();
+
+  // Login first
+  await page.goto("http://localhost:3000/login");
+  await page.getByPlaceholder("Enter Your Email").fill(testUser1.email);
+  await page.getByPlaceholder("Enter Your Password").fill(testUser1.password);
+  await page.getByRole("button", { name: /login/i }).click();
+  await page.waitForURL("**/");
+
+  // Navigate to dashboard
+  await page.goto("http://localhost:3000/dashboard/user");
+  const main = page.getByRole("main");
+  await expect(main).toBeVisible();
+
+  // Refresh the page
+  await page.reload();
+
+  // Check if still logged in and on dashboard
+  await expect(main).toBeVisible();
+  expect(page.url()).toBe("http://localhost:3000/dashboard/user");
+});
