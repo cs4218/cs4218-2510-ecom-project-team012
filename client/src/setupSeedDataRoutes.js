@@ -8,19 +8,39 @@ const resetSeedDatabase = async () => {
 };
 
 const seedCategoryData = async (categories) => {
-  await axios.post("/api/v1/seed/category-data", categories);
+  const { data: categoryRes } = await axios.post(
+    "/api/v1/seed/category-data",
+    categories
+  );
+  return categoryRes;
 };
 
 const seedProductData = async (products) => {
-  await axios.post("/api/v1/seed/product-data", products);
+  const { data: productRes } = await axios.post(
+    "/api/v1/seed/product-data",
+    products
+  );
+
+  return productRes;
 };
 
 const seedOrderData = async (orders) => {
-  await axios.post("/api/v1/seed/order-data", orders);
+  const { data: orderRes } = await axios.post(
+    "/api/v1/seed/order-data",
+    orders
+  );
+  return orderRes;
 };
 
 const seedUserData = async (users) => {
-  await axios.post("/api/v1/seed/user-data", users);
+  const { data: userRes } = await axios.post("/api/v1/seed/user-data", users);
+  return userRes;
 };
 
-export { resetSeedDatabase, seedCategoryData, seedProductData, seedOrderData, seedUserData };
+export {
+  resetSeedDatabase,
+  seedCategoryData,
+  seedProductData,
+  seedOrderData,
+  seedUserData,
+};
