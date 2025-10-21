@@ -5,7 +5,6 @@ import {
   closeTestDB,
   clearTestDB,
 } from "../../../../tests/setupTestDB.js";
-import { seedTestData } from "../../../../tests/seedTestData.js";
 import {
   resetSeedDatabase,
   seedUserData,
@@ -28,20 +27,6 @@ const testUser = {
 
 test.describe.configure({ mode: 'parallel' });
 
-// Test DB setup
-test.beforeAll(async () => {
-  await connectTestDB(await createTestDB());
-});
-
-test.beforeEach(async ({ page }) => {
-  await seedUserData(testUser);
-  await page.goto('http://localhost:3000/forgot-password');
-});
-
-// Test DB teardown
-test.afterEach(async () => await clearTestDB());
-test.afterAll(async () => await closeTestDB());
-
 const validUser = {
   email: 'abc@gmail.com',
   newPassword: '123456',
@@ -56,6 +41,19 @@ const invalidUser = {
 }
 
 test.describe('Forgot Password', () => {
+  // Test DB setup
+  test.beforeAll(async () => {
+    await resetSeedDatabase();
+  });
+
+  test.beforeEach(async ({ page }) => {
+    await seedUserData([testUser]);
+    await page.goto('http://localhost:3000/forgot-password');
+  });
+
+  // Test DB teardown
+  test.afterEach(async () => await resetSeedDatabase());
+
   test('should have all necessary elements', async ({ page }) => {
     await expect(page.getByRole('heading', { name: 'FORGOT PASSWORD' })).toBeVisible();
     await expect(page.getByRole('textbox', { name: 'Enter Your Email' })).toBeVisible();

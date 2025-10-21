@@ -28,21 +28,6 @@ const testUser = {
 
 test.describe.configure({ mode: 'serial' });
 
-// Test DB setup
-// test.beforeAll(async () => {
-
-// });
-
-test.beforeEach(async ({ page }) => {
-  await resetSeedDatabase();
-  await seedUserData([testUser]);
-  await page.goto('http://localhost:3000/login');
-});
-
-// Test DB teardown
-// test.afterEach(async () => await clearTestDB());
-// test.afterAll(async () => await closeTestDB());
-
 const validLogin = {
   email: 'abc@gmail.com',
   password: '1234',
@@ -56,6 +41,20 @@ const unregisteredLogin = {
 }
 
 test.describe('Login Page', () => {
+  
+  // Test DB setup
+  test.beforeAll(async () => {
+    await resetSeedDatabase();
+  });
+
+  test.beforeEach(async ({ page }) => {
+    await resetSeedDatabase();
+    await seedUserData([testUser]);
+    await page.goto('http://localhost:3000/login');
+  });
+
+  // Test DB teardown
+  test.afterEach(async () => await resetSeedDatabase());
   test('should have all necessary elements', async ({ page }) => {
     await expect(page.getByRole('heading', { name: 'LOGIN FORM' })).toBeVisible();
     await expect(page.getByRole('textbox', { name: 'Enter Your Email' })).toBeVisible();
