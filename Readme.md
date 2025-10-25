@@ -87,6 +87,7 @@ Github Actions CI Link: <https://github.com/cs4218/cs4218-2510-ecom-project-team
 | **Spinner.integration.test.js** | components/Spinner.js, react-router-dom (useNavigate/useLocation mocked), redirect flow testing for both default (`/login`) and custom (`/register`) path props | Lim Heng Yi |
 | **Orders.integration.test.js** | pages/user/Orders.js,<br>context/auth.js, context/cart.js, context/search.js,<br>axios (mocked `/api/v1/auth/orders` & `/api/v1/category/get-category`), Header.js, Layout.js,<br>buyer order table rendering, product mapping, payment success/failure, catch & empty-state coverage | Lim Heng Yi |
 | **AdminOrders.integration.test.js** | pages/admin/AdminOrders.js,<br>context/auth.js, context/cart.js, context/search.js,<br>axios (mocked `/api/v1/auth/all-orders`, `/api/v1/auth/order-status/:orderId`), Header.js, Layout.js,<br>antd Select mocked, status change PUT integration, buyer/product/payment display, error and auth guard paths | Lim Heng Yi |
+| **categoryController.integration.test.js** | mongoose, controllers/categoryController.js, models/categoryModel.js | Lim Jun Han, Alvin |
 
 #### Milestone 2 - UI Testing
 
@@ -107,6 +108,9 @@ Github Actions CI Link: <https://github.com/cs4218/cs4218-2510-ecom-project-team
 | **Footer.spec.js** | Footer.js - static footer links (About, Contact, Privacy Policy) and visibility across all routes | Lim Heng Yi |
 | **AdminOrders.spec.js** | AdminOrders.js - admin-only validation, order table rendering | Lim Heng Yi |
 | **Orders.spec.js** | Orders.js - user-auth guard handling, table and product card rendering, flexible route detection, product detail assertions, end-to-end mock integration | Lim Heng Yi |
+| **CreateCategory.spec.js** | CreateCategory.js - Create Update and Delete flow for Categories| Lim Jun Han, Alvin |
+| **CreateUpdateProduct.spec.js** | CreateProduct.js, UpdateProduct.js - Create Update and Delete flow for Products | Lim Jun Han, Alvin |
+| **Profile.spec.js** | Profile.js - Update flow for Profile information | Lim Jun Han, Alvin |
 
 ## 4. Setting Up The Project
 
