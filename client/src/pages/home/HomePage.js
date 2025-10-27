@@ -6,8 +6,10 @@ import { useCart } from "../../context/cart";
 import axios from "axios";
 import toast from "react-hot-toast";
 import Layout from "./../../components/Layout";
+import useCategory from "../../hooks/useCategory";
 import { AiOutlineReload } from "react-icons/ai";
 import "../../styles/Homepages.css";
+import { use } from "react";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -19,22 +21,11 @@ const HomePage = () => {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
-
-  //get all cat
-  const getAllCategory = async () => {
-    try {
-      const { data } = await axios.get("/api/v1/category/get-category");
-      if (data?.success) {
-        setCategories(data?.category);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const { _, getAllCategories } = useCategory();
 
   useEffect(() => {
-    getAllCategory();
     getTotal();
+    getAllCategories();
   }, []);
   //get products
   const getAllProducts = async () => {
