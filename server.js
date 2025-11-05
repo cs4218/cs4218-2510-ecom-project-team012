@@ -6,6 +6,7 @@ import authRoutes from "./routes/authRoute.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
+import orderRoutes from "./routes/orderRoute.js";
 import cors from "cors";
 import { createTestDB, connectTestDB } from "./tests/setupTestDB.js";
 import { seedTestData } from "./tests/seedTestData.js";
@@ -45,6 +46,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/category", categoryRoutes);
 app.use("/api/v1/product", productRoutes);
 app.use("/api/v1/payment", paymentRoutes);
+app.use("/api/v1/auth", orderRoutes);
 
 if (["frontend-int", "test-ui"].includes(process.env.NODE_ENV)) {
   app.use("/api/v1/seed", seedDataRoutes);
