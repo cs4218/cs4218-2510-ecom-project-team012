@@ -233,8 +233,9 @@ export const productFiltersController = async (req, res) => {
     }
     if (radio.length > 0) {
       if (
+        // FIXED BUG: radio[0] should be >=0 for the 0-19 filter
         radio.length == 2 &&
-        radio[0] > 0 &&
+        radio[0] >= 0 &&
         radio[1] > 0 &&
         radio[0] < radio[1]
       ) {

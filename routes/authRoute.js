@@ -4,6 +4,7 @@ import { loginController } from "../controllers/auth/loginController.js";
 import { forgotPasswordController } from "../controllers/auth/forgotPasswordController.js";
 import { updateProfileController } from "../controllers/auth/updateProfileController.js";
 import { testController } from "../controllers/auth/testController.js";
+import { deleteUserController } from "../controllers/auth/deleteUserController.js";
 import { isAdmin, requireSignIn } from "../middlewares/authMiddleware.js";
 
 //router object
@@ -21,6 +22,9 @@ router.post("/forgot-password", forgotPasswordController);
 
 //test routes
 router.get("/test", requireSignIn, isAdmin, testController);
+
+// Delete user by ID (admin only)
+router.delete("/delete-user/:uid", requireSignIn, isAdmin, deleteUserController);
 
 //protected User route auth
 router.get("/user-auth", requireSignIn, (req, res) => {
