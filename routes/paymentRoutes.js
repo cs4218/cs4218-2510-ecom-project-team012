@@ -9,7 +9,7 @@ const router = express.Router();
 
 //payments routes
 //token
-router.get("/braintree/token", braintreeTokenController);
+router.get("/braintree/token", requireSignIn, braintreeTokenController);
 
 //payments
 router.post("/braintree/payment", requireSignIn, brainTreePaymentController);
