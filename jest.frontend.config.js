@@ -21,6 +21,7 @@ export default {
 
   // only run these tests
   testMatch: [
+    "<rootDir>/client/frontend-auth.test.js",
     "<rootDir>/client/src/**/*.test.js", // recursively match all test.js files under src
   ],
 
@@ -34,7 +35,7 @@ export default {
     "client/src/components/Routes/Private.js",
     "client/src/context/cart.js",
     "client/src/context/auth.js",
-    "!**/*.spec.js"
+    "!**/*.spec.js",
   ],
 
   coverageThreshold: {
@@ -45,6 +46,7 @@ export default {
   },
   setupFilesAfterEnv: ["<rootDir>/client/src/setupTests.js"],
   coverageDirectory: "<rootDir>/coverage/front-tests",
+
 
   // ignore integration tests
   coveragePathIgnorePatterns: [
