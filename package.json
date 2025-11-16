@@ -16,6 +16,7 @@
     "test:frontend-int": "cross-env NODE_ENV=frontend-int node_modules/jest/bin/jest.js --runInBand --detectOpenHandles --forceExit --config jest.frontend.integration.config.js",
     "test:backend-int": "cross-env NODE_ENV=backend-int node node_modules/jest/bin/jest.js --runInBand --config jest.backend.integration.config.js",
     "test:integration": "npm run test:backend-int && npm run test:frontend-int",
+    "test:injection": "cross-env NODE_ENV=backend-int node node_modules/jest/bin/jest.js --runInBand --config jest.injection.config.js",
     "convert:json": "node tests/convertJsonToJs.js",
     "test:ui": "npm run convert:json && npx playwright test --ui",
     "dev:ui": "concurrently \"cross-env NODE_ENV=test-ui node server.js\" \"npm run client\""
