@@ -18,6 +18,7 @@ export default {
     "<rootDir>/models/*.test.js",
     "<rootDir>/middlewares/*.test.js",
     "<rootDir>/helpers/*.test.js",
+    "<rootDir>/tests/security/authentication.test.js",
     "<rootDir>/config/*.test.js",
   ],
 

@@ -45,7 +45,7 @@ router.get("/get-product/:slug", getSingleProductController);
 router.get("/product-photo/:pid", productPhotoController);
 
 //delete rproduct
-router.delete("/delete-product/:pid", deleteProductController);
+router.delete("/delete-product/:pid", requireSignIn, deleteProductController); // bug found: sign in should be rquired
 
 //filter product
 router.post("/product-filters", productFiltersController);
